@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Shipter{% endblock %} — Платформа дистрибуции цифровых продуктов</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    
+    <!-- HTMX for dynamic interactions -->
+    <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+    
+    <!-- Main CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+    {% block extra_css %}{% endblock %}
+</head>
+<body class="{% block body_class %}{% endblock %}">
+    <!-- Flash messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="flash-container">
+                {% for category, message in messages %}
+                    <div class="flash flash-{{ category }}">
+                        {{ message }}
+                        <button class="flash-close" onclick="this.parentElement.remove()">×</button>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+    
+    <!-- Navigation -->
+    {% if g.current_user %}
+    <nav class="navbar">
+        <div class="container nav-container">
+            <a href="{{ url_for('dashboard.index') }}" class="logo">
+                <span class="logo-icon">◈</span>
+                <span class="logo-text">Shipter</span>
+            </a>
+            
+            <div class="nav-links">
+                <a href="{{ url_for('projects.list_projects') }}" class="nav-link">Проекты</a>
+                {% if g.current_user.tier == 'pro' %}
+                <a href="#" class="nav-link">Задачи</a>
+                {% endif %}
+                <a href="{{ url_for('billing.plans') }}" class="nav-link">Тариф</a>
+            </div>
+            
+            <div class="nav-actions">
+                {% if g.current_user.tier == 'trial' %}
+                <div class="trial-badge">
+                    ⏳ {{ g.current_user.trial_days_left() }} дн. trial
+                </div>
+                {% endif %}
+                
+                <div class="user-menu">
+                    {% if g.current_user.avatar_url %}
+                    <img src="{{ g.current_user.avatar_url }}" alt="Avatar" class="user-avatar">
+                    {% else %}
+                    <div class="user-avatar user-avatar-placeholder">{{ g.current_user.name[0]|upper if g.current_user.name else g.current_user.email[0]|upper }}</div>
+                    {% endif %}
+                    <div class="dropdown">
+                        <a href="{{ url_for('auth.logout') }}">Выйти</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+    {% else %}
+    <nav class="navbar navbar-public">
+        <div class="container nav-container">
+            <a href="{{ url_for('public.landing') }}" class="logo">
+                <span class="logo-icon">◈</span>
+                <span class="logo-text">Shipter</span>
+            </a>
+            
+            <div class="nav-links">
+                <a href="{{ url_for('public.pricing') }}" class="nav-link">Тарифы</a>
+                <a href="{{ url_for('public.features') }}" class="nav-link">Возможности</a>
+                <a href="{{ url_for('public.about') }}" class="nav-link">О нас</a>
+            </div>
+            
+            <div class="nav-actions">
+                <a href="{{ url_for('auth.login') }}" class="btn btn-ghost">Войти</a>
+                <a href="{{ url_for('auth.register') }}" class="btn btn-primary">Начать бесплатно</a>
+            </div>
+        </div>
+    </nav>
+    {% endif %}
+    
+    <!-- Main content -->
+    <main class="main-content">
+        {% block content %}{% endblock %}
+    </main>
+    
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <span class="logo-icon">◈</span>
+                    <span class="logo-text">Shipter</span>
+                    <p>Платформа для дистрибуции цифровых продуктов</p>
+                </div>
+                <div class="footer-links">
+                    <a href="#">Privacy Policy</a>
+                    <a href="#">Terms of Service</a>
+                    <a href="mailto:hello@shipter.com">Support</a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 Shipter. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+    
+    <!-- Scripts -->
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,28 @@
+[Unit]
+Description=Shipter Web Application
+After=network.target postgresql.service redis.service
+
+[Service]
+User=www-data
+Group=www-data
+WorkingDirectory=/var/www/shipter
+EnvironmentFile=/var/www/shipter/.env
+ExecStart=/var/www/shipter/venv/bin/gunicorn \
+    --workers 4 \
+    --bind 127.0.0.1:8000 \
+    --timeout 120 \
+    --access-logfile /var/log/shipter/access.log \
+    --error-logfile /var/log/shipter/error.log \
+    run:app
+Restart=always
+RestartSec=5
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=shipter
+
+# Security hardening
+NoNewPrivileges=true
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target
