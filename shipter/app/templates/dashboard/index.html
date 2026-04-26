@@ -1,0 +1,254 @@
+{% extends "base.html" %}
+
+{% block title %}Дашборд{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+    <div class="container">
+        <header class="dashboard-header">
+            <h1>Привет, {{ g.current_user.name or 'друг' }} 👋</h1>
+            {% if g.current_user.tier == 'trial' %}
+            <div class="trial-banner">
+                ⏳ Trial: {{ g.current_user.trial_days_left() }} дн. осталось — 
+                <a href="{{ url_for('billing.plans') }}">Выбрать тариф</a>
+            </div>
+            {% endif %}
+        </header>
+        
+        {% if projects|length == 0 %}
+        <div class="empty-state card">
+            <h2>Нет проектов</h2>
+            <p>Создайте первый проект чтобы начать анализ и генерацию контента.</p>
+            <a href="{{ url_for('projects.create_project') }}" class="btn btn-primary mt-3">Добавить первый проект</a>
+        </div>
+        {% else %}
+        <section class="projects-section">
+            <div class="section-header">
+                <h2>Ваши проекты</h2>
+                <a href="{{ url_for('projects.create_project') }}" class="btn btn-secondary">+ Новый проект</a>
+            </div>
+            <div class="projects-grid">
+                {% for project in projects %}
+                <div class="project-card card">
+                    <div class="project-header">
+                        <h3>{{ project.name }}</h3>
+                        <span class="project-type">{{ project.type or 'other' }}</span>
+                    </div>
+                    <p class="project-description">{{ project.description[:100] }}{% if project.description|length > 100 %}...{% endif %}</p>
+                    <div class="project-actions">
+                        <a href="{{ url_for('projects.detail', project_id=project.id) }}" class="btn btn-secondary btn-sm">Открыть</a>
+                        {% if not project.distribution_plan %}
+                        <a href="{{ url_for('ai.analyze_project', project_id=project.id) }}" class="btn btn-primary btn-sm">Анализировать</a>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </section>
+        {% endif %}
+        
+        {% if recent_content %}
+        <section class="recent-content">
+            <h2>Последние генерации</h2>
+            <div class="content-list">
+                {% for item in recent_content %}
+                <div class="content-item card">
+                    <span class="content-type">{{ item.type }}</span>
+                    <p>{{ item.content[:80] }}...</p>
+                    <span class="content-date">{{ item.created_at.strftime('%d.%m.%Y') }}</span>
+                </div>
+                {% endfor %}
+            </div>
+        </section>
+        {% endif %}
+        
+        {% if today_tasks and user.tier == 'pro' %}
+        <section class="today-tasks">
+            <h2>Задачи на сегодня</h2>
+            <div class="task-list">
+                {% for task in today_tasks %}
+                <div class="task-item card">
+                    <input type="checkbox" class="task-checkbox" data-task-id="{{ task.id }}">
+                    <div class="task-content">
+                        <h4>{{ task.title }}</h4>
+                        <p>{{ task.description }}</p>
+                    </div>
+                    <span class="task-category">{{ task.category }}</span>
+                </div>
+                {% endfor %}
+            </div>
+        </section>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.dashboard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 32px;
+    flex-wrap: wrap;
+    gap: 16px;
+}
+
+.dashboard-header h1 {
+    font-family: var(--font-display);
+    font-size: 2rem;
+}
+
+.trial-banner {
+    background: var(--accent-glow);
+    color: var(--accent-warning);
+    padding: 12px 20px;
+    border-radius: 8px;
+    border: 1px solid var(--border-default);
+}
+
+.trial-banner a {
+    color: var(--accent-primary);
+    text-decoration: underline;
+}
+
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+}
+
+.section-header h2 {
+    font-family: var(--font-display);
+    font-size: 1.5rem;
+}
+
+.projects-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 24px;
+    margin-bottom: 48px;
+}
+
+.project-card {
+    padding: 24px;
+}
+
+.project-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.project-header h3 {
+    font-family: var(--font-display);
+    font-size: 1.25rem;
+}
+
+.project-type {
+    background: var(--bg-overlay);
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    color: var(--text-secondary);
+}
+
+.project-description {
+    color: var(--text-secondary);
+    margin-bottom: 16px;
+    line-height: 1.6;
+}
+
+.project-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.btn-sm {
+    padding: 8px 16px;
+    font-size: 0.875rem;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 60px 24px;
+}
+
+.empty-state h2 {
+    font-family: var(--font-display);
+    font-size: 1.5rem;
+    margin-bottom: 8px;
+}
+
+.empty-state p {
+    color: var(--text-secondary);
+    margin-bottom: 24px;
+}
+
+.recent-content, .today-tasks {
+    margin-top: 48px;
+}
+
+.content-list, .task-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.content-item, .task-item {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 16px 20px;
+}
+
+.content-type {
+    background: var(--accent-glow);
+    color: var(--accent-primary);
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.content-item p {
+    flex: 1;
+    color: var(--text-secondary);
+}
+
+.content-date {
+    color: var(--text-muted);
+    font-size: 0.875rem;
+}
+
+.task-checkbox {
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+}
+
+.task-content {
+    flex: 1;
+}
+
+.task-content h4 {
+    margin-bottom: 4px;
+}
+
+.task-content p {
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+}
+
+.task-category {
+    background: var(--bg-overlay);
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+}
+</style>
+{% endblock %}

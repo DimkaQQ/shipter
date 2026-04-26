@@ -1,0 +1,251 @@
+{% extends "base.html" %}
+
+{% block title %}Главная{% endblock %}
+
+{% block body_class %}landing-page{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/landing.css') }}">
+{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero">
+    <canvas id="hero-canvas"></canvas>
+    <div class="container hero-container">
+        <div class="hero-content">
+            <h1 class="hero-title">
+                Ты сделал продукт.<br>
+                Теперь найди для него<br>
+                <span class="text-gradient">клиентов.</span>
+            </h1>
+            <p class="hero-subtitle">
+                Shipter анализирует твой проект и строит персональную стратегию дистрибуции — 
+                от первого поста до первых продаж.
+            </p>
+            <div class="hero-cta">
+                <a href="{{ url_for('auth.register') }}" class="btn btn-primary btn-lg">
+                    Начать бесплатно — 7 дней
+                </a>
+                <a href="#how-it-works" class="btn btn-secondary btn-lg">
+                    Посмотреть как работает ↓
+                </a>
+            </div>
+            <p class="hero-note">Карта не нужна. Отмена в любой момент.</p>
+        </div>
+        <div class="hero-demo">
+            <div class="demo-card card">
+                <div class="demo-header">
+                    <span class="demo-badge">AI Анализ</span>
+                </div>
+                <div class="demo-content">
+                    <div class="demo-line skeleton"></div>
+                    <div class="demo-line skeleton w-80"></div>
+                    <div class="demo-line skeleton w-60"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Pain Points Section -->
+<section class="pain-points">
+    <div class="container">
+        <h2 class="section-title">Узнаёшь себя?</h2>
+        <div class="pain-grid">
+            <div class="pain-card card">
+                <div class="pain-icon">😔</div>
+                <h3>Потратил месяцы на разработку. Запустил. Тишина.</h3>
+            </div>
+            <div class="pain-card card">
+                <div class="pain-icon">🤔</div>
+                <h3>Не знаешь где искать первых клиентов.</h3>
+            </div>
+            <div class="pain-card card">
+                <div class="pain-icon">⏰</div>
+                <h3>Контент писать некогда, а без него никто не узнает.</h3>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- How It Works Section -->
+<section id="how-it-works" class="how-it-works">
+    <div class="container">
+        <h2 class="section-title">Как это работает</h2>
+        <div class="steps">
+            <div class="step">
+                <div class="step-number">1</div>
+                <h3>Опиши свой проект</h3>
+                <p>Расскажи о продукте, аудитории и проблеме которую решаешь</p>
+            </div>
+            <div class="step-connector"></div>
+            <div class="step">
+                <div class="step-number">2</div>
+                <h3>AI строит стратегию</h3>
+                <p>Получи персональный план дистрибуции и монетизации</p>
+            </div>
+            <div class="step-connector"></div>
+            <div class="step">
+                <div class="step-number">3</div>
+                <h3>Следуй плану</h3>
+                <p>Выполняй конкретные шаги и получай первых клиентов</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Demo Section -->
+<section class="demo-section">
+    <div class="container">
+        <h2 class="section-title">Пример AI-анализа</h2>
+        <div class="demo-tabs">
+            <button class="tab-btn active" data-tab="niche">Анализ ниши</button>
+            <button class="tab-btn" data-tab="competitors">Конкуренты</button>
+            <button class="tab-btn" data-tab="strategy">Стратегия</button>
+            <button class="tab-btn" data-tab="content">Контент</button>
+        </div>
+        <div class="demo-output card">
+            <div id="typewriter-text" class="typewriter"></div>
+        </div>
+    </div>
+</section>
+
+<!-- Pricing Section -->
+<section class="pricing-section">
+    <div class="container">
+        <h2 class="section-title">Выбери свой режим</h2>
+        <div class="pricing-grid">
+            <div class="pricing-card card">
+                <h3>Trial</h3>
+                <div class="price">7 дней</div>
+                <div class="price-sub">Бесплатно</div>
+                <ul class="features-list">
+                    <li>✓ Полный доступ к AI</li>
+                    <li>✓ До 3 проектов</li>
+                    <li>✓ Анализ и контент</li>
+                </ul>
+                <a href="{{ url_for('auth.register') }}" class="btn btn-secondary btn-block">Начать trial</a>
+            </div>
+            
+            <div class="pricing-card card popular">
+                <div class="popular-badge">Популярный выбор ⭐</div>
+                <h3>Starter</h3>
+                <div class="price">$49<span>/мес</span></div>
+                <div class="price-sub">AI-советник</div>
+                <ul class="features-list">
+                    <li>✓ Всё из Trial</li>
+                    <li>✓ До 5 проектов</li>
+                    <li>✓ Безлимитные AI-запросы</li>
+                    <li>✓ Email поддержка</li>
+                </ul>
+                <a href="{{ url_for('billing.checkout', tier='starter') }}" class="btn btn-primary btn-block">Выбрать Starter</a>
+            </div>
+            
+            <div class="pricing-card card">
+                <h3>Pro</h3>
+                <div class="price">$199<span>/мес</span></div>
+                <div class="price-sub">AI делает за тебя</div>
+                <ul class="features-list">
+                    <li>✓ Всё из Starter</li>
+                    <li>✓ Безлимит проектов</li>
+                    <li>✓ Action Tasks на неделю</li>
+                    <li>✓ Персональная поддержка</li>
+                </ul>
+                <a href="{{ url_for('billing.checkout', tier='pro') }}" class="btn btn-secondary btn-block">Выбрать Pro</a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Testimonials Section -->
+<section class="testimonials">
+    <div class="container">
+        <h2 class="section-title">Что говорят пользователи</h2>
+        <div class="testimonials-grid">
+            <div class="testimonial-card card">
+                <div class="testimonial-stars">★★★★★</div>
+                <p>"Shipter помог мне найти первых 100 клиентов за 2 недели. AI-анализ попал точно в цель."</p>
+                <div class="testimonial-author">
+                    <div class="author-avatar">А</div>
+                    <div>
+                        <strong>Алексей К.</strong>
+                        <span>Инди-разработчик, Казахстан</span>
+                    </div>
+                </div>
+            </div>
+            <div class="testimonial-card card">
+                <div class="testimonial-stars">★★★★★</div>
+                <p>"Наконец-то инструмент который понимает специфику цифровых продуктов. Рекомендую!"</p>
+                <div class="testimonial-author">
+                    <div class="author-avatar">М</div>
+                    <div>
+                        <strong>Мария С.</strong>
+                        <span>Фрилансер, Россия</span>
+                    </div>
+                </div>
+            </div>
+            <div class="testimonial-card card">
+                <div class="testimonial-stars">★★★★★</div>
+                <p>"Pro план окупился за первый месяц. AI задачи сэкономили кучу времени."</p>
+                <div class="testimonial-author">
+                    <div class="author-avatar">Д</div>
+                    <div>
+                        <strong>Дмитрий В.</strong>
+                        <span>Founder SaaS, Украина</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- FAQ Section -->
+<section class="faq-section">
+    <div class="container">
+        <h2 class="section-title">Частые вопросы</h2>
+        <div class="faq-list">
+            <details class="faq-item">
+                <summary>Что такое Shipter?</summary>
+                <p>Shipter — это платформа которая помогает создателям цифровых продуктов с дистрибуцией и монетизацией. AI анализирует ваш проект и строит персональную стратегию продвижения.</p>
+            </details>
+            <details class="faq-item">
+                <summary>Для кого это?</summary>
+                <p>Для создателей SaaS, Telegram ботов, мобильных приложений, онлайн-курсов и других цифровых продуктов.</p>
+            </details>
+            <details class="faq-item">
+                <summary>Как работает AI-анализ?</summary>
+                <p>Мы используем Claude API от Anthropic для глубокого анализа вашего проекта. AI изучает нишу, конкурентов и строит пошаговый план дистрибуции.</p>
+            </details>
+            <details class="faq-item">
+                <summary>Что входит в Trial?</summary>
+                <p>7 дней полного доступа ко всем функциям: AI-анализ, генерация контента, до 3 проектов.</p>
+            </details>
+            <details class="faq-item">
+                <summary>Когда меня спишут деньги?</summary>
+                <p>После окончания 7-дневного trial, если вы выберете платный тариф. Списания происходят автоматически каждый месяц.</p>
+            </details>
+            <details class="faq-item">
+                <summary>Можно ли отменить в любой момент?</summary>
+                <p>Да, вы можете отменить подписку в любой момент. Доступ сохранится до конца оплаченного периода.</p>
+            </details>
+            <details class="faq-item">
+                <summary>Какие языки поддерживает AI?</summary>
+                <p>AI работает на русском и английском языках. Интерфейс платформы на русском.</p>
+            </details>
+        </div>
+    </div>
+</section>
+
+<!-- CTA Footer Section -->
+<section class="cta-footer">
+    <div class="container text-center">
+        <h2>Готов запустить свой продукт?</h2>
+        <a href="{{ url_for('auth.register') }}" class="btn btn-primary btn-lg mt-3">Начать бесплатно</a>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/landing.js') }}"></script>
+{% endblock %}
