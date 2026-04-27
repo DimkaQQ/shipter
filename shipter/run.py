@@ -6,6 +6,7 @@ from app.extensions import db, scheduler
 from app.models import User, Project, DistributionPlan, GeneratedContent, Subscription, ActionTask
 from app.services.trial_service import init_scheduler
 import os
+import click
 
 app = create_app()
 

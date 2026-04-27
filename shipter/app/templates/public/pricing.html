@@ -1,0 +1,317 @@
+{% extends "base.html" %}
+
+{% block title %}Тарифы — Shipter{% endblock %}
+
+{% block content %}
+<section class="pricing-hero">
+    <div class="container">
+        <h1>Выбери свой режим</h1>
+        <p class="subtitle">Начни бесплатно. Отмени в любой момент.</p>
+    </div>
+</section>
+
+<section class="pricing-plans">
+    <div class="container">
+        <div class="plans-grid">
+            <!-- TRIAL -->
+            <div class="plan-card">
+                <div class="plan-header">
+                    <h3>Trial</h3>
+                    <div class="price">
+                        <span class="amount">0₽</span>
+                        <span class="period">на 7 дней</span>
+                    </div>
+                </div>
+                <ul class="plan-features">
+                    <li>✅ Полный доступ ко всем функциям</li>
+                    <li>✅ До 3 проектов</li>
+                    <li>✅ AI-анализ проекта</li>
+                    <li>✅ Генерация контента</li>
+                    <li>✅ Пошаговый план дистрибуции</li>
+                </ul>
+                <a href="{{ url_for('auth.register') }}" class="btn btn-outline">Начать бесплатно</a>
+            </div>
+
+            <!-- STARTER -->
+            <div class="plan-card popular">
+                <div class="popular-badge">Популярный выбор</div>
+                <div class="plan-header">
+                    <h3>Starter</h3>
+                    <div class="price">
+                        <span class="amount">$49</span>
+                        <span class="period">в месяц</span>
+                    </div>
+                </div>
+                <ul class="plan-features">
+                    <li>✅ Всё из Trial</li>
+                    <li>✅ До 5 проектов</li>
+                    <li>✅ Неограниченные AI-анализы</li>
+                    <li>✅ Неограниченная генерация контента</li>
+                    <li>✅ 6 типов контента</li>
+                    <li>✉️ Email-поддержка</li>
+                </ul>
+                <a href="{{ url_for('auth.register') }}" class="btn btn-primary">Выбрать Starter</a>
+            </div>
+
+            <!-- PRO -->
+            <div class="plan-card">
+                <div class="plan-header">
+                    <h3>Pro</h3>
+                    <div class="price">
+                        <span class="amount">$199</span>
+                        <span class="period">в месяц</span>
+                    </div>
+                </div>
+                <ul class="plan-features">
+                    <li>✅ Всё из Starter</li>
+                    <li>✅ <strong>Неограниченные проекты</strong></li>
+                    <li>✅ <strong>Action Tasks</strong> — AI делает за тебя</li>
+                    <li>✅ Задачи на неделю от AI</li>
+                    <li>✅ Контент-календарь на месяц</li>
+                    <li>🚀 Персональная поддержка</li>
+                </ul>
+                <a href="{{ url_for('auth.register') }}" class="btn btn-outline">Выбрать Pro</a>
+            </div>
+        </div>
+
+        <div class="faq-section">
+            <h2>Частые вопросы</h2>
+            <div class="faq-list">
+                <details class="faq-item">
+                    <summary>Что такое Shipter?</summary>
+                    <p>Shipter — это платформа, которая анализирует твой цифровой продукт и строит персональную стратегию дистрибуции с помощью AI.</p>
+                </details>
+                <details class="faq-item">
+                    <summary>Для кого это?</summary>
+                    <p>Для создателей ботов, SaaS, приложений, курсов и любых цифровых продуктов, которые хотят найти клиентов.</p>
+                </details>
+                <details class="faq-item">
+                    <summary>Как работает Trial?</summary>
+                    <p>7 дней полного доступа ко всем функциям. Карта не требуется. После окончания можно выбрать тариф или остаться на бесплатном уровне с ограничениями.</p>
+                </details>
+                <details class="faq-item">
+                    <summary>Можно ли отменить подписку?</summary>
+                    <p>Да, в любой момент. Подписка действует до конца оплаченного периода.</p>
+                </details>
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+.pricing-hero {
+    padding: 80px 0 40px;
+    text-align: center;
+    background: var(--gradient-glow);
+}
+
+.pricing-hero h1 {
+    font-size: 3rem;
+    margin-bottom: 16px;
+    background: var(--gradient-hero);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.pricing-hero .subtitle {
+    font-size: 1.2rem;
+    color: var(--text-secondary);
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.pricing-plans {
+    padding: 60px 0;
+}
+
+.plans-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 32px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.plan-card {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-subtle);
+    border-radius: 16px;
+    padding: 32px;
+    position: relative;
+    transition: all 0.3s var(--ease-spring);
+    display: flex;
+    flex-direction: column;
+}
+
+.plan-card:hover {
+    transform: translateY(-8px);
+    border-color: var(--border-strong);
+    box-shadow: var(--shadow-glow);
+}
+
+.plan-card.popular {
+    border-color: var(--accent-primary);
+    box-shadow: 0 0 30px rgba(108, 99, 255, 0.1);
+}
+
+.popular-badge {
+    position: absolute;
+    top: -12px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--gradient-hero);
+    color: white;
+    padding: 4px 16px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.plan-header {
+    text-align: center;
+    margin-bottom: 24px;
+}
+
+.plan-header h3 {
+    font-size: 1.5rem;
+    margin-bottom: 16px;
+    color: var(--text-primary);
+}
+
+.price {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.price .amount {
+    font-size: 3rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    font-family: var(--font-mono);
+}
+
+.price .period {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+.plan-features {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 32px;
+    flex-grow: 1;
+}
+
+.plan-features li {
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border-subtle);
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+}
+
+.plan-features li:last-child {
+    border-bottom: none;
+}
+
+.btn {
+    display: block;
+    width: 100%;
+    padding: 16px;
+    text-align: center;
+    border-radius: 12px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.btn-primary {
+    background: var(--gradient-hero);
+    color: white;
+    border: none;
+}
+
+.btn-primary:hover {
+    opacity: 0.9;
+    transform: scale(1.02);
+}
+
+.btn-outline {
+    background: transparent;
+    color: var(--text-primary);
+    border: 2px solid var(--border-default);
+}
+
+.btn-outline:hover {
+    border-color: var(--accent-primary);
+    background: var(--accent-glow);
+}
+
+.faq-section {
+    max-width: 800px;
+    margin: 80px auto 0;
+    padding-top: 60px;
+    border-top: 1px solid var(--border-subtle);
+}
+
+.faq-section h2 {
+    text-align: center;
+    margin-bottom: 40px;
+    color: var(--text-primary);
+}
+
+.faq-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.faq-item {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-subtle);
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.faq-item summary {
+    padding: 20px;
+    cursor: pointer;
+    font-weight: 600;
+    color: var(--text-primary);
+    list-style: none;
+    position: relative;
+}
+
+.faq-item summary::-webkit-details-marker {
+    display: none;
+}
+
+.faq-item summary::after {
+    content: '+';
+    position: absolute;
+    right: 20px;
+    font-size: 1.5rem;
+    color: var(--accent-primary);
+}
+
+.faq-item[open] summary::after {
+    content: '−';
+}
+
+.faq-item p {
+    padding: 0 20px 20px;
+    color: var(--text-secondary);
+    line-height: 1.6;
+}
+
+@media (max-width: 768px) {
+    .pricing-hero h1 {
+        font-size: 2rem;
+    }
+    
+    .plans-grid {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
+{% endblock %}
