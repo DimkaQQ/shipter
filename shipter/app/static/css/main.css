@@ -69,6 +69,7 @@ body {
     color: var(--text-primary);
     line-height: 1.6;
     min-height: 100vh;
+    overflow-x: hidden;
 }
 
 a {
@@ -522,6 +523,47 @@ input, textarea, select {
     0%, 100% { transform: translate(0, 0) scale(1); }
     33% { transform: translate(10%, 10%) scale(1.1); }
     66% { transform: translate(-10%, 5%) scale(0.95); }
+}
+
+/* Background Particles */
+.bg-particle {
+    position: absolute;
+    border-radius: 50%;
+    pointer-events: none;
+}
+
+/* Ripple Effect for Buttons */
+.ripple {
+    position: absolute;
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    transform: scale(0);
+    pointer-events: none;
+}
+
+/* Loading State */
+.loading {
+    display: inline-block;
+    position: relative;
+}
+
+.loading::after {
+    content: '...';
+    animation: loading 1.5s infinite;
+}
+
+@keyframes loading {
+    0%, 20% { content: '.'; }
+    40% { content: '..'; }
+    60%, 100% { content: '...'; }
+}
+
+/* Error State for Form Inputs */
+.form-input.error,
+.form-textarea.error,
+.form-select.error {
+    border-color: var(--accent-danger);
+    box-shadow: 0 0 0 3px rgba(255, 71, 87, 0.1);
 }
 
 /* ============================================
