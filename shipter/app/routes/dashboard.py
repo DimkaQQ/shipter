@@ -1,8 +1,6 @@
 from flask import Blueprint, render_template, g, redirect, url_for
 from app.middleware.auth import login_required
-from app.models.project import Project
-from app.models.generated_content import GeneratedContent
-from app.models.action_task import ActionTask
+from app.models import Project, GeneratedContent, ActionTask
 from datetime import date
 
 dashboard_bp = Blueprint('dashboard', __name__)
