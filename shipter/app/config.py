@@ -38,7 +38,7 @@ class Config:
     MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD', '')
     
     # Trial
-    TRIAL_DAYS = int(os.environ.get('TRIAL_DAYS', 7))
+    TRIAL_DAYS = int(os.environ.get('TRIAL_DAYS', 3))  # 3 дня trial
     
     # SQLAlchemy
     SQLALCHEMY_TRACK_MODIFICATIONS = False
