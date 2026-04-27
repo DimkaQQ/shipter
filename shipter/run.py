@@ -7,6 +7,7 @@ from app.models import User, Project, DistributionPlan, GeneratedContent, Subscr
 from app.services.trial_service import init_scheduler
 import click
 import os
+import click
 
 app = create_app()
 
