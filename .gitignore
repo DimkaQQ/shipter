@@ -1,1 +1,97 @@
-Nothing should be ignored in this case, as the changes only include source files (`.html` and `.py`) without any build artifacts, dependencies, or temporary files.
+# --- Python ---
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# PyInstaller
+*.manifest
+*.spec
+
+# --- Virtual Environment ---
+venv/
+ENV/
+env/
+.venv/
+
+# --- IDE & Editors ---
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.project
+.pydevproject
+.settings/
+
+# --- Environment Variables (IMPORTANT) ---
+.env
+.env.local
+.env.production
+.env.development
+*.env
+
+# --- Database ---
+*.db
+*.sqlite
+*.sqlite3
+instance/
+
+# --- Logs ---
+logs/
+*.log
+
+# --- OS Generated Files ---
+# macOS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+fseventsd
+
+# Windows
+Thumbs.db
+
+# --- Testing ---
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+.nox/
+
+# --- Jupyter Notebook ---
+.ipynb_checkpoints
+
+# --- pyenv ---
+.python-version
+
+# --- Celery / Scheduler ---
+celerybeat-schedule
+celerybeat.pid
+
+# --- Local development specific ---
+local_settings.py
