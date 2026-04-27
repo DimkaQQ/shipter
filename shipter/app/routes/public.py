@@ -17,3 +17,11 @@ def about():
 @public_bp.route('/features')
 def features():
     return render_template('public/features.html')
+
+@public_bp.route('/privacy')
+def privacy():
+    return render_template('legal/privacy.html')
+
+@public_bp.route('/terms')
+def terms():
+    return render_template('legal/terms.html')
