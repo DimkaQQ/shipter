@@ -1,9 +1,6 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash, g, jsonify
 from app.extensions import db
-from app.models.project import Project
-from app.models.plan import DistributionPlan
-from app.models.content import GeneratedContent
-from app.models.action_task import ActionTask
+from app.models import Project, DistributionPlan, GeneratedContent, ActionTask
 from app.middleware.auth import login_required, requires_active_subscription, requires_pro
 from app.services.ai_service import ai_service
 from datetime import datetime, timezone, date
