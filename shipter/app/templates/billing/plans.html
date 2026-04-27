@@ -1,0 +1,439 @@
+{% extends "base.html" %}
+
+{% block title %}Тарифы — Shipter{% endblock %}
+
+{% block content %}
+<div class="billing-container">
+    <div class="container">
+        <header class="billing-header">
+            <h1>Управление подпиской</h1>
+            <p class="subtitle">Выберите тариф который подходит именно вам</p>
+        </header>
+
+        {% if subscription.is_trial %}
+        <div class="trial-info card">
+            <div class="trial-icon">⏳</div>
+            <div class="trial-details">
+                <h3>Trial период</h3>
+                <p>У вас осталось <strong>{{ subscription.trial_days_left }} дн.</strong> бесплатного доступа</p>
+                <p class="trial-note">Требуется привязка карты. Списания начнутся после окончания trial.</p>
+            </div>
+        </div>
+        {% endif %}
+
+        {% if subscription.active %}
+        <div class="active-subscription card">
+            <div class="sub-status status-active">● Активна</div>
+            <h3>Ваш тариф: <span class="tier-name">{{ subscription.tier|upper }}</span></h3>
+            <p>Действует до: {{ subscription.current_period_end.strftime('%d.%m.%Y') }}</p>
+            {% if subscription.cancel_at_period_end %}
+            <div class="cancel-notice">
+                ⚠️ Подписка будет отменена в конце периода
+            </div>
+            {% else %}
+            <form method="POST" action="{{ url_for('billing.cancel_subscription') }}" class="cancel-form">
+                <button type="submit" class="btn btn-outline btn-sm" onclick="return confirm('Вы уверены? Доступ сохранится до конца оплаченного периода.')">
+                    Отменить подписку
+                </button>
+            </form>
+            {% endif %}
+        </div>
+        {% else %}
+        <div class="plans-grid">
+            <!-- TRIAL -->
+            <div class="plan-card">
+                <div class="plan-header">
+                    <h3>Trial</h3>
+                    <div class="price">
+                        <span class="amount">0₽</span>
+                        <span class="period">на 3 дня</span>
+                    </div>
+                </div>
+                <ul class="plan-features">
+                    <li>✅ Полный доступ ко всем функциям</li>
+                    <li>✅ До 3 проектов</li>
+                    <li>✅ AI-анализ проекта</li>
+                    <li>✅ Генерация контента</li>
+                    <li>✅ Пошаговый план дистрибуции</li>
+                    <li>💳 Требуется привязка карты</li>
+                </ul>
+                {% if not g.current_user %}
+                <a href="{{ url_for('auth.register') }}" class="btn btn-outline">Начать бесплатно</a>
+                {% else %}
+                <button class="btn btn-outline" disabled>Уже активирован</button>
+                {% endif %}
+            </div>
+
+            <!-- STARTER -->
+            <div class="plan-card popular">
+                <div class="popular-badge">Популярный выбор ⭐</div>
+                <div class="plan-header">
+                    <h3>Starter</h3>
+                    <div class="price">
+                        <span class="amount">$49</span>
+                        <span class="period">в месяц</span>
+                    </div>
+                </div>
+                <ul class="plan-features">
+                    <li>✅ Всё из Trial</li>
+                    <li>✅ До 5 проектов</li>
+                    <li>✅ Неограниченные AI-анализы</li>
+                    <li>✅ Неограниченная генерация контента</li>
+                    <li>✅ 6 типов контента</li>
+                    <li>✉️ Email-поддержка</li>
+                </ul>
+                <a href="{{ url_for('billing.checkout', tier='starter') }}" class="btn btn-primary">Выбрать Starter</a>
+            </div>
+
+            <!-- PRO -->
+            <div class="plan-card">
+                <div class="plan-header">
+                    <h3>Pro</h3>
+                    <div class="price">
+                        <span class="amount">$199</span>
+                        <span class="period">в месяц</span>
+                    </div>
+                </div>
+                <ul class="plan-features">
+                    <li>✅ Всё из Starter</li>
+                    <li>✅ <strong>Неограниченные проекты</strong></li>
+                    <li>✅ <strong>Action Tasks</strong> — AI делает за тебя</li>
+                    <li>✅ Задачи на неделю от AI</li>
+                    <li>✅ Контент-календарь на месяц</li>
+                    <li>🚀 Персональная поддержка</li>
+                </ul>
+                <a href="{{ url_for('billing.checkout', tier='pro') }}" class="btn btn-outline">Выбрать Pro</a>
+            </div>
+        </div>
+        {% endif %}
+
+        {% if expired %}
+        <div class="expired-notice card">
+            <h3>⚠️ Ваша подписка истекла</h3>
+            <p>Выберите новый тариф чтобы продолжить пользоваться платформой.</p>
+        </div>
+        {% endif %}
+
+        <div class="billing-faq">
+            <h2>Частые вопросы</h2>
+            <div class="faq-list">
+                <details class="faq-item">
+                    <summary>Что такое Trial и как он работает?</summary>
+                    <p>Trial — это 3 дня полного доступа ко всем функциям платформы. Требуется привязка карты для защиты от злоупотреблений. Вы можете отменить подписку в любой момент до окончания trial и с вас не спишут деньги.</p>
+                </details>
+                <details class="faq-item">
+                    <summary>Когда произойдёт первое списание?</summary>
+                    <p>Первое списание произойдёт автоматически после окончания 3-дневного trial периода если вы не отмените подписку. Далее списания происходят раз в месяц в ту же дату.</p>
+                </details>
+                <details class="faq-item">
+                    <summary>Можно ли отменить подписку?</summary>
+                    <p>Да, вы можете отменить подписку в любой момент в личном кабинете. Доступ к платформе сохранится до конца оплаченного периода.</p>
+                </details>
+                <details class="faq-item">
+                    <summary>Какие способы оплаты принимаются?</summary>
+                    <p>Мы принимаем все основные кредитные и дебетовые карты через защищённый платёжный шлюз Stripe.</p>
+                </details>
+                <details class="faq-item">
+                    <summary>Что будет если trial закончится а я не выберу тариф?</summary>
+                    <p>Ваш аккаунт перейдёт в статус «expired». Вы потеряете доступ к AI-функциям и проектам. Данные сохраняются 30 дней.</p>
+                </details>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.billing-container {
+    padding: 60px 0;
+}
+
+.billing-header {
+    text-align: center;
+    margin-bottom: 48px;
+}
+
+.billing-header h1 {
+    font-family: var(--font-display);
+    font-size: 2.5rem;
+    margin-bottom: 12px;
+    background: var(--gradient-hero);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.subtitle {
+    color: var(--text-secondary);
+    font-size: 1.1rem;
+}
+
+.trial-info, .active-subscription {
+    max-width: 700px;
+    margin: 0 auto 48px;
+    display: flex;
+    gap: 20px;
+    align-items: flex-start;
+}
+
+.trial-icon {
+    font-size: 3rem;
+}
+
+.trial-details h3 {
+    margin-bottom: 8px;
+    font-family: var(--font-display);
+}
+
+.trial-note {
+    color: var(--accent-warning);
+    font-size: 0.9rem;
+    margin-top: 8px;
+}
+
+.sub-status {
+    font-size: 0.875rem;
+    font-weight: 600;
+    margin-bottom: 12px;
+}
+
+.status-active {
+    color: #10b981;
+}
+
+.tier-name {
+    background: var(--gradient-hero);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.cancel-notice {
+    background: var(--accent-glow);
+    color: var(--accent-warning);
+    padding: 12px 16px;
+    border-radius: 8px;
+    margin-top: 16px;
+    font-size: 0.9rem;
+}
+
+.cancel-form {
+    margin-top: 16px;
+}
+
+.plans-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 32px;
+    max-width: 1200px;
+    margin: 0 auto 60px;
+}
+
+.plan-card {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-subtle);
+    border-radius: 16px;
+    padding: 32px;
+    position: relative;
+    transition: all 0.3s var(--ease-spring);
+    display: flex;
+    flex-direction: column;
+}
+
+.plan-card:hover {
+    transform: translateY(-8px);
+    border-color: var(--border-strong);
+    box-shadow: var(--shadow-glow);
+}
+
+.plan-card.popular {
+    border-color: var(--accent-primary);
+    box-shadow: 0 0 30px rgba(108, 99, 255, 0.1);
+}
+
+.popular-badge {
+    position: absolute;
+    top: -12px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--gradient-hero);
+    color: white;
+    padding: 4px 16px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.plan-header {
+    text-align: center;
+    margin-bottom: 24px;
+}
+
+.plan-header h3 {
+    font-size: 1.5rem;
+    margin-bottom: 16px;
+    color: var(--text-primary);
+}
+
+.price {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.price .amount {
+    font-size: 3rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    font-family: var(--font-mono);
+}
+
+.price .period {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+.plan-features {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 32px;
+    flex-grow: 1;
+}
+
+.plan-features li {
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border-subtle);
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+}
+
+.plan-features li:last-child {
+    border-bottom: none;
+}
+
+.btn {
+    display: block;
+    width: 100%;
+    padding: 16px;
+    text-align: center;
+    border-radius: 12px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    border: none;
+    font-size: 1rem;
+}
+
+.btn-primary {
+    background: var(--gradient-hero);
+    color: white;
+}
+
+.btn-primary:hover {
+    opacity: 0.9;
+    transform: scale(1.02);
+}
+
+.btn-outline {
+    background: transparent;
+    color: var(--text-primary);
+    border: 2px solid var(--border-default);
+}
+
+.btn-outline:hover:not(:disabled) {
+    border-color: var(--accent-primary);
+    background: var(--accent-glow);
+}
+
+.btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.btn-sm {
+    padding: 10px 20px;
+    font-size: 0.875rem;
+    width: auto;
+    display: inline-block;
+}
+
+.expired-notice {
+    max-width: 700px;
+    margin: 0 auto 48px;
+    background: var(--accent-glow);
+    border: 1px solid var(--accent-warning);
+}
+
+.billing-faq {
+    max-width: 800px;
+    margin: 60px auto 0;
+    padding-top: 48px;
+    border-top: 1px solid var(--border-subtle);
+}
+
+.billing-faq h2 {
+    text-align: center;
+    margin-bottom: 32px;
+    font-family: var(--font-display);
+}
+
+.faq-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.faq-item {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-subtle);
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.faq-item summary {
+    padding: 20px;
+    cursor: pointer;
+    font-weight: 600;
+    color: var(--text-primary);
+    list-style: none;
+    position: relative;
+}
+
+.faq-item summary::-webkit-details-marker {
+    display: none;
+}
+
+.faq-item summary::after {
+    content: '+';
+    position: absolute;
+    right: 20px;
+    font-size: 1.5rem;
+    color: var(--accent-primary);
+}
+
+.faq-item[open] summary::after {
+    content: '−';
+}
+
+.faq-item p {
+    padding: 0 20px 20px;
+    color: var(--text-secondary);
+    line-height: 1.6;
+}
+
+@media (max-width: 768px) {
+    .billing-header h1 {
+        font-size: 2rem;
+    }
+    
+    .plans-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .trial-info, .active-subscription {
+        flex-direction: column;
+        text-align: center;
+    }
+}
+</style>
+{% endblock %}

@@ -1,0 +1,200 @@
+{% extends "base.html" %}
+
+{% block title %}Privacy Policy — Shipter{% endblock %}
+
+{% block content %}
+<div class="legal-container">
+    <div class="container">
+        <article class="legal-content">
+            <h1>Privacy Policy</h1>
+            <p class="last-updated">Last updated: April 2025</p>
+
+            <section>
+                <h2>1. Introduction</h2>
+                <p>Welcome to Shipter ("we", "our", or "us"). We are committed to protecting your privacy and personal information. This Privacy Policy explains how we collect, use, and safeguard your data when you use our platform.</p>
+            </section>
+
+            <section>
+                <h2>2. Information We Collect</h2>
+                <h3>2.1 Personal Information</h3>
+                <ul>
+                    <li>Email address</li>
+                    <li>Name</li>
+                    <li>Password (hashed with bcrypt)</li>
+                    <li>Google account information (if you sign in with Google)</li>
+                    <li>Payment information processed by Stripe</li>
+                </ul>
+
+                <h3>2.2 Usage Information</h3>
+                <ul>
+                    <li>Project descriptions and details you provide</li>
+                    <li>AI-generated content and analysis</li>
+                    <li>Subscription status and billing history</li>
+                    <li>Login timestamps and activity logs</li>
+                </ul>
+            </section>
+
+            <section>
+                <h2>3. How We Use Your Information</h2>
+                <ul>
+                    <li>To provide and maintain our services</li>
+                    <li>To process payments and manage subscriptions</li>
+                    <li>To generate AI-powered analysis and content</li>
+                    <li>To send important notifications about your account</li>
+                    <li>To improve our platform and user experience</li>
+                    <li>To prevent fraud and ensure security</li>
+                </ul>
+            </section>
+
+            <section>
+                <h2>4. Data Security</h2>
+                <p>We implement industry-standard security measures to protect your data:</p>
+                <ul>
+                    <li><strong>Password Security:</strong> All passwords are hashed using bcrypt before storage</li>
+                    <li><strong>Database Protection:</strong> SQL injection prevention through SQLAlchemy ORM</li>
+                    <li><strong>Session Security:</strong> Secure session cookies with CSRF protection</li>
+                    <li><strong>Payment Processing:</strong> All payments handled securely by Stripe (PCI DSS compliant)</li>
+                    <li><strong>Data Encryption:</strong> Sensitive data transmitted over HTTPS</li>
+                </ul>
+            </section>
+
+            <section>
+                <h2>5. Third-Party Services</h2>
+                <p>We use the following third-party services:</p>
+                <ul>
+                    <li><strong>Stripe:</strong> Payment processing</li>
+                    <li><strong>Anthropic (Claude API):</strong> AI-powered analysis and content generation</li>
+                    <li><strong>Google OAuth:</strong> Authentication</li>
+                    <li><strong>Email Service (SMTP):</strong> Transactional emails</li>
+                </ul>
+                <p>These services have their own privacy policies and terms of service.</p>
+            </section>
+
+            <section>
+                <h2>6. Data Retention</h2>
+                <p>We retain your data for as long as your account is active. If you cancel your subscription:</p>
+                <ul>
+                    <li>Your projects and generated content are preserved for 30 days</li>
+                    <li>After 30 days, data may be deleted</li>
+                    <li>You can export your data at any time before deletion</li>
+                </ul>
+            </section>
+
+            <section>
+                <h2>7. Your Rights</h2>
+                <p>You have the right to:</p>
+                <ul>
+                    <li>Access your personal data</li>
+                    <li>Correct inaccurate data</li>
+                    <li>Request deletion of your data</li>
+                    <li>Export your data in a portable format</li>
+                    <li>Opt-out of marketing communications</li>
+                </ul>
+            </section>
+
+            <section>
+                <h2>8. Cookies</h2>
+                <p>We use essential cookies for:</p>
+                <ul>
+                    <li>Session management</li>
+                    <li>Security (CSRF tokens)</li>
+                    <li>User authentication</li>
+                </ul>
+            </section>
+
+            <section>
+                <h2>9. Children's Privacy</h2>
+                <p>Our service is not intended for children under 13 years of age. We do not knowingly collect personal information from children under 13.</p>
+            </section>
+
+            <section>
+                <h2>10. Changes to This Policy</h2>
+                <p>We may update this Privacy Policy from time to time. We will notify you of any changes by posting the new policy on this page and updating the "Last updated" date.</p>
+            </section>
+
+            <section>
+                <h2>11. Contact Us</h2>
+                <p>If you have questions about this Privacy Policy, please contact us at:</p>
+                <p><strong>Email:</strong> hello@shipter.com</p>
+            </section>
+        </article>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.legal-container {
+    padding: 60px 0;
+    min-height: 80vh;
+}
+
+.legal-content {
+    max-width: 800px;
+    margin: 0 auto;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-subtle);
+    border-radius: 16px;
+    padding: 48px;
+}
+
+.legal-content h1 {
+    font-family: var(--font-display);
+    font-size: 2.5rem;
+    margin-bottom: 8px;
+    background: var(--gradient-hero);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.last-updated {
+    color: var(--text-secondary);
+    margin-bottom: 48px;
+    font-style: italic;
+}
+
+.legal-content section {
+    margin-bottom: 40px;
+}
+
+.legal-content h2 {
+    font-family: var(--font-display);
+    font-size: 1.5rem;
+    margin-bottom: 16px;
+    color: var(--text-primary);
+}
+
+.legal-content h3 {
+    font-size: 1.1rem;
+    margin: 24px 0 12px;
+    color: var(--text-primary);
+}
+
+.legal-content p {
+    color: var(--text-secondary);
+    line-height: 1.8;
+    margin-bottom: 16px;
+}
+
+.legal-content ul {
+    color: var(--text-secondary);
+    line-height: 1.8;
+    margin-left: 24px;
+    margin-bottom: 16px;
+}
+
+.legal-content li {
+    margin-bottom: 8px;
+}
+
+@media (max-width: 768px) {
+    .legal-content {
+        padding: 32px 24px;
+    }
+    
+    .legal-content h1 {
+        font-size: 2rem;
+    }
+}
+</style>
+{% endblock %}
