@@ -1,4 +1,4 @@
-// Landing Page JavaScript
+// Landing Page JavaScript with Anime.js
 
 document.addEventListener('DOMContentLoaded', function() {
     // Initialize hero canvas animation
@@ -10,9 +10,48 @@ document.addEventListener('DOMContentLoaded', function() {
     // Initialize tab switching
     initTabs();
     
-    // Initialize scroll animations
+    // Initialize scroll animations with Intersection Observer
     initScrollAnimations();
+    
+    // Animate hero elements with Anime.js
+    animateHeroElements();
 });
+
+// Animate Hero Elements with Anime.js
+function animateHeroElements() {
+    const timeline = anime.timeline({
+        easing: 'easeOutCubic',
+        duration: 800
+    });
+    
+    timeline
+    .add({
+        targets: '.hero-title',
+        opacity: [0, 1],
+        translateY: [30, 0],
+        delay: 200
+    })
+    .add({
+        targets: '.hero-subtitle',
+        opacity: [0, 1],
+        translateY: [30, 0]
+    }, '-=600')
+    .add({
+        targets: '.hero-cta',
+        opacity: [0, 1],
+        translateY: [30, 0]
+    }, '-=600')
+    .add({
+        targets: '.hero-note',
+        opacity: [0, 1],
+        translateY: [30, 0]
+    }, '-=600')
+    .add({
+        targets: '.hero-demo',
+        opacity: [0, 1],
+        scale: [0.9, 1]
+    }, '-=400');
+}
 
 // Hero Canvas Animation - Animated Grid
 function initHeroCanvas() {
