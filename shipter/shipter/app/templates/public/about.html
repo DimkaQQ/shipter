@@ -1,0 +1,306 @@
+{% extends "base.html" %}
+
+{% block title %}О проекте — Shipter{% endblock %}
+
+{% block content %}
+<section class="page-header">
+    <div class="container">
+        <h1>О Shipter</h1>
+        <p class="subtitle">Мы помогаем создателям цифровых продуктов находить своих клиентов</p>
+    </div>
+</section>
+
+<section class="about-content">
+    <div class="container">
+        <div class="about-section">
+            <h2>Наша миссия</h2>
+            <p>
+                Каждый день талантливые разработчики, дизайнеры и предприниматели создают потрясающие цифровые продукты: 
+                Telegram-ботов, SaaS-сервисы, мобильные приложения, онлайн-курсы. Но большинство из них сталкиваются с 
+                одной и той же проблемой — они не знают, как найти своих первых клиентов.
+            </p>
+            <p>
+                Shipter создан, чтобы изменить это. Мы используем искусственный интеллект, чтобы анализировать ваш продукт, 
+                понимать вашу аудиторию и строить персональную стратегию дистрибуции — от первого поста до первых продаж.
+            </p>
+        </div>
+
+        <div class="about-section">
+            <h2>Для кого Shipter?</h2>
+            <div class="audience-grid">
+                <div class="audience-card">
+                    <h3>👨‍💻 Инди-разработчики</h3>
+                    <p>Создали продукт в одиночку и не знаете с чего начать продвижение?</p>
+                </div>
+                <div class="audience-card">
+                    <h3>🚀 Стартапы</h3>
+                    <p>Нужна быстрая и эффективная стратегия выхода на рынок без бюджета на маркетинг?</p>
+                </div>
+                <div class="audience-card">
+                    <h3>📱 Создатели ботов</h3>
+                    <p>Разработали Telegram-бота и хотите найти первых пользователей?</p>
+                </div>
+                <div class="audience-card">
+                    <h3>🎓 Инфопродукты</h3>
+                    <p>Запустили курс или консалтинг и нужна система привлечения клиентов?</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="about-section">
+            <h2>Как мы работаем</h2>
+            <ol class="process-list">
+                <li>
+                    <strong>Вы описываете свой проект</strong>
+                    <p>Расскажите нам о своём продукте, целевой аудитории и проблеме которую он решает.</p>
+                </li>
+                <li>
+                    <strong>AI анализирует и строит стратегию</strong>
+                    <p>Claude AI изучает вашу нишу, конкурентов и создаёт пошаговый план дистрибуции.</p>
+                </li>
+                <li>
+                    <strong>Получаете готовый контент</strong>
+                    <p>Генерируем посты, письма, описания — всё что нужно для продвижения.</p>
+                </li>
+                <li>
+                    <strong>Действуете по плану</strong>
+                    <p>Следуйте пошаговым задачам и получайте первых клиентов.</p>
+                </li>
+            </ol>
+        </div>
+
+        <div class="about-section">
+            <h2>Наши принципы</h2>
+            <ul class="principles-list">
+                <li>
+                    <span class="principle-icon">🎯</span>
+                    <div>
+                        <h4>Фокус на результате</h4>
+                        <p>Каждая рекомендация направлена на получение реальных клиентов, а не просто "активности".</p>
+                    </div>
+                </li>
+                <li>
+                    <span class="principle-icon">⚡</span>
+                    <div>
+                        <h4>Быстрые победы</h4>
+                        <p>Сначала действия с максимальным эффектом и минимальными усилиями.</p>
+                    </div>
+                </li>
+                <li>
+                    <span class="principle-icon">🤖</span>
+                    <div>
+                        <h4>AI + человеческий опыт</h4>
+                        <p>Используем передовой ИИ, обученный на лучших практиках дистрибуции.</p>
+                    </div>
+                </li>
+                <li>
+                    <span class="principle-icon">💰</span>
+                    <div>
+                        <h4>Доступность</h4>
+                        <p>Профессиональные инструменты дистрибуции по цене чашки кофе в день.</p>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+</section>
+
+<section class="cta-section">
+    <div class="container">
+        <h2>Готовы запустить свой продукт?</h2>
+        <p>Начните с 7-дневного бесплатного trial. Карта не нужна.</p>
+        <a href="/auth/register" class="btn btn-primary btn-large">Начать бесплатно</a>
+    </div>
+</section>
+
+<style>
+.page-header {
+    padding: 120px 0 80px;
+    text-align: center;
+    background: var(--gradient-glow);
+}
+
+.page-header h1 {
+    font-size: 3rem;
+    margin-bottom: 16px;
+    background: var(--gradient-hero);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.page-header .subtitle {
+    font-size: 1.25rem;
+    color: var(--text-secondary);
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.about-content {
+    padding: 80px 0;
+}
+
+.about-section {
+    margin-bottom: 80px;
+}
+
+.about-section:last-child {
+    margin-bottom: 0;
+}
+
+.about-section h2 {
+    font-size: 2rem;
+    margin-bottom: 24px;
+    color: var(--text-primary);
+}
+
+.about-section p {
+    color: var(--text-secondary);
+    line-height: 1.8;
+    margin-bottom: 16px;
+    font-size: 1.1rem;
+}
+
+.audience-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 24px;
+    margin-top: 32px;
+}
+
+.audience-card {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-subtle);
+    border-radius: 12px;
+    padding: 24px;
+    transition: all 0.3s ease;
+}
+
+.audience-card:hover {
+    border-color: var(--border-strong);
+    transform: translateY(-2px);
+}
+
+.audience-card h3 {
+    font-size: 1.25rem;
+    margin-bottom: 12px;
+    color: var(--text-primary);
+}
+
+.audience-card p {
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+    margin-bottom: 0;
+}
+
+.process-list {
+    list-style: none;
+    padding: 0;
+    counter-reset: process-counter;
+}
+
+.process-list li {
+    position: relative;
+    padding-left: 60px;
+    margin-bottom: 32px;
+    counter-increment: process-counter;
+}
+
+.process-list li:before {
+    content: counter(process-counter);
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 40px;
+    height: 40px;
+    background: var(--gradient-hero);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    color: white;
+    font-size: 1.2rem;
+}
+
+.process-list strong {
+    display: block;
+    font-size: 1.2rem;
+    color: var(--text-primary);
+    margin-bottom: 8px;
+}
+
+.process-list p {
+    margin-bottom: 0;
+}
+
+.principles-list {
+    list-style: none;
+    padding: 0;
+}
+
+.principles-list li {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 32px;
+    padding: 24px;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-subtle);
+    border-radius: 12px;
+}
+
+.principles-list li:last-child {
+    margin-bottom: 0;
+}
+
+.principle-icon {
+    font-size: 2.5rem;
+    flex-shrink: 0;
+}
+
+.principles-list h4 {
+    font-size: 1.2rem;
+    color: var(--text-primary);
+    margin-bottom: 8px;
+}
+
+.principles-list p {
+    color: var(--text-secondary);
+    margin-bottom: 0;
+    font-size: 0.95rem;
+}
+
+.cta-section {
+    padding: 100px 0;
+    text-align: center;
+    background: var(--gradient-card);
+    border-top: 1px solid var(--border-subtle);
+}
+
+.cta-section h2 {
+    font-size: 2.5rem;
+    margin-bottom: 16px;
+}
+
+.cta-section p {
+    font-size: 1.25rem;
+    color: var(--text-secondary);
+    margin-bottom: 32px;
+}
+
+@media (max-width: 768px) {
+    .page-header h1 {
+        font-size: 2rem;
+    }
+    
+    .principles-list li {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .principle-icon {
+        margin: 0 auto;
+    }
+}
+</style>
+{% endblock %}

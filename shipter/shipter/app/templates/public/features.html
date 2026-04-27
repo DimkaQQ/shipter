@@ -1,0 +1,211 @@
+{% extends "base.html" %}
+
+{% block title %}Возможности — Shipter{% endblock %}
+
+{% block content %}
+<section class="page-header">
+    <div class="container">
+        <h1>Возможности Shipter</h1>
+        <p class="subtitle">Полный набор инструментов для дистрибуции вашего цифрового продукта</p>
+    </div>
+</section>
+
+<section class="features-grid">
+    <div class="container">
+        <div class="feature-card">
+            <div class="feature-icon">🎯</div>
+            <h3>AI-анализ проекта</h3>
+            <p>Глубокий анализ вашей ниши, конкурентов и потенциала монетизации с помощью Claude AI.</p>
+            <ul>
+                <li>Анализ рыночной ниши</li>
+                <li>Идентификация конкурентов</li>
+                <li>Стратегии монетизации</li>
+                <li>План дистрибуции по неделям</li>
+            </ul>
+        </div>
+
+        <div class="feature-card">
+            <div class="feature-icon">✍️</div>
+            <h3>Генерация контента</h3>
+            <p>Автоматическое создание готового к публикации контента для всех каналов продвижения.</p>
+            <ul>
+                <li>Посты для Telegram</li>
+                <li>Твиты для Twitter/X</li>
+                <li>Описания продуктов</li>
+                <li>Hero-секции для лендингов</li>
+                <li>Email-последовательности</li>
+                <li>Холодные outreach-сообщения</li>
+            </ul>
+        </div>
+
+        <div class="feature-card">
+            <div class="feature-icon">📋</div>
+            <h3>Action Tasks (Pro)</h3>
+            <p>Персональный список задач на каждую неделю. Просто выполняйте шаги один за другим.</p>
+            <ul>
+                <li>Конкретные выполнимые задачи</li>
+                <li>Оценка времени выполнения</li>
+                <li>Категоризация по типам</li>
+                <li>Отслеживание прогресса</li>
+            </ul>
+        </div>
+
+        <div class="feature-card">
+            <div class="feature-icon">📊</div>
+            <h3>Управление проектами</h3>
+            <p>Централизованное управление всеми вашими цифровыми продуктами в одном месте.</p>
+            <ul>
+                <li>До 5 проектов на Starter</li>
+                <li>Безлимитно на Pro</li>
+                <li>История всех анализов</li>
+                <li>Библиотека контента</li>
+            </ul>
+        </div>
+
+        <div class="feature-card">
+            <div class="feature-icon">⚡</div>
+            <h3>Quick Wins</h3>
+            <p>Быстрые победы с максимальным эффектом. Минимум усилий — максимум результата.</p>
+            <ul>
+                <li>Приоритизация по impact/effort</li>
+                <li>Оценка времени реализации</li>
+                <li>Конкретные действия</li>
+                <li>Немедленный результат</li>
+            </ul>
+        </div>
+
+        <div class="feature-card">
+            <div class="feature-icon">🔐</div>
+            <h3>Безопасность и надёжность</h3>
+            <p>Ваши данные под защитой. Надёжная инфраструктура и шифрование.</p>
+            <ul>
+                <li>HTTPS шифрование</li>
+                <li>Хеширование паролей (bcrypt)</li>
+                <li>Google OAuth 2.0</li>
+                <li>Stripe для платежей</li>
+            </ul>
+        </div>
+    </div>
+</section>
+
+<section class="cta-section">
+    <div class="container">
+        <h2>Готовы запустить свой продукт?</h2>
+        <p>Начните с 7-дневного бесплатного trial. Карта не нужна.</p>
+        <a href="/auth/register" class="btn btn-primary btn-large">Начать бесплатно</a>
+    </div>
+</section>
+
+<style>
+.page-header {
+    padding: 120px 0 80px;
+    text-align: center;
+    background: var(--gradient-glow);
+}
+
+.page-header h1 {
+    font-size: 3rem;
+    margin-bottom: 16px;
+    background: var(--gradient-hero);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.page-header .subtitle {
+    font-size: 1.25rem;
+    color: var(--text-secondary);
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.features-grid {
+    padding: 80px 0;
+}
+
+.features-grid .container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 32px;
+}
+
+.feature-card {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-subtle);
+    border-radius: 16px;
+    padding: 32px;
+    transition: all 0.3s var(--ease-spring);
+}
+
+.feature-card:hover {
+    transform: translateY(-4px);
+    border-color: var(--border-strong);
+    box-shadow: var(--shadow-glow);
+}
+
+.feature-icon {
+    font-size: 3rem;
+    margin-bottom: 20px;
+}
+
+.feature-card h3 {
+    font-size: 1.5rem;
+    margin-bottom: 12px;
+    color: var(--text-primary);
+}
+
+.feature-card p {
+    color: var(--text-secondary);
+    margin-bottom: 20px;
+    line-height: 1.6;
+}
+
+.feature-card ul {
+    list-style: none;
+    padding: 0;
+}
+
+.feature-card li {
+    padding: 8px 0;
+    color: var(--text-secondary);
+    position: relative;
+    padding-left: 24px;
+}
+
+.feature-card li:before {
+    content: '✓';
+    position: absolute;
+    left: 0;
+    color: var(--accent-secondary);
+    font-weight: bold;
+}
+
+.cta-section {
+    padding: 100px 0;
+    text-align: center;
+    background: var(--gradient-card);
+    border-top: 1px solid var(--border-subtle);
+}
+
+.cta-section h2 {
+    font-size: 2.5rem;
+    margin-bottom: 16px;
+}
+
+.cta-section p {
+    font-size: 1.25rem;
+    color: var(--text-secondary);
+    margin-bottom: 32px;
+}
+
+@media (max-width: 768px) {
+    .page-header h1 {
+        font-size: 2rem;
+    }
+    
+    .features-grid .container {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
+{% endblock %}
