@@ -13,11 +13,17 @@
     <!-- HTMX for dynamic interactions -->
     <script src="https://unpkg.com/htmx.org@1.9.10"></script>
     
+    <!-- Anime.js for animations -->
+    <script src="{{ url_for('static', filename='js/anime.min.js') }}"></script>
+    
     <!-- Main CSS -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
     {% block extra_css %}{% endblock %}
 </head>
 <body class="{% block body_class %}{% endblock %}">
+    <!-- Animated background -->
+    <div class="animated-bg"></div>
+    
     <!-- Flash messages -->
     {% with messages = get_flashed_messages(with_categories=true) %}
         {% if messages %}
