@@ -34,8 +34,6 @@
     font-weight: 800;
     line-height: 1.1;
     margin-bottom: 24px;
-    opacity: 0;
-    transform: translateY(30px);
 }
 
 .hero-subtitle {
@@ -43,24 +41,18 @@
     color: var(--text-secondary);
     margin-bottom: 32px;
     max-width: 500px;
-    opacity: 0;
-    transform: translateY(30px);
 }
 
 .hero-cta {
     display: flex;
     gap: 16px;
     flex-wrap: wrap;
-    opacity: 0;
-    transform: translateY(30px);
 }
 
 .hero-note {
     margin-top: 16px;
     font-size: 0.875rem;
     color: var(--text-muted);
-    opacity: 0;
-    transform: translateY(30px);
 }
 
 .hero-demo {
@@ -87,30 +79,6 @@
     font-size: 0.75rem;
     font-weight: 600;
     text-transform: uppercase;
-}
-
-/* Section animations */
-.pain-points,
-.how-it-works,
-.demo-section,
-.pricing-section,
-.testimonials,
-.faq-section,
-.cta-footer {
-    opacity: 0;
-    transform: translateY(50px);
-    transition: opacity 0.8s ease, transform 0.8s ease;
-}
-
-.pain-points.visible,
-.how-it-works.visible,
-.demo-section.visible,
-.pricing-section.visible,
-.testimonials.visible,
-.faq-section.visible,
-.cta-footer.visible {
-    opacity: 1;
-    transform: translateY(0);
 }
 
 .demo-line {
