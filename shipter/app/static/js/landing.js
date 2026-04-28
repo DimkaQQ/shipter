@@ -15,45 +15,64 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Animate hero elements with Anime.js
     animateHeroElements();
+    
+    // Animate business example timeline
+    animateTimeline();
 });
 
-// Animate Hero Elements with Anime.js
+// Animate Hero Elements with Anime.js - Smoother transitions
 function animateHeroElements() {
     const timeline = anime.timeline({
         easing: 'easeOutCubic',
-        duration: 800
+        duration: 1000
     });
     
     timeline
     .add({
         targets: '.hero-title',
         opacity: [0, 1],
-        translateY: [30, 0],
+        translateY: [50, 0],
         delay: 200
     })
     .add({
         targets: '.hero-subtitle',
         opacity: [0, 1],
-        translateY: [30, 0]
-    }, '-=600')
+        translateY: [50, 0]
+    }, '-=800')
     .add({
         targets: '.hero-cta',
         opacity: [0, 1],
-        translateY: [30, 0]
-    }, '-=600')
-    .add({
-        targets: '.hero-note',
-        opacity: [0, 1],
-        translateY: [30, 0]
-    }, '-=600')
+        translateY: [50, 0]
+    }, '-=800')
     .add({
         targets: '.hero-demo',
         opacity: [0, 1],
-        scale: [0.9, 1]
-    }, '-=400');
+        scale: [0.95, 1]
+    }, '-=600');
 }
 
-// Hero Canvas Animation - Animated Grid
+// Animate Timeline with staggered effect
+function animateTimeline() {
+    anime({
+        targets: '.timeline-item',
+        opacity: [0, 1],
+        translateX: [-50, 0],
+        delay: anime.stagger(200, {start: 500}),
+        easing: 'easeOutCubic',
+        duration: 800
+    });
+    
+    anime({
+        targets: '.stat-card',
+        opacity: [0, 1],
+        translateY: [30, 0],
+        delay: anime.stagger(150, {start: 1500}),
+        easing: 'easeOutCubic',
+        duration: 700
+    });
+}
+
+// Hero Canvas Animation - Smooth Particles
 function initHeroCanvas() {
     const canvas = document.getElementById('hero-canvas');
     if (!canvas) return;
@@ -71,9 +90,10 @@ function initHeroCanvas() {
         constructor() {
             this.x = Math.random() * width;
             this.y = Math.random() * height;
-            this.vx = (Math.random() - 0.5) * 0.5;
-            this.vy = (Math.random() - 0.5) * 0.5;
+            this.vx = (Math.random() - 0.5) * 0.3;
+            this.vy = (Math.random() - 0.5) * 0.3;
             this.size = Math.random() * 2 + 1;
+            this.opacity = Math.random() * 0.5 + 0.2;
         }
         
         update() {
@@ -87,7 +107,7 @@ function initHeroCanvas() {
         draw() {
             ctx.beginPath();
             ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-            ctx.fillStyle = 'rgba(108, 99, 255, 0.3)';
+            ctx.fillStyle = `rgba(108, 99, 255, ${this.opacity})`;
             ctx.fill();
         }
     }
@@ -95,7 +115,7 @@ function initHeroCanvas() {
     function init() {
         resize();
         particles = [];
-        for (let i = 0; i < 50; i++) {
+        for (let i = 0; i < 40; i++) {
             particles.push(new Particle());
         }
     }
@@ -109,9 +129,7 @@ function initHeroCanvas() {
             p.draw();
         });
         
-        // Draw connections
-        ctx.strokeStyle = 'rgba(108, 99, 255, 0.1)';
-        ctx.lineWidth = 1;
+        // Draw connections with smooth opacity
         for (let i = 0; i < particles.length; i++) {
             for (let j = i + 1; j < particles.length; j++) {
                 const dx = particles[i].x - particles[j].x;
@@ -119,6 +137,9 @@ function initHeroCanvas() {
                 const dist = Math.sqrt(dx * dx + dy * dy);
                 
                 if (dist < 150) {
+                    const opacity = (1 - dist / 150) * 0.15;
+                    ctx.strokeStyle = `rgba(108, 99, 255, ${opacity})`;
+                    ctx.lineWidth = 1;
                     ctx.beginPath();
                     ctx.moveTo(particles[i].x, particles[i].y);
                     ctx.lineTo(particles[j].x, particles[j].y);
@@ -139,7 +160,7 @@ function initHeroCanvas() {
     animate();
 }
 
-// Typewriter Effect
+// Typewriter Effect - Smoother typing
 function initTypewriter() {
     const textElement = document.getElementById('typewriter-text');
     if (!textElement) return;
@@ -163,7 +184,7 @@ function initTypewriter() {
             if (i < text.length) {
                 textElement.textContent += text.charAt(i);
                 i++;
-                setTimeout(type, 20);
+                setTimeout(type, 15);
             } else {
                 isTyping = false;
                 if (callback) callback();
@@ -181,7 +202,7 @@ function initTypewriter() {
     window.typeTypewriterText = typeText;
 }
 
-// Tab Switching
+// Tab Switching with smooth transition
 function initTabs() {
     const tabBtns = document.querySelectorAll('.tab-btn');
     
@@ -191,29 +212,59 @@ function initTabs() {
             
             const tab = this.dataset.tab;
             
-            // Update active state
+            // Update active state with animation
             tabBtns.forEach(b => b.classList.remove('active'));
             this.classList.add('active');
             
-            // Type new text
-            if (window.typeTypewriterText && window.typewriterTexts[tab]) {
-                window.typeTypewriterText(window.typewriterTexts[tab]);
-            }
+            // Fade out, type new text, fade in
+            const outputEl = document.getElementById('typewriter-text');
+            anime({
+                targets: outputEl,
+                opacity: [1, 0],
+                duration: 200,
+                easing: 'linear',
+                complete: function() {
+                    if (window.typeTypewriterText && window.typewriterTexts[tab]) {
+                        window.typeTypewriterText(window.typewriterTexts[tab]);
+                        anime({
+                            targets: outputEl,
+                            opacity: [0, 1],
+                            duration: 300,
+                            easing: 'easeOutCubic'
+                        });
+                    }
+                }
+            });
         });
     });
 }
 
-// Scroll Animations with Intersection Observer
+// Scroll Animations with Intersection Observer - Smoother reveal
 function initScrollAnimations() {
     const observerOptions = {
-        threshold: 0.1,
-        rootMargin: '0px 0px -50px 0px'
+        threshold: 0.15,
+        rootMargin: '0px 0px -80px 0px'
     };
     
     const observer = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
                 entry.target.classList.add('visible');
+                
+                // Trigger anime.js animation for specific elements
+                if (entry.target.classList.contains('pain-card') || 
+                    entry.target.classList.contains('pricing-card') ||
+                    entry.target.classList.contains('testimonial-card')) {
+                    anime({
+                        targets: entry.target,
+                        opacity: [0, 1],
+                        translateY: [40, 0],
+                        scale: [0.95, 1],
+                        duration: 700,
+                        easing: 'easeOutCubic'
+                    });
+                }
+                
                 observer.unobserve(entry.target);
             }
         });
@@ -222,8 +273,8 @@ function initScrollAnimations() {
     // Observe sections
     document.querySelectorAll('.pain-card, .step, .pricing-card, .testimonial-card, .faq-item').forEach(el => {
         el.style.opacity = '0';
-        el.style.transform = 'translateY(30px)';
-        el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+        el.style.transform = 'translateY(40px)';
+        el.style.transition = 'none';
         observer.observe(el);
     });
     
