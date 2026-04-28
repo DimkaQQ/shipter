@@ -4,12 +4,18 @@ import logging
 from app.extensions import redis_client
 from anthropic import Anthropic
 from app.config import Config
+import httpx
 
 logger = logging.getLogger(__name__)
 
 class AIService:
     def __init__(self):
-        self.client = Anthropic(api_key=Config.ANTHROPIC_API_KEY) if Config.ANTHROPIC_API_KEY else None
+        if Config.ANTHROPIC_API_KEY:
+            # Создаем httpx клиент без параметра proxies для совместимости
+            http_client = httpx.Client()
+            self.client = Anthropic(api_key=Config.ANTHROPIC_API_KEY, http_client=http_client)
+        else:
+            self.client = None
     
     def _get_cache_key(self, project_id: int, prompt_type: str, description: str) -> str:
         raw = f"{project_id}:{prompt_type}:{description[:200]}"

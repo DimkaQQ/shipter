@@ -13,17 +13,19 @@ __pycache__/
 # Logs
 *.log
 
-# Coverage
-.coverage
-coverage/
-htmlcov/
+# Dependencies
+.venv/
+venv/
+node_modules/
 
-# IDE
+# Build artifacts
+dist/
+build/
+target/
+
+# Editors
 .vscode/
 .idea/
-*.swp
-*.swo
-*.tmp
 
 # OS
 .DS_Store
