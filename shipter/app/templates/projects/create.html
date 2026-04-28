@@ -1,0 +1,202 @@
+{% extends "base.html" %}
+
+{% block title %}Создать проект — Shipter{% endblock %}
+
+{% block content %}
+<div class="project-form-container">
+    <div class="container">
+        <div class="form-header">
+            <h1>Новый проект</h1>
+            <p>Расскажите о вашем продукте чтобы получить AI-анализ и стратегию дистрибуции</p>
+        </div>
+
+        <form method="POST" class="project-form card">
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label" for="name">Название проекта *</label>
+                    <input type="text" id="name" name="name" class="form-input" required placeholder="Мой стартап">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="type">Тип продукта</label>
+                    <select id="type" name="type" class="form-input">
+                        <option value="saas">SaaS</option>
+                        <option value="mobile_app">Mobile App</option>
+                        <option value="web_app">Web App</option>
+                        <option value="ecommerce">E-commerce</option>
+                        <option value="marketplace">Marketplace</option>
+                        <option value="content">Content Platform</option>
+                        <option value="other">Другое</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" for="description">Описание проекта *</label>
+                <textarea id="description" name="description" class="form-input" rows="5" required placeholder="Опишите что делает ваш продукт, какие проблемы решает и для кого..."></textarea>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label" for="audience">Целевая аудитория</label>
+                    <input type="text" id="audience" name="audience" class="form-input" placeholder="Кто ваши пользователи?">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="problem">Проблема которую решаете</label>
+                    <input type="text" id="problem" name="problem" class="form-input" placeholder="Какую боль устраняете?">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" for="website_url">URL сайта (если есть)</label>
+                <input type="url" id="website_url" name="website_url" class="form-input" placeholder="https://...">
+            </div>
+
+            <div class="form-actions">
+                <a href="{{ url_for('dashboard.index') }}" class="btn btn-ghost">Отмена</a>
+                <button type="submit" class="btn btn-primary">Создать проект</button>
+            </div>
+        </form>
+
+        <div class="form-help card">
+            <h3>💡 Советы по заполнению</h3>
+            <ul>
+                <li>Чем подробнее описание — тем точнее AI-анализ</li>
+                <li>Укажите конкретную целевую аудиторию</li>
+                <li>Опишите уникальное преимущество вашего продукта</li>
+                <li>AI проанализирует рынок и предложит стратегию дистрибуции</li>
+            </ul>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.project-form-container {
+    padding: 60px 0;
+}
+
+.form-header {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.form-header h1 {
+    font-family: var(--font-display);
+    font-size: 2.5rem;
+    margin-bottom: 12px;
+    background: var(--gradient-hero);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.form-header p {
+    color: var(--text-secondary);
+    font-size: 1.1rem;
+}
+
+.project-form {
+    max-width: 800px;
+    margin: 0 auto 32px;
+    padding: 40px;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+}
+
+.form-group {
+    margin-bottom: 24px;
+}
+
+.form-label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.form-input {
+    width: 100%;
+    padding: 14px 18px;
+    background: var(--bg-overlay);
+    border: 1px solid var(--border-subtle);
+    border-radius: 10px;
+    color: var(--text-primary);
+    font-size: 1rem;
+    transition: all 0.3s ease;
+}
+
+.form-input:focus {
+    outline: none;
+    border-color: var(--accent-primary);
+    box-shadow: 0 0 0 3px var(--accent-glow);
+}
+
+textarea.form-input {
+    resize: vertical;
+    min-height: 120px;
+}
+
+.form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 16px;
+    margin-top: 32px;
+    padding-top: 24px;
+    border-top: 1px solid var(--border-subtle);
+}
+
+.form-help {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 24px 32px;
+}
+
+.form-help h3 {
+    margin-bottom: 16px;
+    font-family: var(--font-display);
+}
+
+.form-help ul {
+    list-style: none;
+    padding: 0;
+}
+
+.form-help li {
+    padding: 8px 0;
+    color: var(--text-secondary);
+    position: relative;
+    padding-left: 24px;
+}
+
+.form-help li::before {
+    content: '→';
+    position: absolute;
+    left: 0;
+    color: var(--accent-primary);
+}
+
+@media (max-width: 768px) {
+    .form-row {
+        grid-template-columns: 1fr;
+    }
+    
+    .project-form {
+        padding: 24px;
+    }
+    
+    .form-actions {
+        flex-direction: column;
+    }
+    
+    .form-actions .btn {
+        width: 100%;
+    }
+}
+</style>
+{% endblock %}
