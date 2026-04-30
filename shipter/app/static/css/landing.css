@@ -240,7 +240,11 @@
     font-size: 0.75rem;
     color: var(--accent-primary);
     opacity: 0.8;
-    animation: pulseStatus 1.5s ease-in-out infinite;
+}
+
+#ai-demo-card.loaded .demo-status {
+    animation: none;
+    opacity: 1;
 }
 
 @keyframes pulseStatus {
@@ -263,7 +267,6 @@
 
 #ai-demo-card.loaded .demo-result {
     display: block;
-    animation: fadeIn 0.4s ease-out;
 }
 
 @keyframes fadeIn {
