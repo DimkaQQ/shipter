@@ -34,6 +34,12 @@ function simulateAILoading() {
         statusEl.textContent = 'Готово ✓';
         demoCard.classList.add('loaded');
         
+        // Remove skeleton lines when loaded
+        const demoContent = demoCard.querySelector('.demo-content');
+        if (demoContent) {
+            demoContent.style.display = 'none';
+        }
+        
         // Add result content
         const resultContent = document.createElement('div');
         resultContent.className = 'demo-result';
@@ -48,7 +54,7 @@ function simulateAILoading() {
         `;
         demoCard.appendChild(resultContent);
         
-        // Animate the result
+        // Animate the result with fade in
         anime({
             targets: '.demo-result',
             opacity: [0, 1],
