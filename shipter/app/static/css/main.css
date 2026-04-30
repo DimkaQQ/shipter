@@ -1,54 +1,57 @@
 /* ============================================
    SHIPTER DESIGN SYSTEM
-   Dark Premium Utility Style
+   Dark Premium Hi-Tech AI Style
+   Teal/Cyan/Blue - No Purple
    ============================================ */
 
 /* CSS Variables - Design Tokens */
 :root {
     /* Backgrounds */
-    --bg-base: #080810;
-    --bg-surface: #0f0f1a;
-    --bg-elevated: #16162a;
-    --bg-overlay: #1e1e35;
+    --bg-base: #0a0e14;
+    --bg-surface: #0f1620;
+    --bg-elevated: #151f2e;
+    --bg-overlay: #1a273a;
     
-    /* Accents */
-    --accent-primary: #6C63FF;
-    --accent-glow: rgba(108, 99, 255, 0.15);
-    --accent-secondary: #00D4AA;
-    --accent-warning: #FF8A00;
-    --accent-danger: #FF4757;
-    --accent-success: #2ED573;
+    /* Accents - Hi-Tech AI Colors (No Purple) */
+    --accent-primary: #00d9ff;
+    --accent-glow: rgba(0, 217, 255, 0.12);
+    --accent-secondary: #00ff9d;
+    --accent-tertiary: #0088ff;
+    --accent-warning: #ffb700;
+    --accent-danger: #ff4757;
+    --accent-success: #2ed573;
     
     /* Text */
-    --text-primary: #F0F0FF;
-    --text-secondary: #8B8BA8;
-    --text-muted: #4A4A6A;
+    --text-primary: #e8f4f8;
+    --text-secondary: #7a9ba8;
+    --text-muted: #3d5a6b;
     
     /* Borders */
-    --border-subtle: rgba(108, 99, 255, 0.1);
-    --border-default: rgba(108, 99, 255, 0.2);
-    --border-strong: rgba(108, 99, 255, 0.4);
+    --border-subtle: rgba(0, 217, 255, 0.08);
+    --border-default: rgba(0, 217, 255, 0.18);
+    --border-strong: rgba(0, 217, 255, 0.35);
     
     /* Gradients */
-    --gradient-hero: linear-gradient(135deg, #6C63FF 0%, #00D4AA 100%);
-    --gradient-card: linear-gradient(135deg, rgba(108, 99, 255, 0.05) 0%, rgba(0, 212, 170, 0.05) 100%);
-    --gradient-glow: radial-gradient(ellipse at 50% 0%, rgba(108, 99, 255, 0.15) 0%, transparent 70%);
+    --gradient-hero: linear-gradient(135deg, #00d9ff 0%, #00ff9d 100%);
+    --gradient-card: linear-gradient(135deg, rgba(0, 217, 255, 0.05) 0%, rgba(0, 255, 157, 0.05) 100%);
+    --gradient-glow: radial-gradient(ellipse at 50% 0%, rgba(0, 217, 255, 0.12) 0%, transparent 70%);
+    --gradient-deep: radial-gradient(ellipse at center, rgba(0, 136, 255, 0.08) 0%, rgba(10, 14, 20, 0.4) 70%);
     
     /* Shadows */
-    --shadow-card: 0 4px 24px rgba(0, 0, 0, 0.4), 0 0 0 1px var(--border-subtle);
-    --shadow-glow: 0 0 40px rgba(108, 99, 255, 0.2);
+    --shadow-card: 0 4px 24px rgba(0, 0, 0, 0.5), 0 0 0 1px var(--border-subtle);
+    --shadow-glow: 0 0 40px rgba(0, 217, 255, 0.18);
     
     /* Typography */
     --font-display: 'Syne', sans-serif;
     --font-body: 'DM Sans', sans-serif;
     --font-mono: 'JetBrains Mono', monospace;
     
-    /* Animation */
+    /* Animation - Faster & Smoother */
     --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
     --ease-smooth: cubic-bezier(0.4, 0, 0.2, 1);
-    --duration-fast: 150ms;
-    --duration-normal: 300ms;
-    --duration-slow: 600ms;
+    --duration-fast: 120ms;
+    --duration-normal: 200ms;
+    --duration-slow: 350ms;
 }
 
 /* Reset & Base */
@@ -494,7 +497,7 @@ input, textarea, select {
 }
 
 /* ============================================
-   ANIMATED BACKGROUND
+   ANIMATED BACKGROUND - Deep Dynamic Hi-Tech
    ============================================ */
 .animated-bg {
     position: fixed;
@@ -505,6 +508,7 @@ input, textarea, select {
     z-index: -1;
     pointer-events: none;
     overflow: hidden;
+    background: radial-gradient(ellipse at center, rgba(0, 136, 255, 0.06) 0%, rgba(10, 14, 20, 0.3) 50%, rgba(10, 14, 20, 1) 100%);
 }
 
 .animated-bg::before {
@@ -514,23 +518,23 @@ input, textarea, select {
     left: -50%;
     width: 200%;
     height: 200%;
-    background: radial-gradient(circle at 50% 50%, var(--accent-glow) 0%, transparent 70%);
-    animation: bgPulse 15s ease-in-out infinite;
-    opacity: 0.5;
+    background: radial-gradient(circle at 50% 50%, rgba(0, 217, 255, 0.06) 0%, transparent 70%);
+    animation: bgPulse 20s ease-in-out infinite;
+    opacity: 0.4;
 }
 
 @keyframes bgPulse {
     0%, 100% { transform: translate(0, 0) scale(1); }
-    33% { transform: translate(10%, 10%) scale(1.1); }
-    66% { transform: translate(-10%, 5%) scale(0.95); }
+    33% { transform: translate(10%, 10%) scale(1.05); }
+    66% { transform: translate(-10%, 5%) scale(0.98); }
 }
 
-/* Background Particles */
+/* Background Particles - More subtle and smoother */
 .bg-particle {
     position: absolute;
     border-radius: 50%;
     pointer-events: none;
-    background: radial-gradient(circle, rgba(108, 99, 255, 0.4) 0%, transparent 70%);
+    background: radial-gradient(circle, rgba(0, 217, 255, 0.3) 0%, transparent 70%);
     animation: floatParticle linear infinite;
 }
 
@@ -540,13 +544,13 @@ input, textarea, select {
         opacity: 0;
     }
     10% {
-        opacity: 1;
+        opacity: 0.5;
     }
     90% {
-        opacity: 1;
+        opacity: 0.5;
     }
     100% {
-        transform: translateY(-100px) scale(1);
+        transform: translateY(-100px) scale(0.8);
         opacity: 0;
     }
 }
