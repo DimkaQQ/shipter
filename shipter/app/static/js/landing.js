@@ -19,7 +19,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Animate hero elements with Anime.js
     animateHeroElements();
     
-    // Simulate AI demo loading - FIXED: no infinite loop
+    // Simulate AI demo loading - FIXED: runs once, no infinite loop
     simulateAILoading();
 });
 
@@ -65,13 +65,8 @@ function simulateAILoading() {
         statusEl.textContent = 'Готово ✓';
         statusEl.classList.remove('loading');
         
-        // Add loaded class to card
+        // Add loaded class to card - this triggers CSS to hide skeleton
         demoCard.classList.add('loaded');
-        
-        // Hide skeleton lines
-        if (demoContent) {
-            demoContent.style.display = 'none';
-        }
         
         // Create result content only if it doesn't exist
         if (!demoCard.querySelector('.demo-result')) {
@@ -89,19 +84,26 @@ function simulateAILoading() {
             demoCard.appendChild(resultContent);
             
             // Animate result with anime.js
-            anime({
-                targets: '.demo-result',
-                opacity: [0, 1],
-                translateY: [20, 0],
-                duration: 500,
-                easing: 'easeOutCubic'
-            });
+            if (typeof anime !== 'undefined') {
+                anime({
+                    targets: '.demo-result',
+                    opacity: [0, 1],
+                    translateY: [20, 0],
+                    duration: 500,
+                    easing: 'easeOutCubic'
+                });
+            }
         }
     }, 1500);
 }
 
 // Animate Hero Elements with Anime.js
 function animateHeroElements() {
+    if (typeof anime === 'undefined') {
+        console.warn('Anime.js not loaded, skipping hero animations');
+        return;
+    }
+    
     const timeline = anime.timeline({
         easing: 'easeOutCubic',
         duration: 800
@@ -274,23 +276,30 @@ function initTabs() {
             
             // Fade out, type new text, fade in
             const outputEl = document.getElementById('typewriter-text');
-            anime({
-                targets: outputEl,
-                opacity: [1, 0],
-                duration: 200,
-                easing: 'linear',
-                complete: function() {
-                    if (window.typeTypewriterText && window.typewriterTexts[tab]) {
-                        window.typeTypewriterText(window.typewriterTexts[tab]);
-                        anime({
-                            targets: outputEl,
-                            opacity: [0, 1],
-                            duration: 300,
-                            easing: 'easeOutCubic'
-                        });
+            if (typeof anime !== 'undefined') {
+                anime({
+                    targets: outputEl,
+                    opacity: [1, 0],
+                    duration: 200,
+                    easing: 'linear',
+                    complete: function() {
+                        if (window.typeTypewriterText && window.typewriterTexts[tab]) {
+                            window.typeTypewriterText(window.typewriterTexts[tab]);
+                            anime({
+                                targets: outputEl,
+                                opacity: [0, 1],
+                                duration: 300,
+                                easing: 'easeOutCubic'
+                            });
+                        }
                     }
+                });
+            } else {
+                // Fallback without anime.js
+                if (window.typeTypewriterText && window.typewriterTexts[tab]) {
+                    window.typeTypewriterText(window.typewriterTexts[tab]);
                 }
-            });
+            }
         });
     });
 }
@@ -307,34 +316,36 @@ function initScrollAnimations() {
             if (entry.isIntersecting) {
                 entry.target.classList.add('visible');
                 
-                // Trigger anime.js animation
-                if (entry.target.classList.contains('pain-card') || 
-                    entry.target.classList.contains('pricing-card') ||
-                    entry.target.classList.contains('testimonial-card')) {
-                    anime({
-                        targets: entry.target,
-                        opacity: [0, 1],
-                        translateY: [40, 0],
-                        scale: [0.97, 1],
-                        duration: 600,
-                        easing: 'easeOutCubic'
-                    });
-                } else if (entry.target.classList.contains('step')) {
-                    anime({
-                        targets: entry.target,
-                        opacity: [0, 1],
-                        translateX: [-60, 0],
-                        duration: 700,
-                        easing: 'easeOutCubic'
-                    });
-                } else if (entry.target.classList.contains('faq-item')) {
-                    anime({
-                        targets: entry.target,
-                        opacity: [0, 1],
-                        translateY: [30, 0],
-                        duration: 500,
-                        easing: 'easeOutCubic'
-                    });
+                // Trigger anime.js animation if available
+                if (typeof anime !== 'undefined') {
+                    if (entry.target.classList.contains('pain-card') || 
+                        entry.target.classList.contains('pricing-card') ||
+                        entry.target.classList.contains('testimonial-card')) {
+                        anime({
+                            targets: entry.target,
+                            opacity: [0, 1],
+                            translateY: [40, 0],
+                            scale: [0.97, 1],
+                            duration: 600,
+                            easing: 'easeOutCubic'
+                        });
+                    } else if (entry.target.classList.contains('step')) {
+                        anime({
+                            targets: entry.target,
+                            opacity: [0, 1],
+                            translateX: [-60, 0],
+                            duration: 700,
+                            easing: 'easeOutCubic'
+                        });
+                    } else if (entry.target.classList.contains('faq-item')) {
+                        anime({
+                            targets: entry.target,
+                            opacity: [0, 1],
+                            translateY: [30, 0],
+                            duration: 500,
+                            easing: 'easeOutCubic'
+                        });
+                    }
                 }
                 
                 observer.unobserve(entry.target);

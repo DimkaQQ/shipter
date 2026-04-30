@@ -1,6 +1,11 @@
 // Shipter Main JavaScript with Anime.js
 
 document.addEventListener('DOMContentLoaded', function() {
+    // Check if anime.js is loaded
+    if (typeof anime === 'undefined') {
+        console.warn('Anime.js not loaded, some animations may not work');
+    }
+    
     // Initialize anime.js background particles
     initBackgroundParticles();
     
@@ -14,14 +19,19 @@ document.addEventListener('DOMContentLoaded', function() {
     const flashes = document.querySelectorAll('.flash');
     flashes.forEach((flash, index) => {
         setTimeout(() => {
-            anime({
-                targets: flash,
-                opacity: 0,
-                translateX: 100,
-                duration: 400,
-                easing: 'easeInQuad',
-                complete: () => flash.remove()
-            });
+            if (typeof anime !== 'undefined') {
+                anime({
+                    targets: flash,
+                    opacity: 0,
+                    translateX: 100,
+                    duration: 400,
+                    easing: 'easeInQuad',
+                    complete: () => flash.remove()
+                });
+            } else {
+                flash.style.opacity = '0';
+                setTimeout(() => flash.remove(), 400);
+            }
         }, 5000 + index * 500);
     });
 
@@ -31,12 +41,16 @@ document.addEventListener('DOMContentLoaded', function() {
             e.preventDefault();
             const target = document.querySelector(this.getAttribute('href'));
             if (target) {
-                anime({
-                    targets: document.documentElement,
-                    scrollTop: target.offsetTop - 72,
-                    duration: 800,
-                    easing: 'easeInOutQuad'
-                });
+                if (typeof anime !== 'undefined') {
+                    anime({
+                        targets: document.documentElement,
+                        scrollTop: target.offsetTop - 72,
+                        duration: 800,
+                        easing: 'easeInOutQuad'
+                    });
+                } else {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
             }
         });
     });
@@ -72,12 +86,14 @@ document.addEventListener('DOMContentLoaded', function() {
                 this.textContent = 'Скопировано!';
                 
                 // Animate button
-                anime({
-                    targets: this,
-                    scale: [1, 1.1, 1],
-                    duration: 300,
-                    easing: 'easeOutQuad'
-                });
+                if (typeof anime !== 'undefined') {
+                    anime({
+                        targets: this,
+                        scale: [1, 1.1, 1],
+                        duration: 300,
+                        easing: 'easeOutQuad'
+                    });
+                }
                 
                 setTimeout(() => {
                     this.textContent = originalText;
@@ -123,14 +139,16 @@ document.addEventListener('DOMContentLoaded', function() {
             btn.style.overflow = 'hidden';
             btn.appendChild(ripple);
             
-            anime({
-                targets: ripple,
-                scale: 2,
-                opacity: 0,
-                duration: 600,
-                easing: 'easeOutQuad',
-                complete: () => ripple.remove()
-            });
+            if (typeof anime !== 'undefined') {
+                anime({
+                    targets: ripple,
+                    scale: 2,
+                    opacity: 0,
+                    duration: 600,
+                    easing: 'easeOutQuad',
+                    complete: () => ripple.remove()
+                });
+            }
         });
     });
 
@@ -167,6 +185,11 @@ function initBackgroundParticles() {
 
 // UI Animations with Anime.js
 function initUIAnimations() {
+    if (typeof anime === 'undefined') {
+        console.warn('Anime.js not loaded, skipping UI animations');
+        return;
+    }
+    
     // Animate cards on page load with staggered effect
     const cards = document.querySelectorAll('.card, .pricing-card, .pain-card, .testimonial-card, .step');
     if (cards.length > 0) {
@@ -276,14 +299,16 @@ function initScrollReveal() {
                 const element = entry.target;
                 element.classList.add('revealed');
                 
-                // Trigger anime.js animation
-                anime({
-                    targets: element,
-                    opacity: [0, 1],
-                    translateY: [50, 0],
-                    duration: 800,
-                    easing: 'easeOutCubic'
-                });
+                // Trigger anime.js animation if available
+                if (typeof anime !== 'undefined') {
+                    anime({
+                        targets: element,
+                        opacity: [0, 1],
+                        translateY: [50, 0],
+                        duration: 800,
+                        easing: 'easeOutCubic'
+                    });
+                }
                 
                 revealObserver.unobserve(element);
             }
