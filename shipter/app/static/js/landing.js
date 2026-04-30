@@ -1,4 +1,4 @@
-// Landing Page JavaScript with Anime.js
+// Landing Page JavaScript with Anime.js - Hi-Tech AI Style
 
 document.addEventListener('DOMContentLoaded', function() {
     // Initialize hero canvas animation
@@ -13,66 +13,66 @@ document.addEventListener('DOMContentLoaded', function() {
     // Initialize scroll animations with Intersection Observer
     initScrollAnimations();
     
-    // Animate hero elements with Anime.js
+    // Animate hero elements with Anime.js - Faster animations
     animateHeroElements();
     
     // Animate business example timeline
     animateTimeline();
 });
 
-// Animate Hero Elements with Anime.js - Smoother transitions
+// Animate Hero Elements with Anime.js - Faster & Smoother transitions
 function animateHeroElements() {
     const timeline = anime.timeline({
         easing: 'easeOutCubic',
-        duration: 1000
+        duration: 600
     });
     
     timeline
     .add({
         targets: '.hero-title',
         opacity: [0, 1],
-        translateY: [50, 0],
-        delay: 200
+        translateY: [30, 0],
+        delay: 100
     })
     .add({
         targets: '.hero-subtitle',
         opacity: [0, 1],
-        translateY: [50, 0]
-    }, '-=800')
+        translateY: [30, 0]
+    }, '-=450')
     .add({
         targets: '.hero-cta',
         opacity: [0, 1],
-        translateY: [50, 0]
-    }, '-=800')
+        translateY: [30, 0]
+    }, '-=450')
     .add({
         targets: '.hero-demo',
         opacity: [0, 1],
-        scale: [0.95, 1]
-    }, '-=600');
+        scale: [0.97, 1]
+    }, '-=400');
 }
 
-// Animate Timeline with staggered effect
+// Animate Timeline with staggered effect - Faster
 function animateTimeline() {
     anime({
         targets: '.timeline-item',
         opacity: [0, 1],
-        translateX: [-50, 0],
-        delay: anime.stagger(200, {start: 500}),
+        translateX: [-30, 0],
+        delay: anime.stagger(150, {start: 300}),
         easing: 'easeOutCubic',
-        duration: 800
+        duration: 500
     });
     
     anime({
         targets: '.stat-card',
         opacity: [0, 1],
-        translateY: [30, 0],
-        delay: anime.stagger(150, {start: 1500}),
+        translateY: [20, 0],
+        delay: anime.stagger(100, {start: 1000}),
         easing: 'easeOutCubic',
-        duration: 700
+        duration: 450
     });
 }
 
-// Hero Canvas Animation - Smooth Particles
+// Hero Canvas Animation - Smooth Particles with new colors
 function initHeroCanvas() {
     const canvas = document.getElementById('hero-canvas');
     if (!canvas) return;
@@ -90,10 +90,10 @@ function initHeroCanvas() {
         constructor() {
             this.x = Math.random() * width;
             this.y = Math.random() * height;
-            this.vx = (Math.random() - 0.5) * 0.3;
-            this.vy = (Math.random() - 0.5) * 0.3;
+            this.vx = (Math.random() - 0.5) * 0.4;
+            this.vy = (Math.random() - 0.5) * 0.4;
             this.size = Math.random() * 2 + 1;
-            this.opacity = Math.random() * 0.5 + 0.2;
+            this.opacity = Math.random() * 0.4 + 0.2;
         }
         
         update() {
@@ -107,7 +107,7 @@ function initHeroCanvas() {
         draw() {
             ctx.beginPath();
             ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-            ctx.fillStyle = `rgba(108, 99, 255, ${this.opacity})`;
+            ctx.fillStyle = `rgba(0, 217, 255, ${this.opacity})`;
             ctx.fill();
         }
     }
@@ -115,7 +115,7 @@ function initHeroCanvas() {
     function init() {
         resize();
         particles = [];
-        for (let i = 0; i < 40; i++) {
+        for (let i = 0; i < 50; i++) {
             particles.push(new Particle());
         }
     }
@@ -129,7 +129,7 @@ function initHeroCanvas() {
             p.draw();
         });
         
-        // Draw connections with smooth opacity
+        // Draw connections with smooth opacity - cyan color
         for (let i = 0; i < particles.length; i++) {
             for (let j = i + 1; j < particles.length; j++) {
                 const dx = particles[i].x - particles[j].x;
@@ -137,8 +137,8 @@ function initHeroCanvas() {
                 const dist = Math.sqrt(dx * dx + dy * dy);
                 
                 if (dist < 150) {
-                    const opacity = (1 - dist / 150) * 0.15;
-                    ctx.strokeStyle = `rgba(108, 99, 255, ${opacity})`;
+                    const opacity = (1 - dist / 150) * 0.12;
+                    ctx.strokeStyle = `rgba(0, 217, 255, ${opacity})`;
                     ctx.lineWidth = 1;
                     ctx.beginPath();
                     ctx.moveTo(particles[i].x, particles[i].y);
@@ -202,14 +202,12 @@ function initTypewriter() {
     window.typeTypewriterText = typeText;
 }
 
-// Tab Switching with smooth transition
+// Tab Switching with smooth transition - Always clickable
 function initTabs() {
     const tabBtns = document.querySelectorAll('.tab-btn');
     
     tabBtns.forEach(btn => {
         btn.addEventListener('click', function() {
-            if (isTyping) return;
-            
             const tab = this.dataset.tab;
             
             // Update active state with animation
@@ -221,7 +219,7 @@ function initTabs() {
             anime({
                 targets: outputEl,
                 opacity: [1, 0],
-                duration: 200,
+                duration: 150,
                 easing: 'linear',
                 complete: function() {
                     if (window.typeTypewriterText && window.typewriterTexts[tab]) {
@@ -229,7 +227,7 @@ function initTabs() {
                         anime({
                             targets: outputEl,
                             opacity: [0, 1],
-                            duration: 300,
+                            duration: 200,
                             easing: 'easeOutCubic'
                         });
                     }
@@ -239,7 +237,7 @@ function initTabs() {
     });
 }
 
-// Scroll Animations with Intersection Observer - Smoother reveal
+// Scroll Animations with Intersection Observer - Faster reveal
 function initScrollAnimations() {
     const observerOptions = {
         threshold: 0.15,
@@ -258,9 +256,9 @@ function initScrollAnimations() {
                     anime({
                         targets: entry.target,
                         opacity: [0, 1],
-                        translateY: [40, 0],
-                        scale: [0.95, 1],
-                        duration: 700,
+                        translateY: [30, 0],
+                        scale: [0.97, 1],
+                        duration: 450,
                         easing: 'easeOutCubic'
                     });
                 }
@@ -273,7 +271,7 @@ function initScrollAnimations() {
     // Observe sections
     document.querySelectorAll('.pain-card, .step, .pricing-card, .testimonial-card, .faq-item').forEach(el => {
         el.style.opacity = '0';
-        el.style.transform = 'translateY(40px)';
+        el.style.transform = 'translateY(30px)';
         el.style.transition = 'none';
         observer.observe(el);
     });

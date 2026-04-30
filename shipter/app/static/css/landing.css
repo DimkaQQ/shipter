@@ -1,4 +1,4 @@
-/* Landing Page Styles with Anime.js enhancements */
+/* Landing Page Styles with Anime.js enhancements - Hi-Tech AI Style */
 
 .hero {
     position: relative;
@@ -16,7 +16,7 @@
     width: 100%;
     height: 100%;
     z-index: 0;
-    opacity: 0.5;
+    opacity: 0.4;
 }
 
 .hero-container {
@@ -26,6 +26,8 @@
     grid-template-columns: 1fr 1fr;
     gap: 64px;
     align-items: center;
+    max-width: 1200px;
+    margin: 0 auto;
 }
 
 .hero-title {
@@ -184,8 +186,9 @@
 .step-connector {
     width: 100px;
     height: 2px;
-    background: var(--border-default);
+    background: linear-gradient(90deg, transparent, var(--accent-primary), transparent);
     position: relative;
+    overflow: hidden;
 }
 
 .step-connector::after {
@@ -195,6 +198,12 @@
     top: 50%;
     transform: translateY(-50%);
     color: var(--accent-primary);
+    animation: arrowPulse 2s ease-in-out infinite;
+}
+
+@keyframes arrowPulse {
+    0%, 100% { opacity: 0.5; transform: translateY(-50%) scale(1); }
+    50% { opacity: 1; transform: translateY(-50%) scale(1.2); }
 }
 
 /* Demo Section */
@@ -213,44 +222,46 @@
 
 .demo-tabs {
     display: flex;
-    gap: 12px;
+    gap: 16px;
     margin-bottom: 32px;
     flex-wrap: wrap;
     justify-content: center;
 }
 
 .tab-btn {
-    padding: 14px 28px;
+    padding: 16px 32px;
     background: var(--bg-elevated);
     border: 1px solid var(--border-subtle);
-    border-radius: 12px;
+    border-radius: 14px;
     color: var(--text-secondary);
-    font-weight: 500;
+    font-weight: 600;
     cursor: pointer;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
     display: flex;
     align-items: center;
-    gap: 8px;
-    font-size: 0.95rem;
+    gap: 10px;
+    font-size: 1rem;
+    min-width: 180px;
+    justify-content: center;
 }
 
 .tab-btn:hover {
     border-color: var(--border-default);
     color: var(--text-primary);
-    transform: translateY(-2px);
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+    transform: translateY(-3px);
+    box-shadow: 0 10px 25px rgba(0, 217, 255, 0.15);
 }
 
 .tab-btn.active {
-    background: var(--accent-glow);
+    background: linear-gradient(135deg, rgba(0, 217, 255, 0.15) 0%, rgba(0, 255, 157, 0.1) 100%);
     border-color: var(--accent-primary);
     color: var(--accent-primary);
-    transform: translateY(-2px);
-    box-shadow: 0 8px 24px rgba(108, 99, 255, 0.3);
+    transform: translateY(-3px);
+    box-shadow: 0 10px 30px rgba(0, 217, 255, 0.25);
 }
 
 .tab-icon {
-    font-size: 1.2rem;
+    font-size: 1.3rem;
 }
 
 .demo-output {
