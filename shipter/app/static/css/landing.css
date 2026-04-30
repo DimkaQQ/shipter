@@ -230,13 +230,17 @@
     background-size: 200% 100%;
 }
 
-#ai-demo-card.loaded .skeleton {
-    animation: none !important;
+#ai-demo-card.loaded .skeleton,
+#ai-demo-card.loaded .demo-line {
     display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
 }
 
 #ai-demo-card.loaded .demo-content {
     display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
 }
 
 @keyframes shimmer {
