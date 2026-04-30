@@ -1,5 +1,6 @@
-```css
-/* No build artifacts, dependencies, or temp files detected in changes */
-/* Only source files (CSS, JS) were modified */
-/* No .gitignore rules needed */
+```
+# Dependencies
+node_modules/
+# Package lock file
+package-lock.json
 ```

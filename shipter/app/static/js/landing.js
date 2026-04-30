@@ -1,6 +1,9 @@
-// Landing Page JavaScript with Anime.js - Hi-Tech AI Style
+// Landing Page - Apple Style with Anime.js
 
 document.addEventListener('DOMContentLoaded', function() {
+    // Add animated background orbs
+    addAnimatedBackground();
+    
     // Initialize hero canvas animation
     initHeroCanvas();
     
@@ -10,20 +13,29 @@ document.addEventListener('DOMContentLoaded', function() {
     // Initialize tab switching
     initTabs();
     
-    // Initialize scroll animations with Intersection Observer
+    // Initialize scroll animations
     initScrollAnimations();
     
-    // Animate hero elements with Anime.js - Faster animations
+    // Animate hero elements with Anime.js
     animateHeroElements();
     
-    // Animate business example timeline
-    animateTimeline();
-    
-    // Simulate AI demo loading
+    // Simulate AI demo loading - FIXED: no infinite loop
     simulateAILoading();
 });
 
-// Simulate AI Demo Loading - Fast load (1.5 seconds)
+// Add animated background orbs to body
+function addAnimatedBackground() {
+    const orbsContainer = document.createElement('div');
+    orbsContainer.className = 'animated-bg-orbs';
+    orbsContainer.innerHTML = `
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+        <div class="orb orb-3"></div>
+    `;
+    document.body.insertBefore(orbsContainer, document.body.firstChild);
+}
+
+// Simulate AI Demo Loading - Fixed version (runs once, no infinite loop)
 function simulateAILoading() {
     const demoCard = document.getElementById('ai-demo-card');
     const statusEl = document.getElementById('demo-status');
@@ -31,110 +43,95 @@ function simulateAILoading() {
     
     if (!demoCard || !statusEl) return;
     
-    // Clear any existing result to avoid duplicates
+    // Remove any existing result to avoid duplicates
     const existingResult = demoCard.querySelector('.demo-result');
     if (existingResult) {
         existingResult.remove();
     }
     
+    // Reset loaded state
+    demoCard.classList.remove('loaded');
+    statusEl.textContent = 'Загрузка...';
+    statusEl.classList.add('loading');
+    
+    // Show skeleton, hide result
+    if (demoContent) {
+        demoContent.style.display = 'block';
+    }
+    
+    // After 1.5 seconds, show result ONCE
     setTimeout(() => {
         // Update status
         statusEl.textContent = 'Готово ✓';
+        statusEl.classList.remove('loading');
         
         // Add loaded class to card
         demoCard.classList.add('loaded');
         
-        // Hide skeleton lines explicitly
+        // Hide skeleton lines
         if (demoContent) {
             demoContent.style.display = 'none';
         }
         
-        // Hide all skeleton elements
-        const skeletons = demoCard.querySelectorAll('.skeleton');
-        skeletons.forEach(skel => {
-            skel.style.display = 'none';
-        });
-        
-        // Create and append result content
-        const resultContent = document.createElement('div');
-        resultContent.className = 'demo-result';
-        resultContent.innerHTML = `
-            <p style="color: var(--accent-primary); font-weight: 600; margin-bottom: 12px;">
-                🎯 Анализ ниши completed
-            </p>
-            <p style="color: var(--text-secondary); line-height: 1.7;">
-                Рынок цифровых продуктов растёт на 20% ежегодно.<br>
-                Основные барьеры — маркетинг и доверие аудитории.
-            </p>
-        `;
-        demoCard.appendChild(resultContent);
-        
-        // Force reflow and animate the result with fade in
-        resultContent.offsetHeight; // trigger reflow
-        
-        anime({
-            targets: '.demo-result',
-            opacity: [0, 1],
-            translateY: [20, 0],
-            duration: 400,
-            easing: 'easeOutCubic'
-        });
+        // Create result content only if it doesn't exist
+        if (!demoCard.querySelector('.demo-result')) {
+            const resultContent = document.createElement('div');
+            resultContent.className = 'demo-result';
+            resultContent.innerHTML = `
+                <p style="color: var(--apple-accent); font-weight: 600; margin-bottom: 12px;">
+                    🎯 Анализ ниши completed
+                </p>
+                <p style="color: var(--apple-text-secondary); line-height: 1.7;">
+                    Рынок цифровых продуктов растёт на 20% ежегодно.<br>
+                    Основные барьеры — маркетинг и доверие аудитории.
+                </p>
+            `;
+            demoCard.appendChild(resultContent);
+            
+            // Animate result with anime.js
+            anime({
+                targets: '.demo-result',
+                opacity: [0, 1],
+                translateY: [20, 0],
+                duration: 500,
+                easing: 'easeOutCubic'
+            });
+        }
     }, 1500);
 }
 
-// Animate Hero Elements with Anime.js - Faster & Smoother transitions
+// Animate Hero Elements with Anime.js
 function animateHeroElements() {
     const timeline = anime.timeline({
         easing: 'easeOutCubic',
-        duration: 600
+        duration: 800
     });
     
     timeline
     .add({
         targets: '.hero-title',
         opacity: [0, 1],
-        translateY: [30, 0],
+        translateY: [40, 0],
         delay: 100
     })
     .add({
         targets: '.hero-subtitle',
         opacity: [0, 1],
-        translateY: [30, 0]
-    }, '-=450')
+        translateY: [40, 0]
+    }, '-=600')
     .add({
         targets: '.hero-cta',
         opacity: [0, 1],
-        translateY: [30, 0]
-    }, '-=450')
+        translateY: [40, 0]
+    }, '-=600')
     .add({
         targets: '.hero-demo',
         opacity: [0, 1],
-        scale: [0.97, 1]
-    }, '-=400');
+        scale: [0.95, 1]
+    }, '-=600');
 }
 
-// Animate Timeline with staggered effect - Faster
-function animateTimeline() {
-    anime({
-        targets: '.timeline-item',
-        opacity: [0, 1],
-        translateX: [-30, 0],
-        delay: anime.stagger(150, {start: 300}),
-        easing: 'easeOutCubic',
-        duration: 500
-    });
-    
-    anime({
-        targets: '.stat-card',
-        opacity: [0, 1],
-        translateY: [20, 0],
-        delay: anime.stagger(100, {start: 1000}),
-        easing: 'easeOutCubic',
-        duration: 450
-    });
-}
-
-// Hero Canvas Animation - Smooth Particles with new colors
+// Hero Canvas Animation - Smooth Particles
 function initHeroCanvas() {
     const canvas = document.getElementById('hero-canvas');
     if (!canvas) return;
@@ -152,10 +149,10 @@ function initHeroCanvas() {
         constructor() {
             this.x = Math.random() * width;
             this.y = Math.random() * height;
-            this.vx = (Math.random() - 0.5) * 0.4;
-            this.vy = (Math.random() - 0.5) * 0.4;
+            this.vx = (Math.random() - 0.5) * 0.3;
+            this.vy = (Math.random() - 0.5) * 0.3;
             this.size = Math.random() * 2 + 1;
-            this.opacity = Math.random() * 0.4 + 0.2;
+            this.opacity = Math.random() * 0.5 + 0.2;
         }
         
         update() {
@@ -169,7 +166,7 @@ function initHeroCanvas() {
         draw() {
             ctx.beginPath();
             ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-            ctx.fillStyle = `rgba(0, 217, 255, ${this.opacity})`;
+            ctx.fillStyle = `rgba(41, 151, 255, ${this.opacity})`;
             ctx.fill();
         }
     }
@@ -177,7 +174,7 @@ function initHeroCanvas() {
     function init() {
         resize();
         particles = [];
-        for (let i = 0; i < 50; i++) {
+        for (let i = 0; i < 60; i++) {
             particles.push(new Particle());
         }
     }
@@ -185,13 +182,12 @@ function initHeroCanvas() {
     function animate() {
         ctx.clearRect(0, 0, width, height);
         
-        // Update and draw particles
         particles.forEach(p => {
             p.update();
             p.draw();
         });
         
-        // Draw connections with smooth opacity - cyan color
+        // Draw connections
         for (let i = 0; i < particles.length; i++) {
             for (let j = i + 1; j < particles.length; j++) {
                 const dx = particles[i].x - particles[j].x;
@@ -199,8 +195,8 @@ function initHeroCanvas() {
                 const dist = Math.sqrt(dx * dx + dy * dy);
                 
                 if (dist < 150) {
-                    const opacity = (1 - dist / 150) * 0.12;
-                    ctx.strokeStyle = `rgba(0, 217, 255, ${opacity})`;
+                    const opacity = (1 - dist / 150) * 0.15;
+                    ctx.strokeStyle = `rgba(41, 151, 255, ${opacity})`;
                     ctx.lineWidth = 1;
                     ctx.beginPath();
                     ctx.moveTo(particles[i].x, particles[i].y);
@@ -222,7 +218,7 @@ function initHeroCanvas() {
     animate();
 }
 
-// Typewriter Effect - Smoother typing
+// Typewriter Effect
 function initTypewriter() {
     const textElement = document.getElementById('typewriter-text');
     if (!textElement) return;
@@ -246,7 +242,7 @@ function initTypewriter() {
             if (i < text.length) {
                 textElement.textContent += text.charAt(i);
                 i++;
-                setTimeout(type, 15);
+                setTimeout(type, 20);
             } else {
                 isTyping = false;
                 if (callback) callback();
@@ -264,7 +260,7 @@ function initTypewriter() {
     window.typeTypewriterText = typeText;
 }
 
-// Tab Switching with smooth transition - Always clickable
+// Tab Switching with smooth transition
 function initTabs() {
     const tabBtns = document.querySelectorAll('.tab-btn');
     
@@ -272,7 +268,7 @@ function initTabs() {
         btn.addEventListener('click', function() {
             const tab = this.dataset.tab;
             
-            // Update active state with animation
+            // Update active state
             tabBtns.forEach(b => b.classList.remove('active'));
             this.classList.add('active');
             
@@ -281,7 +277,7 @@ function initTabs() {
             anime({
                 targets: outputEl,
                 opacity: [1, 0],
-                duration: 150,
+                duration: 200,
                 easing: 'linear',
                 complete: function() {
                     if (window.typeTypewriterText && window.typewriterTexts[tab]) {
@@ -289,7 +285,7 @@ function initTabs() {
                         anime({
                             targets: outputEl,
                             opacity: [0, 1],
-                            duration: 200,
+                            duration: 300,
                             easing: 'easeOutCubic'
                         });
                     }
@@ -299,7 +295,7 @@ function initTabs() {
     });
 }
 
-// Scroll Animations with Intersection Observer - Faster reveal with WOW effect
+// Scroll Animations with Intersection Observer
 function initScrollAnimations() {
     const observerOptions = {
         threshold: 0.1,
@@ -311,7 +307,7 @@ function initScrollAnimations() {
             if (entry.isIntersecting) {
                 entry.target.classList.add('visible');
                 
-                // Trigger anime.js animation for specific elements with staggered effect
+                // Trigger anime.js animation
                 if (entry.target.classList.contains('pain-card') || 
                     entry.target.classList.contains('pricing-card') ||
                     entry.target.classList.contains('testimonial-card')) {
@@ -319,25 +315,24 @@ function initScrollAnimations() {
                         targets: entry.target,
                         opacity: [0, 1],
                         translateY: [40, 0],
-                        scale: [0.95, 1],
-                        duration: 500,
-                        easing: 'easeOutCubic',
-                        delay: anime.stagger(100, {start: 0})
+                        scale: [0.97, 1],
+                        duration: 600,
+                        easing: 'easeOutCubic'
                     });
                 } else if (entry.target.classList.contains('step')) {
                     anime({
                         targets: entry.target,
                         opacity: [0, 1],
-                        translateX: [-50, 0],
-                        duration: 600,
+                        translateX: [-60, 0],
+                        duration: 700,
                         easing: 'easeOutCubic'
                     });
                 } else if (entry.target.classList.contains('faq-item')) {
                     anime({
                         targets: entry.target,
                         opacity: [0, 1],
-                        translateY: [20, 0],
-                        duration: 400,
+                        translateY: [30, 0],
+                        duration: 500,
                         easing: 'easeOutCubic'
                     });
                 }
@@ -347,27 +342,13 @@ function initScrollAnimations() {
         });
     }, observerOptions);
     
-    // Observe sections
+    // Observe elements
     document.querySelectorAll('.pain-card, .step, .pricing-card, .testimonial-card, .faq-item').forEach(el => {
         el.style.opacity = '0';
         el.style.transform = 'translateY(40px)';
         el.style.transition = 'none';
         observer.observe(el);
     });
-    
-    // Add visible styles
-    const style = document.createElement('style');
-    style.textContent = `
-        .pain-card.visible,
-        .step.visible,
-        .pricing-card.visible,
-        .testimonial-card.visible,
-        .faq-item.visible {
-            opacity: 1 !important;
-            transform: translateY(0) !important;
-        }
-    `;
-    document.head.appendChild(style);
 }
 
 // Smooth scroll to section
