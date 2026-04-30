@@ -1,5 +1,6 @@
 /* Landing Page Styles with Anime.js enhancements - Hi-Tech AI Style */
 
+/* Hero Section with Animated Gradient Background */
 .hero {
     position: relative;
     min-height: 100vh;
@@ -7,6 +8,15 @@
     align-items: center;
     overflow: hidden;
     padding: 80px 0;
+    background: linear-gradient(-45deg, #0a0e27, #1a0f2e, #0f1a2e, #1a1a3e);
+    background-size: 400% 400%;
+    animation: gradientShift 15s ease infinite;
+}
+
+@keyframes gradientShift {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
 }
 
 #hero-canvas {
@@ -97,6 +107,11 @@
     animation: shimmer 1s infinite;
     background: linear-gradient(90deg, var(--bg-overlay) 25%, var(--bg-elevated) 50%, var(--bg-overlay) 75%);
     background-size: 200% 100%;
+}
+
+#ai-demo-card.loaded .skeleton {
+    animation: none;
+    display: none;
 }
 
 @keyframes shimmer {

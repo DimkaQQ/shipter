@@ -40,19 +40,24 @@ function simulateAILoading() {
             demoContent.style.display = 'none';
         }
         
-        // Add result content
-        const resultContent = document.createElement('div');
-        resultContent.className = 'demo-result';
-        resultContent.innerHTML = `
-            <p style="color: var(--accent-primary); font-weight: 600; margin-bottom: 12px;">
-                🎯 Анализ ниши completed
-            </p>
-            <p style="color: var(--text-secondary); line-height: 1.7;">
-                Рынок цифровых продуктов растёт на 20% ежегодно.<br>
-                Основные барьеры — маркетинг и доверие аудитории.
-            </p>
-        `;
-        demoCard.appendChild(resultContent);
+        // Check if result already exists to avoid duplicates
+        let resultContent = demoCard.querySelector('.demo-result');
+        if (!resultContent) {
+            resultContent = document.createElement('div');
+            resultContent.className = 'demo-result';
+            resultContent.innerHTML = `
+                <p style="color: var(--accent-primary); font-weight: 600; margin-bottom: 12px;">
+                    🎯 Анализ ниши completed
+                </p>
+                <p style="color: var(--text-secondary); line-height: 1.7;">
+                    Рынок цифровых продуктов растёт на 20% ежегодно.<br>
+                    Основные барьеры — маркетинг и доверие аудитории.
+                </p>
+            `;
+            demoCard.appendChild(resultContent);
+        } else {
+            resultContent.style.display = 'block';
+        }
         
         // Animate the result with fade in
         anime({
