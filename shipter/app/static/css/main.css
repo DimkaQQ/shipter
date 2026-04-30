@@ -71,8 +71,7 @@ html {
 
 body {
     font-family: var(--font-body);
-    background: var(--bg-deep);
-    background-attachment: fixed;
+    background: transparent;
     color: var(--text-primary);
     line-height: 1.6;
     min-height: 100vh;
@@ -380,7 +379,8 @@ input, textarea, select {
    CARDS
    ============================================ */
 .card {
-    background: var(--bg-surface);
+    background: rgba(15, 22, 32, 0.6);
+    backdrop-filter: blur(12px);
     border: 1px solid var(--border-subtle);
     border-radius: 16px;
     padding: 24px;
@@ -425,7 +425,8 @@ input, textarea, select {
 .form-select {
     width: 100%;
     padding: 14px 16px;
-    background: var(--bg-surface);
+    background: rgba(15, 22, 32, 0.5);
+    backdrop-filter: blur(8px);
     border: 1px solid var(--border-default);
     border-radius: 8px;
     color: var(--text-primary);
@@ -454,7 +455,8 @@ input, textarea, select {
 }
 
 .footer {
-    background: var(--bg-surface);
+    background: rgba(15, 22, 32, 0.7);
+    backdrop-filter: blur(12px);
     border-top: 1px solid var(--border-subtle);
     padding: 48px 0 24px;
     margin-top: auto;
@@ -512,7 +514,17 @@ input, textarea, select {
     z-index: -1;
     pointer-events: none;
     overflow: hidden;
-    background: radial-gradient(ellipse at center, rgba(0, 136, 255, 0.06) 0%, rgba(10, 14, 20, 0.3) 50%, rgba(10, 14, 20, 1) 100%);
+    background: linear-gradient(-45deg, #0a0e14, #0d1b2a, #1b263b, #0f1c2e, #1a1a2e, #0a0e14);
+    background-size: 400% 400%;
+    animation: gradientFlow 15s ease infinite;
+}
+
+@keyframes gradientFlow {
+    0% { background-position: 0% 50%; }
+    25% { background-position: 50% 100%; }
+    50% { background-position: 100% 50%; }
+    75% { background-position: 50% 0%; }
+    100% { background-position: 0% 50%; }
 }
 
 .animated-bg::before {
@@ -522,15 +534,48 @@ input, textarea, select {
     left: -50%;
     width: 200%;
     height: 200%;
-    background: radial-gradient(circle at 50% 50%, rgba(0, 217, 255, 0.06) 0%, transparent 70%);
+    background: radial-gradient(circle at 50% 50%, rgba(0, 217, 255, 0.08) 0%, transparent 70%);
     animation: bgPulse 20s ease-in-out infinite;
-    opacity: 0.4;
+    opacity: 0.5;
+}
+
+.animated-bg::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: 
+        radial-gradient(circle at 20% 80%, rgba(0, 255, 157, 0.06) 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, rgba(0, 136, 255, 0.08) 0%, transparent 50%),
+        radial-gradient(circle at 40% 40%, rgba(0, 217, 255, 0.05) 0%, transparent 40%);
+    animation: orbMovement 25s ease-in-out infinite;
 }
 
 @keyframes bgPulse {
     0%, 100% { transform: translate(0, 0) scale(1); }
     33% { transform: translate(10%, 10%) scale(1.05); }
     66% { transform: translate(-10%, 5%) scale(0.98); }
+}
+
+@keyframes orbMovement {
+    0%, 100% { 
+        transform: translate(0, 0) scale(1);
+        opacity: 0.6;
+    }
+    25% { 
+        transform: translate(5%, -5%) scale(1.1);
+        opacity: 0.8;
+    }
+    50% { 
+        transform: translate(-5%, 5%) scale(0.95);
+        opacity: 0.7;
+    }
+    75% { 
+        transform: translate(3%, 3%) scale(1.05);
+        opacity: 0.9;
+    }
 }
 
 /* Background Particles - More subtle and smoother */

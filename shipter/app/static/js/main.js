@@ -160,24 +160,36 @@ function initBackgroundParticles() {
     const bg = document.querySelector('.animated-bg');
     if (!bg) return;
     
-    // Clear existing particles
-    bg.innerHTML = '';
+    // Clear existing particles (keep pseudo-elements intact)
+    const existingParticles = bg.querySelectorAll('.bg-particle');
+    existingParticles.forEach(p => p.remove());
     
-    // Create floating particles
-    for (let i = 0; i < 30; i++) {
+    // Create floating particles with varied colors
+    const colors = [
+        'rgba(0, 217, 255, 0.5)',  // cyan
+        'rgba(0, 255, 157, 0.4)',  // green
+        'rgba(0, 136, 255, 0.4)'   // blue
+    ];
+    
+    for (let i = 0; i < 40; i++) {
         const particle = document.createElement('div');
         particle.className = 'bg-particle';
-        const size = Math.random() * 6 + 2;
+        const size = Math.random() * 8 + 2;
+        const color = colors[Math.floor(Math.random() * colors.length)];
+        const duration = Math.random() * 15 + 15;
+        const delay = Math.random() * 10;
+        
         particle.style.cssText = `
             position: absolute;
             width: ${size}px;
             height: ${size}px;
-            background: radial-gradient(circle, rgba(108, 99, 255, ${Math.random() * 0.4 + 0.2}) 0%, transparent 70%);
+            background: radial-gradient(circle, ${color} 0%, transparent 70%);
             border-radius: 50%;
             left: ${Math.random() * 100}%;
             top: ${Math.random() * 100}%;
-            animation-duration: ${Math.random() * 10 + 10}s;
-            animation-delay: ${Math.random() * 5}s;
+            animation-duration: ${duration}s;
+            animation-delay: -${delay}s;
+            opacity: ${Math.random() * 0.5 + 0.3};
         `;
         bg.appendChild(particle);
     }
