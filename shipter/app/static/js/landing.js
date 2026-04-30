@@ -27,39 +27,51 @@ document.addEventListener('DOMContentLoaded', function() {
 function simulateAILoading() {
     const demoCard = document.getElementById('ai-demo-card');
     const statusEl = document.getElementById('demo-status');
+    const demoContent = document.querySelector('.demo-content');
     
     if (!demoCard || !statusEl) return;
     
+    // Clear any existing result to avoid duplicates
+    const existingResult = demoCard.querySelector('.demo-result');
+    if (existingResult) {
+        existingResult.remove();
+    }
+    
     setTimeout(() => {
+        // Update status
         statusEl.textContent = 'Готово ✓';
+        
+        // Add loaded class to card
         demoCard.classList.add('loaded');
         
-        // Remove skeleton lines when loaded
-        const demoContent = demoCard.querySelector('.demo-content');
+        // Hide skeleton lines explicitly
         if (demoContent) {
             demoContent.style.display = 'none';
         }
         
-        // Check if result already exists to avoid duplicates
-        let resultContent = demoCard.querySelector('.demo-result');
-        if (!resultContent) {
-            resultContent = document.createElement('div');
-            resultContent.className = 'demo-result';
-            resultContent.innerHTML = `
-                <p style="color: var(--accent-primary); font-weight: 600; margin-bottom: 12px;">
-                    🎯 Анализ ниши completed
-                </p>
-                <p style="color: var(--text-secondary); line-height: 1.7;">
-                    Рынок цифровых продуктов растёт на 20% ежегодно.<br>
-                    Основные барьеры — маркетинг и доверие аудитории.
-                </p>
-            `;
-            demoCard.appendChild(resultContent);
-        } else {
-            resultContent.style.display = 'block';
-        }
+        // Hide all skeleton elements
+        const skeletons = demoCard.querySelectorAll('.skeleton');
+        skeletons.forEach(skel => {
+            skel.style.display = 'none';
+        });
         
-        // Animate the result with fade in
+        // Create and append result content
+        const resultContent = document.createElement('div');
+        resultContent.className = 'demo-result';
+        resultContent.innerHTML = `
+            <p style="color: var(--accent-primary); font-weight: 600; margin-bottom: 12px;">
+                🎯 Анализ ниши completed
+            </p>
+            <p style="color: var(--text-secondary); line-height: 1.7;">
+                Рынок цифровых продуктов растёт на 20% ежегодно.<br>
+                Основные барьеры — маркетинг и доверие аудитории.
+            </p>
+        `;
+        demoCard.appendChild(resultContent);
+        
+        // Force reflow and animate the result with fade in
+        resultContent.offsetHeight; // trigger reflow
+        
         anime({
             targets: '.demo-result',
             opacity: [0, 1],
