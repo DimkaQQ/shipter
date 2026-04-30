@@ -18,7 +18,46 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Animate business example timeline
     animateTimeline();
+    
+    // Simulate AI demo loading
+    simulateAILoading();
 });
+
+// Simulate AI Demo Loading - Fast load (1.5 seconds)
+function simulateAILoading() {
+    const demoCard = document.getElementById('ai-demo-card');
+    const statusEl = document.getElementById('demo-status');
+    
+    if (!demoCard || !statusEl) return;
+    
+    setTimeout(() => {
+        statusEl.textContent = 'Готово ✓';
+        demoCard.classList.add('loaded');
+        
+        // Add result content
+        const resultContent = document.createElement('div');
+        resultContent.className = 'demo-result';
+        resultContent.innerHTML = `
+            <p style="color: var(--accent-primary); font-weight: 600; margin-bottom: 12px;">
+                🎯 Анализ ниши completed
+            </p>
+            <p style="color: var(--text-secondary); line-height: 1.7;">
+                Рынок цифровых продуктов растёт на 20% ежегодно.<br>
+                Основные барьеры — маркетинг и доверие аудитории.
+            </p>
+        `;
+        demoCard.appendChild(resultContent);
+        
+        // Animate the result
+        anime({
+            targets: '.demo-result',
+            opacity: [0, 1],
+            translateY: [20, 0],
+            duration: 400,
+            easing: 'easeOutCubic'
+        });
+    }, 1500);
+}
 
 // Animate Hero Elements with Anime.js - Faster & Smoother transitions
 function animateHeroElements() {
@@ -237,11 +276,11 @@ function initTabs() {
     });
 }
 
-// Scroll Animations with Intersection Observer - Faster reveal
+// Scroll Animations with Intersection Observer - Faster reveal with WOW effect
 function initScrollAnimations() {
     const observerOptions = {
-        threshold: 0.15,
-        rootMargin: '0px 0px -80px 0px'
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
     };
     
     const observer = new IntersectionObserver((entries) => {
@@ -249,16 +288,33 @@ function initScrollAnimations() {
             if (entry.isIntersecting) {
                 entry.target.classList.add('visible');
                 
-                // Trigger anime.js animation for specific elements
+                // Trigger anime.js animation for specific elements with staggered effect
                 if (entry.target.classList.contains('pain-card') || 
                     entry.target.classList.contains('pricing-card') ||
                     entry.target.classList.contains('testimonial-card')) {
                     anime({
                         targets: entry.target,
                         opacity: [0, 1],
-                        translateY: [30, 0],
-                        scale: [0.97, 1],
-                        duration: 450,
+                        translateY: [40, 0],
+                        scale: [0.95, 1],
+                        duration: 500,
+                        easing: 'easeOutCubic',
+                        delay: anime.stagger(100, {start: 0})
+                    });
+                } else if (entry.target.classList.contains('step')) {
+                    anime({
+                        targets: entry.target,
+                        opacity: [0, 1],
+                        translateX: [-50, 0],
+                        duration: 600,
+                        easing: 'easeOutCubic'
+                    });
+                } else if (entry.target.classList.contains('faq-item')) {
+                    anime({
+                        targets: entry.target,
+                        opacity: [0, 1],
+                        translateY: [20, 0],
+                        duration: 400,
                         easing: 'easeOutCubic'
                     });
                 }
@@ -271,7 +327,7 @@ function initScrollAnimations() {
     // Observe sections
     document.querySelectorAll('.pain-card, .step, .pricing-card, .testimonial-card, .faq-item').forEach(el => {
         el.style.opacity = '0';
-        el.style.transform = 'translateY(30px)';
+        el.style.transform = 'translateY(40px)';
         el.style.transition = 'none';
         observer.observe(el);
     });

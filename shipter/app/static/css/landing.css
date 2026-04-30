@@ -94,7 +94,7 @@
 .demo-line.w-60 { width: 60%; }
 
 .skeleton {
-    animation: shimmer 2s infinite;
+    animation: shimmer 1s infinite;
     background: linear-gradient(90deg, var(--bg-overlay) 25%, var(--bg-elevated) 50%, var(--bg-overlay) 75%);
     background-size: 200% 100%;
 }
@@ -189,21 +189,37 @@
     background: linear-gradient(90deg, transparent, var(--accent-primary), transparent);
     position: relative;
     overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
-.step-connector::after {
-    content: '→';
+.step-connector::before {
+    content: '';
     position: absolute;
-    right: -10px;
-    top: 50%;
-    transform: translateY(-50%);
-    color: var(--accent-primary);
-    animation: arrowPulse 2s ease-in-out infinite;
+    width: 40%;
+    height: 100%;
+    background: var(--accent-primary);
+    animation: flowArrow 2s ease-in-out infinite;
 }
 
-@keyframes arrowPulse {
-    0%, 100% { opacity: 0.5; transform: translateY(-50%) scale(1); }
-    50% { opacity: 1; transform: translateY(-50%) scale(1.2); }
+.connector-arrow {
+    position: relative;
+    z-index: 1;
+    color: var(--accent-primary);
+    font-size: 1.2rem;
+    animation: arrowMove 1.5s ease-in-out infinite;
+}
+
+@keyframes flowArrow {
+    0% { left: -40%; opacity: 0; }
+    50% { opacity: 1; }
+    100% { left: 100%; opacity: 0; }
+}
+
+@keyframes arrowMove {
+    0%, 100% { transform: translateX(0) scale(1); opacity: 0.6; }
+    50% { transform: translateX(3px) scale(1.15); opacity: 1; }
 }
 
 /* Demo Section */
@@ -218,6 +234,41 @@
     margin-top: -30px;
     margin-bottom: 40px;
     font-size: 1.1rem;
+}
+
+.demo-status {
+    font-size: 0.75rem;
+    color: var(--accent-primary);
+    opacity: 0.8;
+    animation: pulseStatus 1.5s ease-in-out infinite;
+}
+
+@keyframes pulseStatus {
+    0%, 100% { opacity: 0.5; }
+    50% { opacity: 1; }
+}
+
+#ai-demo-card.loaded .skeleton {
+    display: none;
+}
+
+#ai-demo-card.loaded .demo-content {
+    display: none;
+}
+
+#ai-demo-card .demo-result {
+    display: none;
+    padding: 20px;
+}
+
+#ai-demo-card.loaded .demo-result {
+    display: block;
+    animation: fadeIn 0.4s ease-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 
 .demo-tabs {
@@ -629,9 +680,18 @@
         height: 50px;
     }
     
-    .step-connector::after {
-        content: '↓';
-        right: 50%;
-        transform: translateX(50%) translateY(-50%);
+    .step-connector::before {
+        width: 100%;
+        animation: flowArrowVertical 2s ease-in-out infinite;
+    }
+    
+    .connector-arrow {
+        transform: rotate(90deg);
+    }
+    
+    @keyframes flowArrowVertical {
+        0% { top: -40%; opacity: 0; }
+        50% { opacity: 1; }
+        100% { top: 100%; opacity: 0; }
     }
 }
