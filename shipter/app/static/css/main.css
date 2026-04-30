@@ -12,6 +12,9 @@
     --bg-elevated: #151f2e;
     --bg-overlay: #1a273a;
     
+    /* Single Deep Dynamic Background */
+    --bg-deep: radial-gradient(ellipse at 50% 30%, rgba(0, 136, 255, 0.08) 0%, rgba(10, 14, 20, 0.6) 60%, var(--bg-base) 100%);
+    
     /* Accents - Hi-Tech AI Colors (No Purple) */
     --accent-primary: #00d9ff;
     --accent-glow: rgba(0, 217, 255, 0.12);
@@ -68,7 +71,8 @@ html {
 
 body {
     font-family: var(--font-body);
-    background-color: var(--bg-base);
+    background: var(--bg-deep);
+    background-attachment: fixed;
     color: var(--text-primary);
     line-height: 1.6;
     min-height: 100vh;
