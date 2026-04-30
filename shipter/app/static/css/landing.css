@@ -1,6 +1,22 @@
 /* Landing Page Styles with Anime.js enhancements - Hi-Tech AI Style */
 
-/* Hero Section with Animated Gradient Background */
+/* Animated Dynamic Background - Mesh Gradient Flow */
+@keyframes meshGradientFlow {
+    0% { background-position: 0% 50%; }
+    25% { background-position: 50% 100%; }
+    50% { background-position: 100% 50%; }
+    75% { background-position: 50% 0%; }
+    100% { background-position: 0% 50%; }
+}
+
+@keyframes floatingOrbs {
+    0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.3; }
+    25% { transform: translate(30px, -30px) scale(1.1); opacity: 0.5; }
+    50% { transform: translate(-20px, 20px) scale(0.9); opacity: 0.4; }
+    75% { transform: translate(20px, 30px) scale(1.05); opacity: 0.6; }
+}
+
+/* Hero Section with Animated Mesh Background */
 .hero {
     position: relative;
     min-height: 100vh;
@@ -8,15 +24,120 @@
     align-items: center;
     overflow: hidden;
     padding: 80px 0;
-    background: linear-gradient(-45deg, #0a0e27, #1a0f2e, #0f1a2e, #1a1a3e);
-    background-size: 400% 400%;
-    animation: gradientShift 15s ease infinite;
+    background: linear-gradient(-45deg, #0a0e27, #1a0f2e, #0f1a2e, #1a1a3e, #0d1b2a, #1b263b);
+    background-size: 600% 600%;
+    animation: meshGradientFlow 20s ease infinite;
 }
 
-@keyframes gradientShift {
-    0% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
-    100% { background-position: 0% 50%; }
+/* Floating Orbs Background Effect */
+.hero::before,
+.hero::after,
+.pain-points::before,
+.how-it-works::before,
+.demo-section::before,
+.pricing-section::before,
+.testimonials::before,
+.faq-section::before,
+.cta-footer::before {
+    content: '';
+    position: absolute;
+    width: 400px;
+    height: 400px;
+    background: radial-gradient(circle, rgba(0, 217, 255, 0.15) 0%, transparent 70%);
+    border-radius: 50%;
+    animation: floatingOrbs 15s ease-in-out infinite;
+    pointer-events: none;
+    z-index: 0;
+}
+
+.hero::before {
+    top: 10%;
+    left: 10%;
+    animation-delay: 0s;
+}
+
+.hero::after {
+    bottom: 20%;
+    right: 10%;
+    animation-delay: -5s;
+}
+
+.pain-points {
+    position: relative;
+}
+
+.pain-points::before {
+    top: -100px;
+    right: -100px;
+    background: radial-gradient(circle, rgba(108, 99, 255, 0.12) 0%, transparent 70%);
+    animation-delay: -2s;
+}
+
+.how-it-works {
+    position: relative;
+}
+
+.how-it-works::before {
+    bottom: -150px;
+    left: -100px;
+    background: radial-gradient(circle, rgba(0, 255, 157, 0.1) 0%, transparent 70%);
+    animation-delay: -7s;
+}
+
+.demo-section {
+    position: relative;
+}
+
+.demo-section::before {
+    top: 50%;
+    right: -150px;
+    background: radial-gradient(circle, rgba(255, 107, 129, 0.1) 0%, transparent 70%);
+    animation-delay: -4s;
+}
+
+.pricing-section {
+    position: relative;
+}
+
+.pricing-section::before {
+    bottom: 100px;
+    left: -100px;
+    background: radial-gradient(circle, rgba(0, 217, 255, 0.12) 0%, transparent 70%);
+    animation-delay: -9s;
+}
+
+.testimonials {
+    position: relative;
+}
+
+.testimonials::before {
+    top: -50px;
+    right: 20%;
+    background: radial-gradient(circle, rgba(108, 99, 255, 0.1) 0%, transparent 70%);
+    animation-delay: -6s;
+}
+
+.faq-section {
+    position: relative;
+}
+
+.faq-section::before {
+    bottom: -100px;
+    left: 30%;
+    background: radial-gradient(circle, rgba(0, 255, 157, 0.08) 0%, transparent 70%);
+    animation-delay: -11s;
+}
+
+.cta-footer {
+    position: relative;
+}
+
+.cta-footer::before {
+    top: 20%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: radial-gradient(circle, rgba(255, 107, 129, 0.12) 0%, transparent 70%);
+    animation-delay: -3s;
 }
 
 #hero-canvas {
@@ -110,8 +231,12 @@
 }
 
 #ai-demo-card.loaded .skeleton {
-    animation: none;
-    display: none;
+    animation: none !important;
+    display: none !important;
+}
+
+#ai-demo-card.loaded .demo-content {
+    display: none !important;
 }
 
 @keyframes shimmer {
@@ -255,24 +380,12 @@
     font-size: 0.75rem;
     color: var(--accent-primary);
     opacity: 0.8;
+    transition: all 0.3s ease;
 }
 
 #ai-demo-card.loaded .demo-status {
-    animation: none;
+    animation: none !important;
     opacity: 1;
-}
-
-@keyframes pulseStatus {
-    0%, 100% { opacity: 0.5; }
-    50% { opacity: 1; }
-}
-
-#ai-demo-card.loaded .skeleton {
-    display: none;
-}
-
-#ai-demo-card.loaded .demo-content {
-    display: none;
 }
 
 #ai-demo-card .demo-result {
@@ -281,7 +394,7 @@
 }
 
 #ai-demo-card.loaded .demo-result {
-    display: block;
+    display: block !important;
 }
 
 @keyframes fadeIn {
