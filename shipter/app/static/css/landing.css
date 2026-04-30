@@ -1,6 +1,6 @@
-/* Landing Page Styles with Anime.js enhancements - Hi-Tech AI Style */
+/* Landing Page Styles - Calm & Minimal */
 
-/* Remove white background from all sections - use transparent backgrounds */
+/* Transparent backgrounds for all sections */
 .hero,
 .pain-points,
 .how-it-works,
@@ -12,23 +12,13 @@
     background: transparent !important;
 }
 
-/* Animated Dynamic Background - Mesh Gradient Flow */
-@keyframes meshGradientFlow {
-    0% { background-position: 0% 50%; }
-    25% { background-position: 50% 100%; }
-    50% { background-position: 100% 50%; }
-    75% { background-position: 50% 0%; }
-    100% { background-position: 0% 50%; }
+/* Subtle calm background effect */
+@keyframes gentleFloat {
+    0%, 100% { transform: translate(0, 0); opacity: 0.2; }
+    50% { transform: translate(15px, -15px); opacity: 0.3; }
 }
 
-@keyframes floatingOrbs {
-    0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.3; }
-    25% { transform: translate(30px, -30px) scale(1.1); opacity: 0.5; }
-    50% { transform: translate(-20px, 20px) scale(0.9); opacity: 0.4; }
-    75% { transform: translate(20px, 30px) scale(1.05); opacity: 0.6; }
-}
-
-/* Hero Section with Animated Mesh Background */
+/* Hero Section */
 .hero {
     position: relative;
     min-height: 100vh;
@@ -38,23 +28,16 @@
     padding: 80px 0;
 }
 
-/* Floating Orbs Background Effect */
+/* Minimal floating orbs - reduced and calmer */
 .hero::before,
-.hero::after,
-.pain-points::before,
-.how-it-works::before,
-.demo-section::before,
-.pricing-section::before,
-.testimonials::before,
-.faq-section::before,
-.cta-footer::before {
+.hero::after {
     content: '';
     position: absolute;
-    width: 400px;
-    height: 400px;
-    background: radial-gradient(circle, rgba(0, 217, 255, 0.15) 0%, transparent 70%);
+    width: 300px;
+    height: 300px;
+    background: radial-gradient(circle, rgba(100, 150, 200, 0.08) 0%, transparent 70%);
     border-radius: 50%;
-    animation: floatingOrbs 15s ease-in-out infinite;
+    animation: gentleFloat 20s ease-in-out infinite;
     pointer-events: none;
     z-index: 0;
 }
@@ -62,91 +45,12 @@
 .hero::before {
     top: 10%;
     left: 10%;
-    animation-delay: 0s;
 }
 
 .hero::after {
     bottom: 20%;
     right: 10%;
-    animation-delay: -5s;
-}
-
-.pain-points {
-    position: relative;
-}
-
-.pain-points::before {
-    top: -100px;
-    right: -100px;
-    background: radial-gradient(circle, rgba(108, 99, 255, 0.12) 0%, transparent 70%);
-    animation-delay: -2s;
-}
-
-.how-it-works {
-    position: relative;
-}
-
-.how-it-works::before {
-    bottom: -150px;
-    left: -100px;
-    background: radial-gradient(circle, rgba(0, 255, 157, 0.1) 0%, transparent 70%);
-    animation-delay: -7s;
-}
-
-.demo-section {
-    position: relative;
-}
-
-.demo-section::before {
-    top: 50%;
-    right: -150px;
-    background: radial-gradient(circle, rgba(255, 107, 129, 0.1) 0%, transparent 70%);
-    animation-delay: -4s;
-}
-
-.pricing-section {
-    position: relative;
-}
-
-.pricing-section::before {
-    bottom: 100px;
-    left: -100px;
-    background: radial-gradient(circle, rgba(0, 217, 255, 0.12) 0%, transparent 70%);
-    animation-delay: -9s;
-}
-
-.testimonials {
-    position: relative;
-}
-
-.testimonials::before {
-    top: -50px;
-    right: 20%;
-    background: radial-gradient(circle, rgba(108, 99, 255, 0.1) 0%, transparent 70%);
-    animation-delay: -6s;
-}
-
-.faq-section {
-    position: relative;
-}
-
-.faq-section::before {
-    bottom: -100px;
-    left: 30%;
-    background: radial-gradient(circle, rgba(0, 255, 157, 0.08) 0%, transparent 70%);
-    animation-delay: -11s;
-}
-
-.cta-footer {
-    position: relative;
-}
-
-.cta-footer::before {
-    top: 20%;
-    left: 50%;
-    transform: translateX(-50%);
-    background: radial-gradient(circle, rgba(255, 107, 129, 0.12) 0%, transparent 70%);
-    animation-delay: -3s;
+    animation-delay: -10s;
 }
 
 #hero-canvas {
@@ -235,9 +139,7 @@
 .demo-line.w-60 { width: 60%; }
 
 .skeleton {
-    animation: shimmer 1s infinite;
-    background: linear-gradient(90deg, rgba(26, 39, 58, 0.5) 25%, rgba(21, 31, 46, 0.5) 50%, rgba(26, 39, 58, 0.5) 75%);
-    background-size: 200% 100%;
+    background: rgba(26, 39, 58, 0.3);
 }
 
 #ai-demo-card.loaded .skeleton,
@@ -251,11 +153,6 @@
     display: none !important;
     visibility: hidden !important;
     opacity: 0 !important;
-}
-
-@keyframes shimmer {
-    0% { background-position: 200% 0; }
-    100% { background-position: -200% 0; }
 }
 
 /* Pain Points Section */
@@ -350,10 +247,10 @@
 .step-connector::before {
     content: '';
     position: absolute;
-    width: 40%;
-    height: 100%;
+    width: 100%;
+    height: 2px;
     background: var(--accent-primary);
-    animation: flowArrow 2s ease-in-out infinite;
+    opacity: 0.5;
 }
 
 .connector-arrow {
@@ -361,18 +258,7 @@
     z-index: 1;
     color: var(--accent-primary);
     font-size: 1.2rem;
-    animation: arrowMove 1.5s ease-in-out infinite;
-}
-
-@keyframes flowArrow {
-    0% { left: -40%; opacity: 0; }
-    50% { opacity: 1; }
-    100% { left: 100%; opacity: 0; }
-}
-
-@keyframes arrowMove {
-    0%, 100% { transform: translateX(0) scale(1); opacity: 0.6; }
-    50% { transform: translateX(3px) scale(1.15); opacity: 1; }
+    opacity: 0.6;
 }
 
 /* Demo Section */
@@ -443,16 +329,12 @@
 .tab-btn:hover {
     border-color: var(--border-default);
     color: var(--text-primary);
-    transform: translateY(-3px);
-    box-shadow: 0 10px 25px rgba(0, 217, 255, 0.15);
 }
 
 .tab-btn.active {
-    background: linear-gradient(135deg, rgba(0, 217, 255, 0.15) 0%, rgba(0, 255, 157, 0.1) 100%);
+    background: rgba(100, 150, 200, 0.1);
     border-color: var(--accent-primary);
     color: var(--accent-primary);
-    transform: translateY(-3px);
-    box-shadow: 0 10px 30px rgba(0, 217, 255, 0.25);
 }
 
 .tab-icon {
@@ -476,8 +358,7 @@
 }
 
 .typewriter::after {
-    content: '|';
-    animation: blink 1s infinite;
+    content: '';
 }
 
 /* Business Example Section */
@@ -528,13 +409,7 @@
     font-size: 0.9rem;
     color: white;
     text-align: center;
-    box-shadow: 0 8px 24px rgba(108, 99, 255, 0.3);
-    animation: pulse-glow 3s ease-in-out infinite;
-}
-
-@keyframes pulse-glow {
-    0%, 100% { box-shadow: 0 8px 24px rgba(108, 99, 255, 0.3); }
-    50% { box-shadow: 0 8px 32px rgba(108, 99, 255, 0.5); }
+    box-shadow: 0 8px 24px rgba(100, 150, 200, 0.2);
 }
 
 .timeline-content {
@@ -543,12 +418,9 @@
     background: var(--bg-elevated) !important;
     border: 1px solid var(--border-default) !important;
     border-radius: 16px;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .timeline-content:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.3);
     border-color: var(--accent-primary) !important;
 }
 
@@ -590,12 +462,9 @@
     background: var(--bg-elevated) !important;
     border: 1px solid var(--border-default) !important;
     border-radius: 16px;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .stat-card:hover {
-    transform: translateY(-4px) scale(1.02);
-    box-shadow: 0 12px 32px rgba(108, 99, 255, 0.2);
     border-color: var(--accent-primary) !important;
 }
 
@@ -603,10 +472,7 @@
     font-family: var(--font-display);
     font-size: 2.5rem;
     font-weight: 800;
-    background: var(--gradient-hero);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+    color: var(--text-primary);
     margin-bottom: 8px;
 }
 
@@ -614,11 +480,6 @@
     color: var(--text-secondary);
     font-size: 0.9rem;
     font-weight: 500;
-}
-
-@keyframes blink {
-    0%, 50% { opacity: 1; }
-    51%, 100% { opacity: 0; }
 }
 
 /* Pricing Section */
@@ -826,16 +687,11 @@
     
     .step-connector::before {
         width: 100%;
-        animation: flowArrowVertical 2s ease-in-out infinite;
+        opacity: 0.5;
     }
     
     .connector-arrow {
         transform: rotate(90deg);
-    }
-    
-    @keyframes flowArrowVertical {
-        0% { top: -40%; opacity: 0; }
-        50% { opacity: 1; }
-        100% { top: 100%; opacity: 0; }
+        opacity: 0.6;
     }
 }

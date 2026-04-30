@@ -1,56 +1,22 @@
-// Shipter Main JavaScript with Anime.js
+// Shipter Main JavaScript - Calm & Minimal
 
 document.addEventListener('DOMContentLoaded', function() {
-    // Check if anime.js is loaded
-    if (typeof anime === 'undefined') {
-        console.warn('Anime.js not loaded, some animations may not work');
-    }
-    
-    // Initialize anime.js background particles
-    initBackgroundParticles();
-    
-    // Initialize UI animations
-    initUIAnimations();
-    
-    // Initialize scroll reveal animations
-    initScrollReveal();
-    
-    // Auto-dismiss flash messages after 5 seconds with anime.js
+    // Auto-dismiss flash messages after 5 seconds
     const flashes = document.querySelectorAll('.flash');
     flashes.forEach((flash, index) => {
         setTimeout(() => {
-            if (typeof anime !== 'undefined') {
-                anime({
-                    targets: flash,
-                    opacity: 0,
-                    translateX: 100,
-                    duration: 400,
-                    easing: 'easeInQuad',
-                    complete: () => flash.remove()
-                });
-            } else {
-                flash.style.opacity = '0';
-                setTimeout(() => flash.remove(), 400);
-            }
+            flash.style.opacity = '0';
+            setTimeout(() => flash.remove(), 400);
         }, 5000 + index * 500);
     });
 
-    // Smooth scroll for anchor links with anime.js
+    // Smooth scroll for anchor links
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
         anchor.addEventListener('click', function(e) {
             e.preventDefault();
             const target = document.querySelector(this.getAttribute('href'));
             if (target) {
-                if (typeof anime !== 'undefined') {
-                    anime({
-                        targets: document.documentElement,
-                        scrollTop: target.offsetTop - 72,
-                        duration: 800,
-                        easing: 'easeInOutQuad'
-                    });
-                } else {
-                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                }
+                target.scrollIntoView({ behavior: 'smooth', block: 'start' });
             }
         });
     });
@@ -85,16 +51,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 const originalText = this.textContent;
                 this.textContent = 'Скопировано!';
                 
-                // Animate button
-                if (typeof anime !== 'undefined') {
-                    anime({
-                        targets: this,
-                        scale: [1, 1.1, 1],
-                        duration: 300,
-                        easing: 'easeOutQuad'
-                    });
-                }
-                
                 setTimeout(() => {
                     this.textContent = originalText;
                 }, 2000);
@@ -112,228 +68,9 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // Add ripple effect to buttons
-    document.querySelectorAll('.btn').forEach(btn => {
-        btn.addEventListener('click', function(e) {
-            const rect = btn.getBoundingClientRect();
-            const x = e.clientX - rect.left;
-            const y = e.clientY - rect.top;
-            
-            const ripple = document.createElement('span');
-            ripple.className = 'ripple';
-            ripple.style.cssText = `
-                position: absolute;
-                background: rgba(255, 255, 255, 0.3);
-                border-radius: 50%;
-                transform: scale(0);
-                left: ${x}px;
-                top: ${y}px;
-                width: 100px;
-                height: 100px;
-                margin-left: -50px;
-                margin-top: -50px;
-                pointer-events: none;
-            `;
-            
-            btn.style.position = 'relative';
-            btn.style.overflow = 'hidden';
-            btn.appendChild(ripple);
-            
-            if (typeof anime !== 'undefined') {
-                anime({
-                    targets: ripple,
-                    scale: 2,
-                    opacity: 0,
-                    duration: 600,
-                    easing: 'easeOutQuad',
-                    complete: () => ripple.remove()
-                });
-            }
-        });
-    });
-
-    console.log('Shipter initialized with Anime.js');
+    console.log('Shipter initialized');
 });
 
-// Background Particles with Anime.js
-function initBackgroundParticles() {
-    const bg = document.querySelector('.animated-bg');
-    if (!bg) return;
-    
-    // Clear existing particles (keep pseudo-elements intact)
-    const existingParticles = bg.querySelectorAll('.bg-particle');
-    existingParticles.forEach(p => p.remove());
-    
-    // Create floating particles with varied colors
-    const colors = [
-        'rgba(0, 217, 255, 0.5)',  // cyan
-        'rgba(0, 255, 157, 0.4)',  // green
-        'rgba(0, 136, 255, 0.4)'   // blue
-    ];
-    
-    for (let i = 0; i < 40; i++) {
-        const particle = document.createElement('div');
-        particle.className = 'bg-particle';
-        const size = Math.random() * 8 + 2;
-        const color = colors[Math.floor(Math.random() * colors.length)];
-        const duration = Math.random() * 15 + 15;
-        const delay = Math.random() * 10;
-        
-        particle.style.cssText = `
-            position: absolute;
-            width: ${size}px;
-            height: ${size}px;
-            background: radial-gradient(circle, ${color} 0%, transparent 70%);
-            border-radius: 50%;
-            left: ${Math.random() * 100}%;
-            top: ${Math.random() * 100}%;
-            animation-duration: ${duration}s;
-            animation-delay: -${delay}s;
-            opacity: ${Math.random() * 0.5 + 0.3};
-        `;
-        bg.appendChild(particle);
-    }
-}
-
-// UI Animations with Anime.js
-function initUIAnimations() {
-    if (typeof anime === 'undefined') {
-        console.warn('Anime.js not loaded, skipping UI animations');
-        return;
-    }
-    
-    // Animate cards on page load with staggered effect
-    const cards = document.querySelectorAll('.card, .pricing-card, .pain-card, .testimonial-card, .step');
-    if (cards.length > 0) {
-        anime({
-            targets: cards,
-            opacity: [0, 1],
-            translateY: [40, 0],
-            scale: [0.95, 1],
-            delay: anime.stagger(120, {start: 100}),
-            duration: 800,
-            easing: 'easeOutCubic'
-        });
-    }
-    
-    // Animate hero title with glow effect
-    const heroTitle = document.querySelector('.hero-title');
-    if (heroTitle) {
-        anime({
-            targets: '.hero-title .text-gradient',
-            opacity: [0.7, 1, 0.7],
-            duration: 3000,
-            easing: 'easeInOutSine',
-            loop: true
-        });
-    }
-    
-    // Animate buttons on hover with spring effect
-    const buttons = document.querySelectorAll('.btn');
-    buttons.forEach(btn => {
-        btn.addEventListener('mouseenter', () => {
-            anime({
-                targets: btn,
-                scale: 1.08,
-                duration: 300,
-                easing: 'easeOutQuad'
-            });
-        });
-        
-        btn.addEventListener('mouseleave', () => {
-            anime({
-                targets: btn,
-                scale: 1,
-                duration: 300,
-                easing: 'easeOutQuad'
-            });
-        });
-    });
-    
-    // Animate navigation links with underline effect
-    const navLinks = document.querySelectorAll('.nav-link');
-    navLinks.forEach(link => {
-        link.addEventListener('mouseenter', () => {
-            anime({
-                targets: link,
-                color: '#F0F0FF',
-                duration: 200,
-                easing: 'easeOutQuad'
-            });
-        });
-        
-        link.addEventListener('mouseleave', () => {
-            anime({
-                targets: link,
-                color: '#8B8BA8',
-                duration: 200,
-                easing: 'easeOutQuad'
-            });
-        });
-    });
-    
-    // Animate pricing cards popular badge pulse
-    const popularBadge = document.querySelector('.popular-badge');
-    if (popularBadge) {
-        anime({
-            targets: popularBadge,
-            scale: [1, 1.05, 1],
-            duration: 2000,
-            easing: 'easeInOutSine',
-            loop: true
-        });
-    }
-    
-    // Animate step numbers rotation
-    const stepNumbers = document.querySelectorAll('.step-number');
-    stepNumbers.forEach((num, index) => {
-        anime({
-            targets: num,
-            rotate: [0, 360],
-            duration: 20000,
-            easing: 'linear',
-            loop: true,
-            delay: index * 2000
-        });
-    });
-}
-
-// Scroll Reveal Animation with Intersection Observer
-function initScrollReveal() {
-    const observerOptions = {
-        threshold: 0.1,
-        rootMargin: '0px 0px -80px 0px'
-    };
-    
-    const revealObserver = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                const element = entry.target;
-                element.classList.add('revealed');
-                
-                // Trigger anime.js animation if available
-                if (typeof anime !== 'undefined') {
-                    anime({
-                        targets: element,
-                        opacity: [0, 1],
-                        translateY: [50, 0],
-                        duration: 800,
-                        easing: 'easeOutCubic'
-                    });
-                }
-                
-                revealObserver.unobserve(element);
-            }
-        });
-    }, observerOptions);
-    
-    // Observe elements
-    document.querySelectorAll('.section-title, .pain-card, .step, .pricing-card, .testimonial-card, .faq-item').forEach(el => {
-        el.style.opacity = '0';
-        el.style.transform = 'translateY(50px)';
-        revealObserver.observe(el);
-    });
-}
 
 // HTMX event handlers
 document.body.addEventListener('htmx:beforeRequest', function() {
