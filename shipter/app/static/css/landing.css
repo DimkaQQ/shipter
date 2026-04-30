@@ -1,5 +1,17 @@
 /* Landing Page Styles with Anime.js enhancements - Hi-Tech AI Style */
 
+/* Remove white background from all sections - use transparent backgrounds */
+.hero,
+.pain-points,
+.how-it-works,
+.demo-section,
+.pricing-section,
+.testimonials,
+.faq-section,
+.cta-footer {
+    background: transparent !important;
+}
+
 /* Animated Dynamic Background - Mesh Gradient Flow */
 @keyframes meshGradientFlow {
     0% { background-position: 0% 50%; }
@@ -24,9 +36,6 @@
     align-items: center;
     overflow: hidden;
     padding: 80px 0;
-    background: linear-gradient(-45deg, #0a0e27, #1a0f2e, #0f1a2e, #1a1a3e, #0d1b2a, #1b263b);
-    background-size: 600% 600%;
-    animation: meshGradientFlow 20s ease infinite;
 }
 
 /* Floating Orbs Background Effect */
@@ -193,7 +202,8 @@
 }
 
 .demo-card {
-    background: var(--bg-elevated);
+    background: rgba(21, 31, 46, 0.6);
+    backdrop-filter: blur(12px);
     border: 1px solid var(--border-default);
 }
 
@@ -216,7 +226,7 @@
 
 .demo-line {
     height: 12px;
-    background: var(--bg-overlay);
+    background: rgba(26, 39, 58, 0.5);
     border-radius: 6px;
     margin-bottom: 12px;
 }
@@ -226,7 +236,7 @@
 
 .skeleton {
     animation: shimmer 1s infinite;
-    background: linear-gradient(90deg, var(--bg-overlay) 25%, var(--bg-elevated) 50%, var(--bg-overlay) 75%);
+    background: linear-gradient(90deg, rgba(26, 39, 58, 0.5) 25%, rgba(21, 31, 46, 0.5) 50%, rgba(26, 39, 58, 0.5) 75%);
     background-size: 200% 100%;
 }
 
@@ -251,7 +261,6 @@
 /* Pain Points Section */
 .pain-points {
     padding: 100px 0;
-    background: var(--bg-surface);
 }
 
 .section-title {
@@ -369,7 +378,6 @@
 /* Demo Section */
 .demo-section {
     padding: 100px 0;
-    background: var(--bg-surface);
 }
 
 .section-subtitle {
@@ -416,7 +424,8 @@
 
 .tab-btn {
     padding: 16px 32px;
-    background: var(--bg-elevated);
+    background: rgba(21, 31, 46, 0.5);
+    backdrop-filter: blur(8px);
     border: 1px solid var(--border-subtle);
     border-radius: 14px;
     color: var(--text-secondary);
@@ -475,7 +484,8 @@
 .business-example {
     margin-top: 80px;
     padding: 60px 40px;
-    background: linear-gradient(135deg, var(--bg-overlay) 0%, var(--bg-surface) 100%);
+    background: linear-gradient(135deg, rgba(26, 39, 58, 0.6) 0%, rgba(15, 22, 32, 0.5) 100%);
+    backdrop-filter: blur(12px);
     border-radius: 24px;
     border: 1px solid var(--border-subtle);
 }
@@ -681,7 +691,6 @@
 /* Testimonials Section */
 .testimonials {
     padding: 100px 0;
-    background: var(--bg-surface);
 }
 
 .testimonials-grid {
