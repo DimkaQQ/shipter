@@ -1,14 +1,5 @@
 /* Landing Page Styles - Calm & Minimal */
 
-/* Ensure landing page body shows animated background */
-.landing-page {
-    background: transparent;
-}
-
-.landing-page .main-content {
-    background: transparent;
-}
-
 /* Hero Section - Dynamic Background */
 .hero {
     position: relative;
@@ -17,8 +8,6 @@
     align-items: center;
     overflow: hidden;
     padding: 80px 0;
-    /* Ensure transparent background to show animated-bg behind */
-    background: transparent;
 }
 
 #hero-canvas {
@@ -126,8 +115,6 @@
 /* Pain Points Section */
 .pain-points {
     padding: 100px 0;
-    /* Ensure transparent background to show animated-bg behind */
-    background: transparent;
 }
 
 .section-title {
@@ -162,8 +149,6 @@
 /* How It Works Section */
 .how-it-works {
     padding: 100px 0;
-    /* Ensure transparent background to show animated-bg behind */
-    background: transparent;
 }
 
 .steps {
@@ -236,8 +221,6 @@
 /* Demo Section */
 .demo-section {
     padding: 100px 0;
-    /* Ensure transparent background to show animated-bg behind */
-    background: transparent;
 }
 
 .section-subtitle {
@@ -459,8 +442,6 @@
 /* Pricing Section */
 .pricing-section {
     padding: 100px 0;
-    /* Ensure transparent background to show animated-bg behind */
-    background: transparent;
 }
 
 .pricing-grid {
@@ -528,8 +509,6 @@
 /* Testimonials Section */
 .testimonials {
     padding: 100px 0;
-    /* Ensure transparent background to show animated-bg behind */
-    background: transparent;
 }
 
 .testimonials-grid {
@@ -583,8 +562,6 @@
 /* FAQ Section */
 .faq-section {
     padding: 100px 0;
-    /* Ensure transparent background to show animated-bg behind */
-    background: transparent;
 }
 
 .faq-list {
@@ -632,8 +609,6 @@
 /* CTA Footer Section */
 .cta-footer {
     padding: 100px 0;
-    /* Ensure transparent background to show animated-bg behind */
-    background: transparent;
 }
 
 .cta-footer h2 {
