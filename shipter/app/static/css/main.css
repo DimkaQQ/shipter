@@ -452,6 +452,7 @@ input, textarea, select {
 .main-content {
     min-height: calc(100vh - 72px - 200px);
     padding: 48px 0;
+    background: transparent;
 }
 
 .footer {
@@ -516,6 +517,10 @@ input, textarea, select {
     overflow: hidden;
     background: var(--bg-deep);
     will-change: background-position;
+}
+
+.landing-page .animated-bg {
+    z-index: 0;
 }
 
 .animated-bg::before {

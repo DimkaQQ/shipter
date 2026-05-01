@@ -1,5 +1,14 @@
 /* Landing Page Styles - Calm & Minimal */
 
+/* Ensure landing page body shows animated background */
+.landing-page {
+    background: transparent;
+}
+
+.landing-page .main-content {
+    background: transparent;
+}
+
 /* Hero Section - Dynamic Background */
 .hero {
     position: relative;
