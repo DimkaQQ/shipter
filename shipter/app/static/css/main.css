@@ -504,7 +504,7 @@ input, textarea, select {
 }
 
 /* ============================================
-   ANIMATED BACKGROUND - Optimized for Performance
+   ANIMATED BACKGROUND - New Dynamic Gradient Orbs
    ============================================ */
 .animated-bg {
     position: fixed;
@@ -515,12 +515,7 @@ input, textarea, select {
     z-index: -1;
     pointer-events: none;
     overflow: hidden;
-    background: var(--bg-deep);
-    will-change: background-position;
-}
-
-.landing-page .animated-bg {
-    z-index: 0;
+    background: #0a0e14;
 }
 
 .animated-bg::before {
@@ -530,10 +525,12 @@ input, textarea, select {
     left: -50%;
     width: 200%;
     height: 200%;
-    background: radial-gradient(circle at 50% 50%, rgba(0, 217, 255, 0.06) 0%, transparent 70%);
-    animation: bgPulse 30s ease-in-out infinite;
-    opacity: 0.4;
-    will-change: transform, opacity;
+    background: 
+        radial-gradient(ellipse at 50% 50%, rgba(0, 217, 255, 0.08) 0%, transparent 60%),
+        radial-gradient(ellipse at 80% 20%, rgba(0, 136, 255, 0.06) 0%, transparent 50%),
+        radial-gradient(ellipse at 20% 80%, rgba(0, 255, 157, 0.05) 0%, transparent 50%);
+    animation: orbRotate 40s linear infinite;
+    opacity: 0.6;
 }
 
 .animated-bg::after {
@@ -544,31 +541,34 @@ input, textarea, select {
     width: 100%;
     height: 100%;
     background: 
-        radial-gradient(circle at 20% 80%, rgba(0, 255, 157, 0.04) 0%, transparent 50%),
-        radial-gradient(circle at 80% 20%, rgba(0, 136, 255, 0.05) 0%, transparent 50%);
-    animation: orbMovement 35s ease-in-out infinite;
-    will-change: transform, opacity;
+        radial-gradient(circle at 30% 40%, rgba(0, 217, 255, 0.04) 0%, transparent 40%),
+        radial-gradient(circle at 70% 60%, rgba(0, 136, 255, 0.05) 0%, transparent 40%),
+        radial-gradient(circle at 50% 90%, rgba(0, 255, 157, 0.03) 0%, transparent 40%);
+    animation: orbFloat 30s ease-in-out infinite;
+    opacity: 0.5;
 }
 
-@keyframes gradientFlow {
-    0% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
-    100% { background-position: 0% 50%; }
+@keyframes orbRotate {
+    0% { transform: rotate(0deg) scale(1); }
+    100% { transform: rotate(360deg) scale(1); }
 }
 
-@keyframes bgPulse {
-    0%, 100% { transform: translate(0, 0) scale(1); }
-    50% { transform: translate(5%, 5%) scale(1.02); }
-}
-
-@keyframes orbMovement {
+@keyframes orbFloat {
     0%, 100% { 
         transform: translate(0, 0) scale(1);
         opacity: 0.5;
     }
-    50% { 
-        transform: translate(-3%, 3%) scale(1.03);
+    25% { 
+        transform: translate(5%, -5%) scale(1.05);
         opacity: 0.6;
+    }
+    50% { 
+        transform: translate(-3%, 5%) scale(0.98);
+        opacity: 0.55;
+    }
+    75% { 
+        transform: translate(-5%, -3%) scale(1.02);
+        opacity: 0.65;
     }
 }
 
