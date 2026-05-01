@@ -1,31 +1,56 @@
 ```
-# Python
-__pycache__/
-*.pyc
-*.pyo
-*.pyd
+# Environment and config files
+.env
+.env.local
+.env.*
 
-# Directories
-.git/
-.vscode/
-.idea/
-__pycache__/
-*.egg-info/
-.eggs/
-build/
-dist/
-.coverage
-htmlcov/
-.pytest_cache/
-.mypy_cache/
-
-# Files
+# Logs and temporary files
 *.log
 *.tmp
 *.swp
-.env
-.env.local
-*.env.*
+
+# Editors
+.vscode/
+.idea/
+
+# System files
 .DS_Store
 Thumbs.db
+
+# Dependencies
+node_modules/
+__pycache__/
+*.egg-info/
+.venv/
+venv/
+.envrc
+.env.local
+
+# Build artifacts
+dist/
+build/
+target/
+*.pyc
+*.class
+*.o
+*.obj
+*.so
+*.dll
+*.exe
+
+# Coverage
+.coverage
+coverage/
+htmlcov/
+
+# Compression
+*.zip
+*.gz
+*.tar
+*.tgz
+*.bz2
+*.xz
+*.7z
+*.rar
+*.zst
 ```
