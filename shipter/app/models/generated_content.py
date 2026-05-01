@@ -13,7 +13,6 @@ class GeneratedContent(db.Model):
     tokens_used = db.Column(db.Integer)
     created_at = db.Column(db.DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
 
-    project = db.relationship('Project', backref='generated_contents')
     user = db.relationship('User', backref='generated_contents')
 
     def to_dict(self):
