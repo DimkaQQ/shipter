@@ -1,24 +1,6 @@
 /* Landing Page Styles - Calm & Minimal */
 
-/* Transparent backgrounds for all sections */
-.hero,
-.pain-points,
-.how-it-works,
-.demo-section,
-.pricing-section,
-.testimonials,
-.faq-section,
-.cta-footer {
-    background: transparent !important;
-}
-
-/* Subtle calm background effect */
-@keyframes gentleFloat {
-    0%, 100% { transform: translate(0, 0); opacity: 0.2; }
-    50% { transform: translate(15px, -15px); opacity: 0.3; }
-}
-
-/* Hero Section */
+/* Hero Section - Dynamic Background */
 .hero {
     position: relative;
     min-height: 100vh;
@@ -26,31 +8,8 @@
     align-items: center;
     overflow: hidden;
     padding: 80px 0;
-}
-
-/* Minimal floating orbs - reduced and calmer */
-.hero::before,
-.hero::after {
-    content: '';
-    position: absolute;
-    width: 300px;
-    height: 300px;
-    background: radial-gradient(circle, rgba(100, 150, 200, 0.08) 0%, transparent 70%);
-    border-radius: 50%;
-    animation: gentleFloat 20s ease-in-out infinite;
-    pointer-events: none;
-    z-index: 0;
-}
-
-.hero::before {
-    top: 10%;
-    left: 10%;
-}
-
-.hero::after {
-    bottom: 20%;
-    right: 10%;
-    animation-delay: -10s;
+    /* Dynamic background matching main.css */
+    background: radial-gradient(ellipse at 50% 30%, rgba(0, 136, 255, 0.08) 0%, rgba(10, 14, 20, 0.6) 60%, #0a0e14 100%);
 }
 
 #hero-canvas {
@@ -60,7 +19,7 @@
     width: 100%;
     height: 100%;
     z-index: 0;
-    opacity: 0.4;
+    opacity: 0.5;
 }
 
 .hero-container {
@@ -158,6 +117,7 @@
 /* Pain Points Section */
 .pain-points {
     padding: 100px 0;
+    background: radial-gradient(ellipse at 50% 30%, rgba(0, 136, 255, 0.08) 0%, rgba(10, 14, 20, 0.6) 60%, #0a0e14 100%);
 }
 
 .section-title {
@@ -192,6 +152,7 @@
 /* How It Works Section */
 .how-it-works {
     padding: 100px 0;
+    background: radial-gradient(ellipse at 50% 30%, rgba(0, 136, 255, 0.08) 0%, rgba(10, 14, 20, 0.6) 60%, #0a0e14 100%);
 }
 
 .steps {
@@ -264,6 +225,7 @@
 /* Demo Section */
 .demo-section {
     padding: 100px 0;
+    background: radial-gradient(ellipse at 50% 30%, rgba(0, 136, 255, 0.08) 0%, rgba(10, 14, 20, 0.6) 60%, #0a0e14 100%);
 }
 
 .section-subtitle {
@@ -485,6 +447,7 @@
 /* Pricing Section */
 .pricing-section {
     padding: 100px 0;
+    background: radial-gradient(ellipse at 50% 30%, rgba(0, 136, 255, 0.08) 0%, rgba(10, 14, 20, 0.6) 60%, #0a0e14 100%);
 }
 
 .pricing-grid {
@@ -552,6 +515,7 @@
 /* Testimonials Section */
 .testimonials {
     padding: 100px 0;
+    background: radial-gradient(ellipse at 50% 30%, rgba(0, 136, 255, 0.08) 0%, rgba(10, 14, 20, 0.6) 60%, #0a0e14 100%);
 }
 
 .testimonials-grid {
@@ -605,6 +569,7 @@
 /* FAQ Section */
 .faq-section {
     padding: 100px 0;
+    background: radial-gradient(ellipse at 50% 30%, rgba(0, 136, 255, 0.08) 0%, rgba(10, 14, 20, 0.6) 60%, #0a0e14 100%);
 }
 
 .faq-list {
@@ -652,7 +617,7 @@
 /* CTA Footer Section */
 .cta-footer {
     padding: 100px 0;
-    background: var(--gradient-glow);
+    background: radial-gradient(ellipse at 50% 30%, rgba(0, 136, 255, 0.08) 0%, rgba(10, 14, 20, 0.6) 60%, #0a0e14 100%);
 }
 
 .cta-footer h2 {
