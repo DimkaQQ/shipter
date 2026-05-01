@@ -1,0 +1,211 @@
+{% extends "base.html" %}
+
+{% block title %}Мои проекты — Shipter{% endblock %}
+
+{% block content %}
+<div class="projects-list-container">
+    <div class="container">
+        <header class="page-header">
+            <h1>Мои проекты</h1>
+            <a href="{{ url_for('projects.create_project') }}" class="btn btn-primary">+ Новый проект</a>
+        </header>
+
+        {% if max_projects and projects|length >= max_projects %}
+        <div class="limit-warning card">
+            <p>⚠️ Вы достигли лимита проектов ({{ max_projects }}). 
+            {% if g.current_user.tier == 'trial' %}
+                <a href="{{ url_for('billing.plans') }}">Перейти на Starter или Pro</a> для увеличения лимита.
+            {% elif g.current_user.tier == 'starter' %}
+                <a href="{{ url_for('billing.plans') }}">Перейти на Pro</a> для безлимита.
+            {% endif %}
+            </p>
+        </div>
+        {% endif %}
+
+        {% if projects|length == 0 %}
+        <div class="empty-state card">
+            <h2>Нет проектов</h2>
+            <p>Создайте первый проект чтобы начать анализ и генерацию контента.</p>
+            <a href="{{ url_for('projects.create_project') }}" class="btn btn-primary mt-3">Добавить первый проект</a>
+        </div>
+        {% else %}
+        <div class="projects-grid">
+            {% for project in projects %}
+            <div class="project-card card">
+                <div class="project-header">
+                    <h3>{{ project.name }}</h3>
+                    <span class="project-type">{{ project.type or 'other' }}</span>
+                </div>
+                <p class="project-description">{{ project.description[:150] }}{% if project.description|length > 150 %}...{% endif %}</p>
+                
+                <div class="project-stats">
+                    {% if project.distribution_plan %}
+                    <span class="stat-badge">✓ План создан</span>
+                    {% else %}
+                    <span class="stat-badge pending">⏳ Нет плана</span>
+                    {% endif %}
+                    
+                    {% set content_count = project.generated_content.count() %}
+                    <span class="stat-badge">📝 Контент: {{ content_count }}</span>
+                    
+                    {% if g.current_user.tier == 'pro' %}
+                        {% set task_count = project.action_tasks.filter_by(status='pending').count() %}
+                        <span class="stat-badge {% if task_count > 0 %}warning{% endif %}">✓ Задачи: {{ task_count }} активных</span>
+                    {% endif %}
+                </div>
+
+                <div class="project-actions">
+                    <a href="{{ url_for('projects.detail', project_id=project.id) }}" class="btn btn-secondary btn-sm">Открыть</a>
+                    <a href="{{ url_for('projects.edit_project', project_id=project.id) }}" class="btn btn-ghost btn-sm">Редактировать</a>
+                    {% if not project.distribution_plan %}
+                    <a href="{{ url_for('ai.analyze_project', project_id=project.id) }}" class="btn btn-primary btn-sm">Анализировать</a>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.projects-list-container {
+    padding: 60px 0;
+}
+
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 32px;
+}
+
+.page-header h1 {
+    font-family: var(--font-display);
+    font-size: 2rem;
+}
+
+.limit-warning {
+    background: var(--accent-glow);
+    border: 1px solid var(--accent-warning);
+    color: var(--text-primary);
+    padding: 16px 24px;
+    margin-bottom: 24px;
+}
+
+.limit-warning a {
+    color: var(--accent-primary);
+    text-decoration: underline;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 60px 24px;
+}
+
+.empty-state h2 {
+    font-family: var(--font-display);
+    font-size: 1.5rem;
+    margin-bottom: 8px;
+}
+
+.empty-state p {
+    color: var(--text-secondary);
+    margin-bottom: 24px;
+}
+
+.projects-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 24px;
+}
+
+.project-card {
+    padding: 24px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.project-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+}
+
+.project-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.project-header h3 {
+    font-family: var(--font-display);
+    font-size: 1.25rem;
+    margin: 0;
+}
+
+.project-type {
+    background: var(--bg-overlay);
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    color: var(--text-secondary);
+}
+
+.project-description {
+    color: var(--text-secondary);
+    margin-bottom: 16px;
+    line-height: 1.6;
+}
+
+.project-stats {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 16px;
+}
+
+.stat-badge {
+    background: var(--bg-overlay);
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+}
+
+.stat-badge.pending {
+    background: rgba(255, 193, 7, 0.1);
+    color: var(--accent-warning);
+}
+
+.stat-badge.warning {
+    background: rgba(255, 82, 82, 0.1);
+    color: var(--accent-danger);
+}
+
+.project-actions {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.btn-sm {
+    padding: 8px 16px;
+    font-size: 0.875rem;
+}
+
+@media (max-width: 768px) {
+    .page-header {
+        flex-direction: column;
+        gap: 16px;
+        align-items: flex-start;
+    }
+    
+    .projects-grid {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
+{% endblock %}

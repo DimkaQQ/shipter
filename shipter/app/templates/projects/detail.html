@@ -1,0 +1,907 @@
+{% extends "base.html" %}
+
+{% block title %}{{ project.name }} — Рабочая зона{% endblock %}
+
+{% block content %}
+<div class="project-workspace">
+    <div class="container">
+        <!-- Header -->
+        <header class="workspace-header">
+            <div class="header-content">
+                <a href="{{ url_for('projects.list_projects') }}" class="back-link">← Все проекты</a>
+                <h1>{{ project.name }}</h1>
+                <p class="project-meta">{{ project.type or 'other' }} • Создан {{ project.created_at.strftime('%d.%m.%Y') }}</p>
+            </div>
+            <div class="header-actions">
+                <a href="{{ url_for('projects.edit_project', project_id=project.id) }}" class="btn btn-ghost">Редактировать</a>
+                {% if not project.distribution_plan %}
+                <a href="{{ url_for('ai.analyze_project', project_id=project.id) }}" class="btn btn-primary">Анализировать проект</a>
+                {% endif %}
+            </div>
+        </header>
+
+        <!-- Project Info Card -->
+        <div class="card project-info-card">
+            <h2>О проекте</h2>
+            <p class="project-description-full">{{ project.description }}</p>
+            
+            <div class="project-details-grid">
+                {% if project.audience %}
+                <div class="detail-item">
+                    <span class="detail-label">🎯 Целевая аудитория:</span>
+                    <span class="detail-value">{{ project.audience }}</span>
+                </div>
+                {% endif %}
+                
+                {% if project.problem %}
+                <div class="detail-item">
+                    <span class="detail-label">💡 Проблема:</span>
+                    <span class="detail-value">{{ project.problem }}</span>
+                </div>
+                {% endif %}
+                
+                {% if project.website_url %}
+                <div class="detail-item">
+                    <span class="detail-label">🌐 Сайт:</span>
+                    <a href="{{ project.website_url }}" target="_blank" class="detail-value link">{{ project.website_url }}</a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Tabs Navigation -->
+        <div class="tabs-container">
+            <nav class="tabs">
+                <a href="#overview" class="tab active" data-tab="overview">Обзор</a>
+                <a href="#plan" class="tab" data-tab="plan">План дистрибуции</a>
+                <a href="#content" class="tab" data-tab="content">Контент</a>
+                {% if g.current_user.tier == 'pro' %}
+                <a href="#tasks" class="tab" data-tab="tasks">Задачи (To-Do)</a>
+                {% endif %}
+                <a href="#metrics" class="tab" data-tab="metrics">Показатели</a>
+            </nav>
+        </div>
+
+        <!-- Tab Content: Overview -->
+        <div id="overview" class="tab-content active">
+            <div class="metrics-grid">
+                <div class="metric-card card">
+                    <div class="metric-icon">📊</div>
+                    <div class="metric-value">{{ plan.channels|length if plan else 0 }}</div>
+                    <div class="metric-label">Каналов дистрибуции</div>
+                </div>
+                
+                <div class="metric-card card">
+                    <div class="metric-icon">📝</div>
+                    <div class="metric-value">{{ content_items|length }}</div>
+                    <div class="metric-label">Сгенерировано контента</div>
+                </div>
+                
+                {% if g.current_user.tier == 'pro' %}
+                <div class="metric-card card">
+                    <div class="metric-icon">✓</div>
+                    <div class="metric-value">{{ tasks|selectattr('status', 'equalto', 'done')|list|length }}</div>
+                    <div class="metric-label">Выполнено задач</div>
+                </div>
+                
+                <div class="metric-card card">
+                    <div class="metric-icon">⏳</div>
+                    <div class="metric-value">{{ tasks|selectattr('status', 'equalto', 'pending')|list|length }}</div>
+                    <div class="metric-label">Активных задач</div>
+                </div>
+                {% endif %}
+            </div>
+
+            {% if not plan %}
+            <div class="empty-state card">
+                <h3>Нет плана дистрибуции</h3>
+                <p>AI проанализирует ваш проект и создаст персональную стратегию продвижения.</p>
+                <a href="{{ url_for('ai.analyze_project', project_id=project.id) }}" class="btn btn-primary mt-3">Запустить анализ</a>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Tab Content: Plan -->
+        <div id="plan" class="tab-content">
+            {% if plan %}
+            <div class="plan-container card">
+                <h2>Стратегия дистрибуции</h2>
+                <p class="plan-description">{{ plan.description }}</p>
+                
+                <h3 class="section-title">Каналы продвижения</h3>
+                <div class="channels-list">
+                    {% for channel in plan.channels %}
+                    <div class="channel-item">
+                        <div class="channel-header">
+                            <h4>{{ channel.name }}</h4>
+                            <span class="channel-priority priority-{{ channel.priority }}">{{ channel.priority }}</span>
+                        </div>
+                        <p class="channel-description">{{ channel.description }}</p>
+                        <div class="channel-tactics">
+                            <strong>Тактики:</strong>
+                            <ul>
+                                {% for tactic in channel.tactics %}
+                                <li>{{ tactic }}</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% else %}
+            <div class="empty-state card">
+                <h3>План ещё не создан</h3>
+                <p>Запустите AI-анализ проекта чтобы получить стратегию дистрибуции.</p>
+                <a href="{{ url_for('ai.analyze_project', project_id=project.id) }}" class="btn btn-primary mt-3">Запустить анализ</a>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Tab Content: Content -->
+        <div id="content" class="tab-content">
+            <div class="content-header">
+                <h2>Сгенерированный контент</h2>
+                {% if plan %}
+                <a href="{{ url_for('ai.generate_content', project_id=project.id) }}" class="btn btn-primary">Генерировать контент</a>
+                {% endif %}
+            </div>
+            
+            {% if content_items %}
+            <div class="content-list">
+                {% for item in content_items %}
+                <div class="content-item card">
+                    <div class="content-header-row">
+                        <span class="content-type-badge">{{ item.type }}</span>
+                        <span class="content-date">{{ item.created_at.strftime('%d.%m.%Y %H:%M') }}</span>
+                    </div>
+                    <div class="content-body">
+                        <pre>{{ item.content }}</pre>
+                    </div>
+                    <div class="content-actions">
+                        <button class="btn btn-ghost btn-sm" onclick="navigator.clipboard.writeText(this.parentElement.previousElementSibling.textContent)">Копировать</button>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="empty-state card">
+                <h3>Нет контента</h3>
+                <p>AI сгенерирует посты, статьи и другие материалы для ваших каналов.</p>
+                {% if plan %}
+                <a href="{{ url_for('ai.generate_content', project_id=project.id) }}" class="btn btn-primary mt-3">Сгенерировать</a>
+                {% else %}
+                <p class="text-muted">Сначала создайте план дистрибуции</p>
+                {% endif %}
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Tab Content: Tasks (Pro only) -->
+        {% if g.current_user.tier == 'pro' %}
+        <div id="tasks" class="tab-content">
+            <div class="tasks-header">
+                <h2>Чек-лист задач</h2>
+                <button class="btn btn-primary" onclick="toggleAddTaskForm()">+ Добавить задачу</button>
+            </div>
+            
+            <!-- Add Task Form -->
+            <div id="add-task-form" class="card" style="display: none;">
+                <form method="POST" action="{{ url_for('projects.add_task', project_id=project.id) }}">
+                    <div class="form-group">
+                        <label class="form-label">Название задачи</label>
+                        <input type="text" name="title" class="form-input" required placeholder="Что нужно сделать?">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Описание</label>
+                        <textarea name="description" class="form-input" rows="3" placeholder="Детали задачи..."></textarea>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Категория</label>
+                            <select name="category" class="form-input">
+                                <option value="content">Контент</option>
+                                <option value="outreach">Продвижение</option>
+                                <option value="setup">Настройка</option>
+                                <option value="analytics">Аналитика</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Срок выполнения</label>
+                            <input type="date" name="due_date" class="form-input">
+                        </div>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-ghost" onclick="toggleAddTaskForm()">Отмена</button>
+                        <button type="submit" class="btn btn-primary">Добавить задачу</button>
+                    </div>
+                </form>
+            </div>
+            
+            {% if tasks %}
+            <div class="task-list">
+                {% for task in tasks %}
+                <div class="task-item card {% if task.status == 'done' %}task-done{% endif %}" data-task-id="{{ task.id }}">
+                    <input type="checkbox" class="task-checkbox" 
+                           {% if task.status == 'done' %}checked{% endif %}
+                           onchange="toggleTaskStatus({{ task.id }}, this.checked)">
+                    <div class="task-content">
+                        <h4 class="task-title">{{ task.title }}</h4>
+                        {% if task.description %}
+                        <p class="task-description">{{ task.description }}</p>
+                        {% endif %}
+                        <div class="task-meta">
+                            <span class="task-category-badge">{{ task.category }}</span>
+                            {% if task.due_date %}
+                            <span class="task-due-date">📅 {{ task.due_date.strftime('%d.%m.%Y') }}</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <button class="btn btn-ghost btn-sm delete-task" onclick="deleteTask({{ task.id }})">✕</button>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="empty-state card">
+                <h3>Нет задач</h3>
+                <p>Добавьте первую задачу или позвольте AI создать чек-лист автоматически.</p>
+            </div>
+            {% endif %}
+        </div>
+        {% endif %}
+
+        <!-- Tab Content: Metrics -->
+        <div id="metrics" class="tab-content">
+            <div class="metrics-detail card">
+                <h2>Показатели проекта</h2>
+                
+                <div class="metrics-section">
+                    <h3>Общая статистика</h3>
+                    <div class="stats-grid">
+                        <div class="stat-row">
+                            <span class="stat-label">Дата создания:</span>
+                            <span class="stat-value">{{ project.created_at.strftime('%d.%m.%Y %H:%M') }}</span>
+                        </div>
+                        <div class="stat-row">
+                            <span class="stat-label">Последнее обновление:</span>
+                            <span class="stat-value">{{ project.updated_at.strftime('%d.%m.%Y %H:%M') }}</span>
+                        </div>
+                        <div class="stat-row">
+                            <span class="stat-label">Статус:</span>
+                            <span class="stat-value status-badge">{{ project.status }}</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="metrics-section">
+                    <h3>Активность</h3>
+                    <div class="stats-grid">
+                        <div class="stat-row">
+                            <span class="stat-label">Всего контента:</span>
+                            <span class="stat-value">{{ content_items|length }}</span>
+                        </div>
+                        {% if plan %}
+                        <div class="stat-row">
+                            <span class="stat-label">Каналов дистрибуции:</span>
+                            <span class="stat-value">{{ plan.channels|length }}</span>
+                        </div>
+                        {% endif %}
+                        {% if g.current_user.tier == 'pro' %}
+                        <div class="stat-row">
+                            <span class="stat-label">Всего задач:</span>
+                            <span class="stat-value">{{ tasks|length }}</span>
+                        </div>
+                        <div class="stat-row">
+                            <span class="stat-label">Выполнено задач:</span>
+                            <span class="stat-value">{{ tasks|selectattr('status', 'equalto', 'done')|list|length }}</span>
+                        </div>
+                        <div class="stat-row">
+                            <span class="stat-label">Прогресс:</span>
+                            <span class="stat-value">
+                                {% if tasks|length > 0 %}
+                                    {{ ((tasks|selectattr('status', 'equalto', 'done')|list|length / tasks|length) * 100)|round|int }}%
+                                {% else %}
+                                    0%
+                                {% endif %}
+                            </span>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.project-workspace {
+    padding: 40px 0 80px;
+}
+
+.workspace-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 32px;
+    gap: 24px;
+}
+
+.header-content .back-link {
+    display: inline-block;
+    color: var(--text-secondary);
+    text-decoration: none;
+    margin-bottom: 8px;
+    transition: color 0.2s;
+}
+
+.header-content .back-link:hover {
+    color: var(--accent-primary);
+}
+
+.header-content h1 {
+    font-family: var(--font-display);
+    font-size: 2rem;
+    margin: 0 0 8px 0;
+}
+
+.project-meta {
+    color: var(--text-secondary);
+    margin: 0;
+}
+
+.header-actions {
+    display: flex;
+    gap: 12px;
+}
+
+.project-info-card {
+    margin-bottom: 32px;
+}
+
+.project-info-card h2 {
+    font-family: var(--font-display);
+    margin-bottom: 16px;
+}
+
+.project-description-full {
+    color: var(--text-secondary);
+    line-height: 1.7;
+    margin-bottom: 24px;
+}
+
+.project-details-grid {
+    display: grid;
+    gap: 12px;
+}
+
+.detail-item {
+    display: flex;
+    gap: 12px;
+}
+
+.detail-label {
+    font-weight: 600;
+    color: var(--text-primary);
+    min-width: 150px;
+}
+
+.detail-value {
+    color: var(--text-secondary);
+}
+
+.detail-value.link {
+    color: var(--accent-primary);
+}
+
+/* Tabs */
+.tabs-container {
+    margin-bottom: 24px;
+}
+
+.tabs {
+    display: flex;
+    gap: 8px;
+    border-bottom: 1px solid var(--border-subtle);
+    padding-bottom: 0;
+    overflow-x: auto;
+}
+
+.tab {
+    padding: 12px 24px;
+    color: var(--text-secondary);
+    text-decoration: none;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -1px;
+    transition: all 0.2s;
+    white-space: nowrap;
+}
+
+.tab:hover {
+    color: var(--text-primary);
+}
+
+.tab.active {
+    color: var(--accent-primary);
+    border-bottom-color: var(--accent-primary);
+}
+
+.tab-content {
+    display: none;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+/* Metrics Grid */
+.metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+    margin-bottom: 32px;
+}
+
+.metric-card {
+    padding: 24px;
+    text-align: center;
+}
+
+.metric-icon {
+    font-size: 2rem;
+    margin-bottom: 8px;
+}
+
+.metric-value {
+    font-family: var(--font-display);
+    font-size: 2.5rem;
+    color: var(--accent-primary);
+    margin-bottom: 4px;
+}
+
+.metric-label {
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+}
+
+/* Empty State */
+.empty-state {
+    text-align: center;
+    padding: 48px 24px;
+}
+
+.empty-state h3 {
+    font-family: var(--font-display);
+    margin-bottom: 8px;
+}
+
+.empty-state p {
+    color: var(--text-secondary);
+    margin-bottom: 16px;
+}
+
+/* Plan */
+.plan-container h2 {
+    font-family: var(--font-display);
+    margin-bottom: 12px;
+}
+
+.plan-description {
+    color: var(--text-secondary);
+    margin-bottom: 32px;
+    line-height: 1.6;
+}
+
+.section-title {
+    font-family: var(--font-display);
+    margin: 24px 0 16px;
+}
+
+.channels-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.channel-item {
+    padding: 20px;
+    background: var(--bg-overlay);
+    border-radius: 10px;
+}
+
+.channel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.channel-header h4 {
+    margin: 0;
+    font-family: var(--font-display);
+}
+
+.channel-priority {
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.priority-high {
+    background: rgba(255, 82, 82, 0.2);
+    color: var(--accent-danger);
+}
+
+.priority-medium {
+    background: rgba(255, 193, 7, 0.2);
+    color: var(--accent-warning);
+}
+
+.priority-low {
+    background: rgba(76, 175, 80, 0.2);
+    color: #4CAF50;
+}
+
+.channel-description {
+    color: var(--text-secondary);
+    margin-bottom: 12px;
+}
+
+.channel-tactics strong {
+    display: block;
+    margin-bottom: 8px;
+    color: var(--text-primary);
+}
+
+.channel-tactics ul {
+    margin: 0;
+    padding-left: 20px;
+    color: var(--text-secondary);
+}
+
+.channel-tactics li {
+    margin-bottom: 4px;
+}
+
+/* Content */
+.content-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+}
+
+.content-header h2 {
+    font-family: var(--font-display);
+    margin: 0;
+}
+
+.content-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.content-item {
+    padding: 20px;
+}
+
+.content-header-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.content-type-badge {
+    background: var(--accent-glow);
+    color: var(--accent-primary);
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.content-date {
+    color: var(--text-muted);
+    font-size: 0.875rem;
+}
+
+.content-body pre {
+    background: var(--bg-overlay);
+    padding: 16px;
+    border-radius: 8px;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    line-height: 1.6;
+    margin-bottom: 12px;
+}
+
+.content-actions {
+    display: flex;
+    gap: 8px;
+}
+
+/* Tasks */
+.tasks-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+}
+
+.tasks-header h2 {
+    font-family: var(--font-display);
+    margin: 0;
+}
+
+#add-task-form {
+    margin-bottom: 24px;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+
+.form-group {
+    margin-bottom: 16px;
+}
+
+.form-label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+}
+
+.form-input {
+    width: 100%;
+    padding: 12px 16px;
+    background: var(--bg-overlay);
+    border: 1px solid var(--border-subtle);
+    border-radius: 8px;
+    color: var(--text-primary);
+    font-size: 1rem;
+}
+
+.form-input:focus {
+    outline: none;
+    border-color: var(--accent-primary);
+}
+
+.form-actions {
+    display: flex;
+    gap: 12px;
+    justify-content: flex-end;
+}
+
+.task-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.task-item {
+    display: flex;
+    gap: 16px;
+    padding: 20px;
+    transition: all 0.2s;
+}
+
+.task-item.task-done {
+    opacity: 0.6;
+}
+
+.task-item.task-done .task-title {
+    text-decoration: line-through;
+}
+
+.task-checkbox {
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+    flex-shrink: 0;
+    margin-top: 4px;
+}
+
+.task-content {
+    flex: 1;
+}
+
+.task-title {
+    margin: 0 0 8px 0;
+    font-family: var(--font-display);
+}
+
+.task-description {
+    color: var(--text-secondary);
+    margin-bottom: 12px;
+    font-size: 0.9rem;
+}
+
+.task-meta {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+}
+
+.task-category-badge {
+    background: var(--bg-overlay);
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    text-transform: capitalize;
+}
+
+.task-due-date {
+    color: var(--text-muted);
+    font-size: 0.875rem;
+}
+
+.delete-task {
+    color: var(--text-muted);
+    padding: 4px 8px;
+}
+
+.delete-task:hover {
+    color: var(--accent-danger);
+}
+
+/* Metrics Detail */
+.metrics-detail h2 {
+    font-family: var(--font-display);
+    margin-bottom: 24px;
+}
+
+.metrics-section {
+    margin-bottom: 32px;
+}
+
+.metrics-section h3 {
+    font-family: var(--font-display);
+    margin-bottom: 16px;
+    color: var(--text-primary);
+}
+
+.stats-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.stat-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 12px 16px;
+    background: var(--bg-overlay);
+    border-radius: 8px;
+}
+
+.stat-label {
+    color: var(--text-secondary);
+}
+
+.stat-value {
+    font-weight: 600;
+}
+
+.status-badge {
+    background: rgba(76, 175, 80, 0.2);
+    color: #4CAF50;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+}
+
+@media (max-width: 768px) {
+    .workspace-header {
+        flex-direction: column;
+    }
+    
+    .header-actions {
+        width: 100%;
+        flex-direction: column;
+    }
+    
+    .header-actions .btn {
+        width: 100%;
+    }
+    
+    .tabs {
+        flex-wrap: nowrap;
+    }
+    
+    .form-row {
+        grid-template-columns: 1fr;
+    }
+    
+    .metrics-grid {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Tab switching
+document.querySelectorAll('.tab').forEach(tab => {
+    tab.addEventListener('click', function(e) {
+        e.preventDefault();
+        
+        // Remove active from all tabs
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+        
+        // Add active to clicked tab
+        this.classList.add('active');
+        const tabId = this.getAttribute('data-tab');
+        document.getElementById(tabId).classList.add('active');
+    });
+});
+
+// Toggle add task form
+function toggleAddTaskForm() {
+    const form = document.getElementById('add-task-form');
+    form.style.display = form.style.display === 'none' ? 'block' : 'none';
+}
+
+// Toggle task status
+function toggleTaskStatus(taskId, isDone) {
+    const status = isDone ? 'done' : 'pending';
+    
+    fetch(`/projects/task/${taskId}/toggle`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ status: status })
+    })
+    .then(response => {
+        if (response.ok) {
+            const taskItem = document.querySelector(`[data-task-id="${taskId}"]`);
+            if (isDone) {
+                taskItem.classList.add('task-done');
+            } else {
+                taskItem.classList.remove('task-done');
+            }
+        } else {
+            alert('Ошибка при обновлении задачи');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Ошибка при обновлении задачи');
+    });
+}
+
+// Delete task
+function deleteTask(taskId) {
+    if (!confirm('Удалить эту задачу?')) return;
+    
+    fetch(`/projects/task/${taskId}/delete`, {
+        method: 'POST'
+    })
+    .then(response => {
+        if (response.ok) {
+            const taskItem = document.querySelector(`[data-task-id="${taskId}"]`);
+            taskItem.remove();
+        } else {
+            alert('Ошибка при удалении задачи');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Ошибка при удалении задачи');
+    });
+}
+</script>
+{% endblock %}
