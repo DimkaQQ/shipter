@@ -8,8 +8,8 @@
     align-items: center;
     overflow: hidden;
     padding: 80px 0;
-    /* Dynamic background matching main.css */
-    background: radial-gradient(ellipse at 50% 30%, rgba(0, 136, 255, 0.08) 0%, rgba(10, 14, 20, 0.6) 60%, #0a0e14 100%);
+    /* Ensure transparent background to show animated-bg behind */
+    background: transparent;
 }
 
 #hero-canvas {
@@ -117,7 +117,8 @@
 /* Pain Points Section */
 .pain-points {
     padding: 100px 0;
-    background: radial-gradient(ellipse at 50% 30%, rgba(0, 136, 255, 0.08) 0%, rgba(10, 14, 20, 0.6) 60%, #0a0e14 100%);
+    /* Ensure transparent background to show animated-bg behind */
+    background: transparent;
 }
 
 .section-title {
@@ -152,7 +153,8 @@
 /* How It Works Section */
 .how-it-works {
     padding: 100px 0;
-    background: radial-gradient(ellipse at 50% 30%, rgba(0, 136, 255, 0.08) 0%, rgba(10, 14, 20, 0.6) 60%, #0a0e14 100%);
+    /* Ensure transparent background to show animated-bg behind */
+    background: transparent;
 }
 
 .steps {
@@ -225,7 +227,8 @@
 /* Demo Section */
 .demo-section {
     padding: 100px 0;
-    background: radial-gradient(ellipse at 50% 30%, rgba(0, 136, 255, 0.08) 0%, rgba(10, 14, 20, 0.6) 60%, #0a0e14 100%);
+    /* Ensure transparent background to show animated-bg behind */
+    background: transparent;
 }
 
 .section-subtitle {
@@ -447,7 +450,8 @@
 /* Pricing Section */
 .pricing-section {
     padding: 100px 0;
-    background: radial-gradient(ellipse at 50% 30%, rgba(0, 136, 255, 0.08) 0%, rgba(10, 14, 20, 0.6) 60%, #0a0e14 100%);
+    /* Ensure transparent background to show animated-bg behind */
+    background: transparent;
 }
 
 .pricing-grid {
@@ -515,7 +519,8 @@
 /* Testimonials Section */
 .testimonials {
     padding: 100px 0;
-    background: radial-gradient(ellipse at 50% 30%, rgba(0, 136, 255, 0.08) 0%, rgba(10, 14, 20, 0.6) 60%, #0a0e14 100%);
+    /* Ensure transparent background to show animated-bg behind */
+    background: transparent;
 }
 
 .testimonials-grid {
@@ -569,7 +574,8 @@
 /* FAQ Section */
 .faq-section {
     padding: 100px 0;
-    background: radial-gradient(ellipse at 50% 30%, rgba(0, 136, 255, 0.08) 0%, rgba(10, 14, 20, 0.6) 60%, #0a0e14 100%);
+    /* Ensure transparent background to show animated-bg behind */
+    background: transparent;
 }
 
 .faq-list {
@@ -617,7 +623,8 @@
 /* CTA Footer Section */
 .cta-footer {
     padding: 100px 0;
-    background: radial-gradient(ellipse at 50% 30%, rgba(0, 136, 255, 0.08) 0%, rgba(10, 14, 20, 0.6) 60%, #0a0e14 100%);
+    /* Ensure transparent background to show animated-bg behind */
+    background: transparent;
 }
 
 .cta-footer h2 {
