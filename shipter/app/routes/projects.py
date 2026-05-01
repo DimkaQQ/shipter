@@ -1,8 +1,9 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash, g, jsonify
 from app.extensions import db
 from app.models.project import Project
+from app.models.action_task import ActionTask
 from app.middleware.auth import login_required, requires_active_subscription
-from datetime import datetime, timezone
+from datetime import datetime, timezone, date
 
 projects_bp = Blueprint('projects', __name__)
 
@@ -110,3 +111,88 @@ def delete_project(project_id):
     
     flash('Проект удалён', 'success')
     return redirect(url_for('projects.list_projects'))
+
+@projects_bp.route('/<int:project_id>/add-task', methods=['POST'])
+@login_required
+def add_task(project_id):
+    """Добавить задачу в проект (Pro only)."""
+    user = g.current_user
+    
+    if user.tier != 'pro':
+        flash('Функция доступна только для Pro тарифа', 'error')
+        return redirect(url_for('projects.detail', project_id=project_id))
+    
+    project = Project.query.filter_by(id=project_id, user_id=user.id).first_or_404()
+    
+    title = request.form.get('title', '').strip()
+    description = request.form.get('description', '').strip()
+    category = request.form.get('category', 'content')
+    due_date_str = request.form.get('due_date', '')
+    
+    if not title:
+        flash('Название задачи обязательно', 'error')
+        return redirect(url_for('projects.detail', project_id=project_id))
+    
+    due_date = None
+    if due_date_str:
+        try:
+            due_date = datetime.strptime(due_date_str, '%Y-%m-%d').date()
+        except ValueError:
+            pass
+    
+    task = ActionTask(
+        project_id=project.id,
+        user_id=user.id,
+        title=title,
+        description=description or None,
+        category=category,
+        due_date=due_date,
+        ai_generated=False
+    )
+    
+    db.session.add(task)
+    db.session.commit()
+    
+    flash('Задача добавлена', 'success')
+    return redirect(url_for('projects.detail', project_id=project_id))
+
+@projects_bp.route('/task/<int:task_id>/toggle', methods=['POST'])
+@login_required
+def toggle_task(task_id):
+    """Переключить статус задачи (Pro only)."""
+    user = g.current_user
+    
+    if user.tier != 'pro':
+        return jsonify({'error': 'Forbidden'}), 403
+    
+    task = ActionTask.query.filter_by(id=task_id, user_id=user.id).first_or_404()
+    
+    data = request.get_json()
+    new_status = data.get('status', 'pending')
+    
+    if new_status not in ('pending', 'in_progress', 'done', 'skipped'):
+        return jsonify({'error': 'Invalid status'}), 400
+    
+    task.status = new_status
+    db.session.commit()
+    
+    return jsonify({'success': True, 'status': task.status})
+
+@projects_bp.route('/task/<int:task_id>/delete', methods=['POST'])
+@login_required
+def delete_task(task_id):
+    """Удалить задачу (Pro only)."""
+    user = g.current_user
+    
+    if user.tier != 'pro':
+        flash('Функция доступна только для Pro тарифа', 'error')
+        return redirect(url_for('dashboard.index'))
+    
+    task = ActionTask.query.filter_by(id=task_id, user_id=user.id).first_or_404()
+    
+    project_id = task.project_id
+    db.session.delete(task)
+    db.session.commit()
+    
+    flash('Задача удалена', 'success')
+    return redirect(url_for('projects.detail', project_id=project_id))
