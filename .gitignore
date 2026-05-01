@@ -1,13 +1,28 @@
-```
-# Environment and config files
+# Compiled and build artifacts
+*.pyc
+__pycache__/
+*.o
+*.obj
+*.class
+*.exe
+*.dll
+*.so
+*.a
+*.out
+
+# Dependencies
+node_modules/
+venv/
+.venv/
 .env
 .env.local
 .env.*
 
-# Logs and temporary files
+# Logs and temp files
 *.log
 *.tmp
 *.swp
+*.swo
 
 # Editors
 .vscode/
@@ -17,40 +32,17 @@
 .DS_Store
 Thumbs.db
 
-# Dependencies
-node_modules/
-__pycache__/
-*.egg-info/
-.venv/
-venv/
-.envrc
-.env.local
+# Coverage
+coverage/
+htmlcov/
+.coverage
 
-# Build artifacts
+# Build directories
 dist/
 build/
 target/
-*.pyc
-*.class
-*.o
-*.obj
-*.so
-*.dll
-*.exe
+.gradle/
 
-# Coverage
-.coverage
-coverage/
-htmlcov/
-
-# Compression
-*.zip
-*.gz
-*.tar
-*.tgz
-*.bz2
-*.xz
-*.7z
-*.rar
-*.zst
-```
+# Python cache
+.mypy_cache/
+.pytest_cache/
