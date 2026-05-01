@@ -1,9 +1,6 @@
 // Landing Page - Apple Style with Anime.js
 
 document.addEventListener('DOMContentLoaded', function() {
-    // Add animated background orbs
-    addAnimatedBackground();
-    
     // Initialize hero canvas animation
     initHeroCanvas();
     
@@ -22,18 +19,6 @@ document.addEventListener('DOMContentLoaded', function() {
     // Simulate AI demo loading - FIXED: runs once, no infinite loop
     simulateAILoading();
 });
-
-// Add animated background orbs to body
-function addAnimatedBackground() {
-    const orbsContainer = document.createElement('div');
-    orbsContainer.className = 'animated-bg-orbs';
-    orbsContainer.innerHTML = `
-        <div class="orb orb-1"></div>
-        <div class="orb orb-2"></div>
-        <div class="orb orb-3"></div>
-    `;
-    document.body.insertBefore(orbsContainer, document.body.firstChild);
-}
 
 // Simulate AI Demo Loading - Fixed version (runs once, no infinite loop)
 function simulateAILoading() {
