@@ -188,6 +188,7 @@
             <!-- Add Task Form -->
             <div id="add-task-form" class="card" style="display: none;">
                 <form method="POST" action="{{ url_for('projects.add_task', project_id=project.id) }}">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                     <div class="form-group">
                         <label class="form-label">Название задачи</label>
                         <input type="text" name="title" class="form-input" required placeholder="Что нужно сделать?">
@@ -857,11 +858,13 @@ function toggleAddTaskForm() {
 // Toggle task status
 function toggleTaskStatus(taskId, isDone) {
     const status = isDone ? 'done' : 'pending';
-    
+    const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
+
     fetch(`/projects/task/${taskId}/toggle`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
+            'X-CSRFToken': csrfToken,
         },
         body: JSON.stringify({ status: status })
     })
@@ -886,9 +889,13 @@ function toggleTaskStatus(taskId, isDone) {
 // Delete task
 function deleteTask(taskId) {
     if (!confirm('Удалить эту задачу?')) return;
-    
+    const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
+
     fetch(`/projects/task/${taskId}/delete`, {
-        method: 'POST'
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': csrfToken,
+        },
     })
     .then(response => {
         if (response.ok) {

@@ -1,0 +1,23 @@
+[Unit]
+Description=Shipter Background Scheduler (trial reminders)
+After=network.target postgresql.service redis.service
+
+[Service]
+User=www-data
+Group=www-data
+WorkingDirectory=/var/www/shipter
+EnvironmentFile=/var/www/shipter/.env
+Environment=FLASK_APP=run.py
+ExecStart=/var/www/shipter/venv/bin/flask run-scheduler
+Restart=always
+RestartSec=5
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=shipter-scheduler
+
+# Security hardening
+NoNewPrivileges=true
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target

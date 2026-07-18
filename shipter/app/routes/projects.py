@@ -2,6 +2,7 @@ from flask import Blueprint, render_template, request, redirect, url_for, flash,
 from app.extensions import db
 from app.models.project import Project
 from app.models.action_task import ActionTask
+from app.models.generated_content import GeneratedContent
 from app.middleware.auth import login_required, requires_active_subscription
 from datetime import datetime, timezone, date
 
@@ -69,8 +70,8 @@ def detail(project_id):
     
     # Получаем связанные данные
     plan = project.distribution_plan
-    content_items = project.generated_content.order_by(Project.generated_content.created_at.desc()).all()
-    tasks = project.action_tasks.order_by(Project.action_tasks.due_date).all() if user.tier == 'pro' else []
+    content_items = project.generated_content.order_by(GeneratedContent.created_at.desc()).all()
+    tasks = project.action_tasks.order_by(ActionTask.due_date).all() if user.tier == 'pro' else []
     
     return render_template('projects/detail.html', 
                          project=project, 

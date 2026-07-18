@@ -132,6 +132,27 @@ sudo systemctl start shipter
 sudo systemctl status shipter
 ```
 
+### 4.2.1 Планировщик фоновых задач (trial reminders)
+
+Планировщик (напоминания об истечении триала) запускается **отдельным процессом**,
+а не внутри Gunicorn-воркеров — иначе задачи и письма дублировались бы по числу воркеров.
+
+```bash
+# Скопируйте файл службы
+sudo cp /path/to/shipter/shipter-scheduler.service /etc/systemd/system/
+
+# Обновите пути в файле службы
+sudo nano /etc/systemd/system/shipter-scheduler.service
+
+# Активируйте службу
+sudo systemctl daemon-reload
+sudo systemctl enable shipter-scheduler
+sudo systemctl start shipter-scheduler
+
+# Проверка статуса
+sudo systemctl status shipter-scheduler
+```
+
 ### 4.3 Для macOS (локальная разработка)
 
 Используйте launchd или просто запускайте через:

@@ -9,6 +9,7 @@
         <p class="auth-subtitle">7 дней бесплатно. Карта не нужна.</p>
         
         <form method="POST" action="{{ url_for('auth.register') }}" class="auth-form">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
             <div class="form-group">
                 <label class="form-label" for="name">Имя (необязательно)</label>
                 <input type="text" id="name" name="name" class="form-input" placeholder="Как к вам обращаться?">

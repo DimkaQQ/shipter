@@ -2,6 +2,7 @@ from flask import Blueprint, render_template, request, redirect, url_for, flash,
 from app.extensions import db
 from app.models.user import User
 from app.middleware.auth import login_required
+from app.extensions import oauth
 from app.config import Config
 import secrets
 import logging
@@ -106,19 +107,20 @@ def logout():
 @auth_bp.route('/google')
 def google_login():
     """Инициирует Google OAuth flow."""
-    from authlib.integrations.flask_client import OAuth
-    oauth = OAuth()
-    oauth.init_app(app=None)  # Will be initialized properly in create_app
-    
+    if not hasattr(oauth, 'google'):
+        flash('Вход через Google временно недоступен', 'error')
+        return redirect(url_for('auth.login'))
+
     redirect_uri = url_for('auth.google_callback', _external=True)
     return oauth.google.authorize_redirect(redirect_uri)
 
 @auth_bp.route('/google/callback')
 def google_callback():
     """Обрабатывает callback от Google OAuth."""
-    from authlib.integrations.flask_client import OAuth
-    oauth = OAuth()
-    
+    if not hasattr(oauth, 'google'):
+        flash('Вход через Google временно недоступен', 'error')
+        return redirect(url_for('auth.login'))
+
     try:
         token = oauth.google.authorize_access_token()
         user_info = token.get('userinfo')

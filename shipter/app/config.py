@@ -46,3 +46,6 @@ class Config:
     
     # Session
     PERMANENT_SESSION_LIFETIME = 86400 * 7  # 7 days
+    SESSION_COOKIE_HTTPONLY = True
+    SESSION_COOKIE_SAMESITE = 'Lax'
+    SESSION_COOKIE_SECURE = not DEBUG

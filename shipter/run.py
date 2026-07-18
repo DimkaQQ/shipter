@@ -7,7 +7,7 @@ from app.models import User, Project, DistributionPlan, GeneratedContent, Subscr
 from app.services.trial_service import init_scheduler
 import click
 import os
-import click
+import time
 
 app = create_app()
 
@@ -28,11 +28,26 @@ def create_admin(email, password):
     db.session.commit()
     print(f'Admin user {email} created.')
 
-if __name__ == '__main__':
-    # Initialize scheduler for background tasks
+@app.cli.command('run-scheduler')
+def run_scheduler():
+    """Запускает планировщик фоновых задач (trial reminders) в отдельном процессе.
+
+    Держите его отдельно от Gunicorn-воркеров: если запустить BackgroundScheduler
+    внутри каждого веб-воркера, задачи (и письма) будут дублироваться по числу воркеров.
+    """
     init_scheduler()
-    
-    # Run the application
+    print('Scheduler started. Press Ctrl+C to stop.')
+    try:
+        while True:
+            time.sleep(60)
+    except KeyboardInterrupt:
+        scheduler.shutdown()
+
+if __name__ == '__main__':
+    # Run the dev server. The scheduler is NOT started here in production —
+    # use `flask run-scheduler` as a separate process/service for that.
     port = int(os.environ.get('PORT', 5000))
     debug = os.environ.get('FLASK_ENV', 'production') == 'development'
+    if debug:
+        init_scheduler()
     app.run(host='0.0.0.0', port=port, debug=debug)

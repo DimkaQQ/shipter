@@ -1,18 +1,29 @@
 from flask import Flask, g, session
 from datetime import datetime, timezone
 from app.config import Config
-from app.extensions import db, mail, redis_client, scheduler
+from app.extensions import db, mail, redis_client, scheduler, oauth, csrf
 from app.middleware.auth import load_user
 import logging
 
 def create_app():
     app = Flask(__name__)
     app.config.from_object(Config)
-    
+
     # Initialize extensions
     db.init_app(app)
     mail.init_app(app)
-    
+    csrf.init_app(app)
+
+    oauth.init_app(app)
+    if Config.GOOGLE_CLIENT_ID and Config.GOOGLE_CLIENT_SECRET:
+        oauth.register(
+            name='google',
+            client_id=Config.GOOGLE_CLIENT_ID,
+            client_secret=Config.GOOGLE_CLIENT_SECRET,
+            server_metadata_url='https://accounts.google.com/.well-known/openid-configuration',
+            client_kwargs={'scope': 'openid email profile'},
+        )
+
     # Configure logging
     logging.basicConfig(level=logging.INFO)
     logger = logging.getLogger(__name__)
