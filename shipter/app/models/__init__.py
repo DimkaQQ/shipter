@@ -9,8 +9,9 @@ from app.models.integration import Integration
 from app.models.publish_log import PublishLog
 from app.models.analytics_event import AnalyticsEvent
 from app.models.ad_guide import AdGuide
+from app.models.ad_creative import AdCreative
 
 __all__ = [
     'User', 'Project', 'DistributionPlan', 'GeneratedContent', 'Subscription', 'ActionTask',
-    'Recommendation', 'Integration', 'PublishLog', 'AnalyticsEvent', 'AdGuide'
+    'Recommendation', 'Integration', 'PublishLog', 'AnalyticsEvent', 'AdGuide', 'AdCreative'
 ]

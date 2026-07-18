@@ -43,3 +43,14 @@ def requires_pro(f):
             return redirect(url_for('billing.plans'))
         return f(*args, **kwargs)
     return decorated
+
+def requires_paid_tier(f):
+    """Декоратор требующий Starter или Pro план (не доступно на trial)."""
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        user = g.current_user
+        if user.tier not in ('starter', 'pro') or not user.is_active():
+            flash('Эта функция доступна на тарифах Starter и Pro', 'warning')
+            return redirect(url_for('billing.plans'))
+        return f(*args, **kwargs)
+    return decorated

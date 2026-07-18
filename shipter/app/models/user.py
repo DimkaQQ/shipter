@@ -55,6 +55,7 @@ class User(db.Model):
             'action_tasks':    ['pro'],           # только $199 план
             'unlimited_projects': ['pro'],
             'priority_support': ['pro'],
+            'ad_creatives':    ['starter', 'pro'],  # базовые SVG-баннеры, не на trial
         }
         allowed_tiers = FEATURES.get(feature, [])
         return self.tier in allowed_tiers and self.is_active()

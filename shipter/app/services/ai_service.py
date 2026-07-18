@@ -4,6 +4,7 @@ import logging
 from app.extensions import redis_client
 from anthropic import Anthropic
 from app.config import Config
+from app.services.svg_sanitizer import sanitize_svg
 import httpx
 
 logger = logging.getLogger(__name__)
@@ -368,6 +369,83 @@ class AIService:
             "sources": [],
             "tokens_used": 0
         }
+
+    CREATIVE_FORMATS = {
+        'square': {'width': 1080, 'height': 1080, 'label': 'Квадрат (Instagram/Facebook лента)'},
+        'landscape': {'width': 1200, 'height': 628, 'label': 'Горизонтальный (Facebook/LinkedIn ссылка)'},
+        'story': {'width': 1080, 'height': 1920, 'label': 'Сторис (Instagram/TikTok/Facebook)'},
+    }
+
+    def generate_ad_creative(self, project, format_key: str) -> dict:
+        """Генерирует БАЗОВЫЙ рекламный баннер в виде SVG (без веб-поиска, без реальных фото).
+
+        Это шаблонный баннер силами текстовой модели — фигуры, градиенты, текст.
+        Не замена дизайнеру, годится как черновик/заглушка.
+        """
+        fmt = self.CREATIVE_FORMATS.get(format_key, self.CREATIVE_FORMATS['square'])
+        cache_key = self._get_cache_key(project.id, f'creative_{format_key}', project.description)
+
+        def do_generate():
+            if not self.client:
+                return self._get_mock_creative(fmt)
+
+            prompt = f"""Ты — дизайнер простых рекламных баннеров. Сгенерируй ОДИН самодостаточный
+SVG-баннер размером {fmt['width']}x{fmt['height']} пикселей.
+
+Жёсткие правила:
+- Ответ — ТОЛЬКО SVG-код, начинающийся с <svg и заканчивающийся </svg>. Без markdown, без пояснений.
+- Только базовые фигуры (rect, circle, path, text, tspan) и градиенты (linearGradient/radialGradient). НИКАКИХ <script>, <image>, <foreignObject>, внешних ссылок и href.
+- Только системные шрифты: font-family="Arial, Helvetica, sans-serif".
+- Фон — сплошной цвет или простой linear gradient, отражающий характер продукта.
+- Заголовок — короткий (до 6 слов), крупный, читаемый, помещается в баннер.
+- Кнопка CTA — прямоугольник с текстом вроде "Попробовать бесплатно".
+- Используй viewBox="0 0 {fmt['width']} {fmt['height']}" и width="{fmt['width']}" height="{fmt['height']}".
+
+Проект: {project.name}
+Описание: {project.description}
+Аудитория: {project.audience or 'Не указана'}
+"""
+
+            try:
+                response = self.client.messages.create(
+                    model="claude-sonnet-5",
+                    max_tokens=3072,
+                    messages=[{"role": "user", "content": prompt}]
+                )
+                svg_raw = response.content[0].text.strip()
+                svg_clean = sanitize_svg(svg_raw)
+                tokens_used = response.usage.input_tokens + response.usage.output_tokens
+                if not svg_clean:
+                    logger.error("AI creative: could not parse/sanitize generated SVG, falling back to mock")
+                    result = self._get_mock_creative(fmt)
+                    result['tokens_used'] = tokens_used
+                    return result
+                return {'svg': svg_clean, 'headline': project.name, 'tokens_used': tokens_used}
+            except Exception as e:
+                logger.error(f"AI creative generation error: {e}")
+                return self._get_mock_creative(fmt)
+
+        # Не кешируем результат навсегда за тем же ключом, что и текст —
+        # креативы регенерируются пользователем осознанно, поэтому короткий TTL
+        return self._cached_ai_call(cache_key, 3600, do_generate)
+
+    def _get_mock_creative(self, fmt: dict) -> dict:
+        """Базовый безопасный SVG-баннер для тестирования без API ключа / как фолбэк."""
+        w, h = fmt['width'], fmt['height']
+        svg = (
+            f'<svg xmlns="http://www.w3.org/2000/svg" width="{w}" height="{h}" viewBox="0 0 {w} {h}">'
+            f'<defs><linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">'
+            f'<stop offset="0%" stop-color="#6C5CE7"/><stop offset="100%" stop-color="#00B894"/>'
+            f'</linearGradient></defs>'
+            f'<rect width="{w}" height="{h}" fill="url(#bg)"/>'
+            f'<text x="{w/2}" y="{h/2 - 20}" font-family="Arial, Helvetica, sans-serif" font-size="{int(w/16)}" '
+            f'fill="#ffffff" text-anchor="middle" font-weight="bold">Ваш продукт</text>'
+            f'<rect x="{w/2 - 130}" y="{h/2 + 20}" width="260" height="56" rx="10" fill="#ffffff"/>'
+            f'<text x="{w/2}" y="{h/2 + 56}" font-family="Arial, Helvetica, sans-serif" font-size="20" '
+            f'fill="#333333" text-anchor="middle">Попробовать бесплатно</text>'
+            f'</svg>'
+        )
+        return {'svg': svg, 'headline': 'Ваш продукт', 'tokens_used': 0}
 
     def _get_mock_analysis(self) -> dict:
         """Mock анализ для тестирования без API ключа."""

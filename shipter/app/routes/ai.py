@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash, g, jsonify
 from app.extensions import db
-from app.models import Project, DistributionPlan, GeneratedContent, ActionTask, Recommendation, AdGuide
-from app.middleware.auth import login_required, requires_active_subscription, requires_pro
+from app.models import Project, DistributionPlan, GeneratedContent, ActionTask, Recommendation, AdGuide, AdCreative
+from app.middleware.auth import login_required, requires_active_subscription, requires_pro, requires_paid_tier
 from app.services.ai_service import ai_service
 from datetime import datetime, timezone, date
 
@@ -198,3 +198,37 @@ def ad_guide(project_id):
         return redirect(url_for('projects.detail', project_id=project.id))
 
     return render_template('ai/ad_guide.html', project=project, guide=existing)
+
+@ai_bp.route('/creative/<int:project_id>', methods=['GET', 'POST'])
+@login_required
+@requires_paid_tier
+def creative(project_id):
+    """Генерирует базовый SVG-баннер (доступно на Starter и Pro)."""
+    user = g.current_user
+    project = Project.query.filter_by(id=project_id, user_id=user.id).first_or_404()
+
+    formats = ai_service.CREATIVE_FORMATS
+
+    if request.method == 'POST':
+        format_key = request.form.get('format')
+        if format_key not in formats:
+            flash('Выберите формат баннера', 'error')
+            return render_template('ai/creative.html', project=project, formats=formats)
+
+        result, from_cache = ai_service.generate_ad_creative(project, format_key)
+
+        creative_obj = AdCreative(
+            project_id=project.id,
+            format=format_key,
+            headline=result.get('headline', ''),
+            svg_markup=result.get('svg', ''),
+            tokens_used=result.get('tokens_used', 0)
+        )
+        db.session.add(creative_obj)
+        db.session.commit()
+
+        flash('Баннер сгенерирован — это базовый черновик, не готовый дизайн.', 'success')
+        return redirect(url_for('projects.detail', project_id=project.id))
+
+    creatives = AdCreative.query.filter_by(project_id=project.id).order_by(AdCreative.created_at.desc()).all()
+    return render_template('ai/creative.html', project=project, formats=formats, creatives=creatives)

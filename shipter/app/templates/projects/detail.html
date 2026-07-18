@@ -393,19 +393,30 @@
                 </ul>
                 {% endif %}
             </div>
-
-            <div class="empty-state card">
-                <h3>Тексты объявлений</h3>
-                <p>Google Ads, Meta Ads, TikTok Ads, VK Реклама, Яндекс.Директ — на вкладке "Контент".</p>
-                <a href="{{ url_for('ai.generate_content', project_id=project.id) }}" class="btn btn-primary mt-3">Сгенерировать тексты объявлений</a>
-            </div>
             {% else %}
-            <div class="empty-state card">
+            <div class="empty-state card" style="margin-bottom: 24px;">
                 <h3>Гайда ещё нет</h3>
                 <p>AI подберёт площадки, бюджет и структуру рекламной кампании через веб-поиск.</p>
                 <a href="{{ url_for('ai.ad_guide', project_id=project.id) }}" class="btn btn-primary mt-3">Собрать гайд</a>
             </div>
             {% endif %}
+
+            <div class="empty-state card" style="margin-bottom: 24px;">
+                <h3>Тексты объявлений</h3>
+                <p>Google Ads, Meta Ads, TikTok Ads, VK Реклама, Яндекс.Директ — на вкладке "Контент".</p>
+                <a href="{{ url_for('ai.generate_content', project_id=project.id) }}" class="btn btn-primary mt-3">Сгенерировать тексты объявлений</a>
+            </div>
+
+            <div class="empty-state card">
+                <h3>Баннеры для рекламы</h3>
+                {% if g.current_user.tier in ('starter', 'pro') %}
+                <p>Базовые SVG-баннеры от AI — черновик, не полноценный дизайн.</p>
+                <a href="{{ url_for('ai.creative', project_id=project.id) }}" class="btn btn-primary mt-3">Сгенерировать баннер</a>
+                {% else %}
+                <p>Доступно на тарифах Starter и Pro.</p>
+                <a href="{{ url_for('billing.plans') }}" class="btn btn-ghost mt-3">Посмотреть тарифы</a>
+                {% endif %}
+            </div>
         </div>
 
         <!-- Tab Content: Analytics -->
