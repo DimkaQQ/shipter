@@ -59,6 +59,7 @@
                 <a href="#tasks" class="tab" data-tab="tasks">Задачи (To-Do)</a>
                 {% endif %}
                 <a href="#recommendations" class="tab" data-tab="recommendations">Сервисы и хабы</a>
+                <a href="#ads" class="tab" data-tab="ads">Реклама</a>
                 <a href="#analytics" class="tab" data-tab="analytics">Аналитика</a>
                 <a href="#metrics" class="tab" data-tab="metrics">Показатели</a>
             </nav>
@@ -334,6 +335,75 @@
                 <h3>Подбора ещё нет</h3>
                 <p>AI найдёт через веб-поиск сервисы и стартап-хабы, подходящие вашему проекту.</p>
                 <a href="{{ url_for('ai.recommend', project_id=project.id) }}" class="btn btn-primary mt-3">Подобрать</a>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Tab Content: Ads -->
+        <div id="ads" class="tab-content">
+            <div class="content-header">
+                <h2>Реклама</h2>
+                <a href="{{ url_for('ai.ad_guide', project_id=project.id) }}" class="btn btn-primary">
+                    {{ 'Собрать заново' if ad_guide else 'Собрать гайд по рекламе' }}
+                </a>
+            </div>
+
+            {% if ad_guide %}
+            <div class="plan-container card" style="margin-bottom: 24px;">
+                <h3 class="section-title">Рекомендованные площадки</h3>
+                <div class="channels-list">
+                    {% for platform in ad_guide.recommended_platforms %}
+                    <div class="channel-item">
+                        <div class="channel-header">
+                            <h4>{{ platform.platform }}</h4>
+                            <span class="channel-priority priority-medium">{{ platform.budget_share_percent }}% бюджета</span>
+                        </div>
+                        <p class="channel-description">{{ platform.why }}</p>
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <h3 class="section-title">Бюджет</h3>
+                <p class="channel-description">{{ ad_guide.budget_plan }}</p>
+
+                <h3 class="section-title">Таргетинг</h3>
+                <p class="channel-description">{{ ad_guide.targeting }}</p>
+
+                <h3 class="section-title">Структура запуска</h3>
+                <div class="channels-list">
+                    {% for step in ad_guide.campaign_structure %}
+                    <div class="channel-item">
+                        <div class="channel-header">
+                            <h4>{{ step.step }}</h4>
+                        </div>
+                        <p class="channel-description">{{ step.description }}</p>
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <h3 class="section-title">Креативы</h3>
+                <p class="channel-description">{{ ad_guide.creative_tips }}</p>
+
+                {% if ad_guide.sources %}
+                <h3 class="section-title">Источники</h3>
+                <ul class="sources-list">
+                    {% for source in ad_guide.sources %}
+                    <li><a href="{{ source.url }}" target="_blank" rel="noopener noreferrer">{{ source.title or source.url }}</a></li>
+                    {% endfor %}
+                </ul>
+                {% endif %}
+            </div>
+
+            <div class="empty-state card">
+                <h3>Тексты объявлений</h3>
+                <p>Google Ads, Meta Ads, TikTok Ads, VK Реклама, Яндекс.Директ — на вкладке "Контент".</p>
+                <a href="{{ url_for('ai.generate_content', project_id=project.id) }}" class="btn btn-primary mt-3">Сгенерировать тексты объявлений</a>
+            </div>
+            {% else %}
+            <div class="empty-state card">
+                <h3>Гайда ещё нет</h3>
+                <p>AI подберёт площадки, бюджет и структуру рекламной кампании через веб-поиск.</p>
+                <a href="{{ url_for('ai.ad_guide', project_id=project.id) }}" class="btn btn-primary mt-3">Собрать гайд</a>
             </div>
             {% endif %}
         </div>

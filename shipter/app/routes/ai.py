@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash, g, jsonify
 from app.extensions import db
-from app.models import Project, DistributionPlan, GeneratedContent, ActionTask, Recommendation
+from app.models import Project, DistributionPlan, GeneratedContent, ActionTask, Recommendation, AdGuide
 from app.middleware.auth import login_required, requires_active_subscription, requires_pro
 from app.services.ai_service import ai_service
 from datetime import datetime, timezone, date
@@ -60,7 +60,12 @@ def generate_content(project_id):
         ('product_desc', 'Описание продукта'),
         ('landing_hero', 'Hero секция лендинга'),
         ('email_sequence', 'Email последовательность'),
-        ('cold_outreach', 'Cold outreach шаблон')
+        ('cold_outreach', 'Cold outreach шаблон'),
+        ('google_ads_search', 'Google Ads — поисковая реклама'),
+        ('meta_ads', 'Meta Ads (Facebook/Instagram)'),
+        ('tiktok_ads', 'TikTok Ads — сценарий'),
+        ('vk_ads', 'VK Реклама'),
+        ('yandex_direct', 'Яндекс.Директ'),
     ]
     
     if request.method == 'POST':
@@ -162,3 +167,34 @@ def recommend(project_id):
         return redirect(url_for('projects.detail', project_id=project.id))
 
     return render_template('ai/recommend.html', project=project, recommendation=existing)
+
+@ai_bp.route('/ad-guide/<int:project_id>', methods=['GET', 'POST'])
+@login_required
+@requires_active_subscription
+def ad_guide(project_id):
+    """Готовит гайд по запуску рекламы для проекта."""
+    user = g.current_user
+    project = Project.query.filter_by(id=project_id, user_id=user.id).first_or_404()
+
+    existing = AdGuide.query.filter_by(project_id=project.id).order_by(AdGuide.created_at.desc()).first()
+
+    if request.method == 'POST':
+        result, from_cache = ai_service.generate_ad_guide(project)
+
+        guide = AdGuide(
+            project_id=project.id,
+            recommended_platforms=result.get('recommended_platforms', []),
+            budget_plan=result.get('budget_plan', ''),
+            targeting=result.get('targeting', ''),
+            campaign_structure=result.get('campaign_structure', []),
+            creative_tips=result.get('creative_tips', ''),
+            sources=result.get('sources', []),
+            tokens_used=result.get('tokens_used', 0)
+        )
+        db.session.add(guide)
+        db.session.commit()
+
+        flash('Гайд по запуску рекламы готов!', 'success')
+        return redirect(url_for('projects.detail', project_id=project.id))
+
+    return render_template('ai/ad_guide.html', project=project, guide=existing)

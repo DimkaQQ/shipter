@@ -6,6 +6,7 @@ from app.models.action_task import ActionTask
 from app.models.generated_content import GeneratedContent
 from app.models.recommendation import Recommendation
 from app.models.analytics_event import AnalyticsEvent
+from app.models.ad_guide import AdGuide
 from app.middleware.auth import login_required, requires_active_subscription
 from datetime import datetime, timezone, date, timedelta
 
@@ -78,6 +79,7 @@ def detail(project_id):
     recommendation = Recommendation.query.filter_by(project_id=project.id).order_by(Recommendation.created_at.desc()).first()
     integrations = project.integrations.filter_by(is_active=True).all() if user.tier == 'pro' else []
     analytics = _project_analytics(project.id)
+    ad_guide = AdGuide.query.filter_by(project_id=project.id).order_by(AdGuide.created_at.desc()).first()
 
     return render_template('projects/detail.html',
                          project=project,
@@ -86,6 +88,7 @@ def detail(project_id):
                          recommendation=recommendation,
                          integrations=integrations,
                          analytics=analytics,
+                         ad_guide=ad_guide,
                          tasks=tasks)
 
 

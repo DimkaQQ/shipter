@@ -8,8 +8,9 @@ from app.models.recommendation import Recommendation
 from app.models.integration import Integration
 from app.models.publish_log import PublishLog
 from app.models.analytics_event import AnalyticsEvent
+from app.models.ad_guide import AdGuide
 
 __all__ = [
     'User', 'Project', 'DistributionPlan', 'GeneratedContent', 'Subscription', 'ActionTask',
-    'Recommendation', 'Integration', 'PublishLog', 'AnalyticsEvent'
+    'Recommendation', 'Integration', 'PublishLog', 'AnalyticsEvent', 'AdGuide'
 ]
