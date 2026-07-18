@@ -58,6 +58,8 @@
                 {% if g.current_user.tier == 'pro' %}
                 <a href="#tasks" class="tab" data-tab="tasks">Задачи (To-Do)</a>
                 {% endif %}
+                <a href="#recommendations" class="tab" data-tab="recommendations">Сервисы и хабы</a>
+                <a href="#analytics" class="tab" data-tab="analytics">Аналитика</a>
                 <a href="#metrics" class="tab" data-tab="metrics">Показатели</a>
             </nav>
         </div>
@@ -128,6 +130,15 @@
                     </div>
                     {% endfor %}
                 </div>
+
+                {% if plan.sources %}
+                <h3 class="section-title">Источники</h3>
+                <ul class="sources-list">
+                    {% for source in plan.sources %}
+                    <li><a href="{{ source.url }}" target="_blank" rel="noopener noreferrer">{{ source.title or source.url }}</a></li>
+                    {% endfor %}
+                </ul>
+                {% endif %}
             </div>
             {% else %}
             <div class="empty-state card">
@@ -142,11 +153,16 @@
         <div id="content" class="tab-content">
             <div class="content-header">
                 <h2>Сгенерированный контент</h2>
-                {% if plan %}
-                <a href="{{ url_for('ai.generate_content', project_id=project.id) }}" class="btn btn-primary">Генерировать контент</a>
-                {% endif %}
+                <div style="display: flex; gap: 12px;">
+                    {% if g.current_user.tier == 'pro' %}
+                    <a href="{{ url_for('integrations.list_integrations', project_id=project.id) }}" class="btn btn-ghost">Интеграции</a>
+                    {% endif %}
+                    {% if plan %}
+                    <a href="{{ url_for('ai.generate_content', project_id=project.id) }}" class="btn btn-primary">Генерировать контент</a>
+                    {% endif %}
+                </div>
             </div>
-            
+
             {% if content_items %}
             <div class="content-list">
                 {% for item in content_items %}
@@ -161,6 +177,24 @@
                     <div class="content-actions">
                         <button class="btn btn-ghost btn-sm" onclick="navigator.clipboard.writeText(this.parentElement.previousElementSibling.textContent)">Копировать</button>
                     </div>
+                    {% if g.current_user.tier == 'pro' %}
+                        {% if integrations %}
+                        <form method="POST" action="{{ url_for('integrations.publish_content', content_id=item.id) }}" class="publish-form">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                            <select name="integration_id" class="form-input publish-select" required onchange="this.closest('.publish-form').querySelector('.publish-recipients').style.display = this.options[this.selectedIndex].dataset.platform === 'email_smtp' ? 'inline-block' : 'none'">
+                                {% for integration in integrations %}
+                                <option value="{{ integration.id }}" data-platform="{{ integration.platform }}">{{ integration.display_name }} ({{ 'Telegram' if integration.platform == 'telegram' else 'Email' }})</option>
+                                {% endfor %}
+                            </select>
+                            <input type="text" name="recipients" class="form-input publish-recipients" placeholder="email получателей через запятую" style="display: {{ 'inline-block' if integrations[0].platform == 'email_smtp' else 'none' }};">
+                            <button type="submit" class="btn btn-primary btn-sm">Опубликовать</button>
+                        </form>
+                        {% else %}
+                        <p class="text-muted" style="margin-top: 12px; font-size: 0.85rem;">
+                            <a href="{{ url_for('integrations.list_integrations', project_id=project.id) }}">Подключите интеграцию</a>, чтобы публиковать реально
+                        </p>
+                        {% endif %}
+                    {% endif %}
                 </div>
                 {% endfor %}
             </div>
@@ -250,6 +284,119 @@
             {% endif %}
         </div>
         {% endif %}
+
+        <!-- Tab Content: Recommendations -->
+        <div id="recommendations" class="tab-content">
+            <div class="content-header">
+                <h2>Сервисы и стартап-хабы</h2>
+                <a href="{{ url_for('ai.recommend', project_id=project.id) }}" class="btn btn-primary">
+                    {{ 'Подобрать заново' if recommendation else 'Подобрать сервисы и хабы' }}
+                </a>
+            </div>
+
+            {% if recommendation %}
+            <div class="channels-list" style="margin-bottom: 32px;">
+                <h3 class="section-title">Сервисы</h3>
+                {% for service in recommendation.services %}
+                <div class="channel-item">
+                    <div class="channel-header">
+                        <h4>{{ service.name }}</h4>
+                        <span class="channel-priority priority-medium">{{ service.category }}</span>
+                    </div>
+                    <p class="channel-description">{{ service.why_fits }}</p>
+                    {% if service.url %}
+                    <a href="{{ service.url }}" target="_blank" rel="noopener noreferrer" class="detail-value link">{{ service.url }}</a>
+                    {% endif %}
+                </div>
+                {% endfor %}
+            </div>
+
+            <div class="channels-list">
+                <h3 class="section-title">Стартап-хабы и акселераторы</h3>
+                {% for hub in recommendation.hubs %}
+                <div class="channel-item">
+                    <div class="channel-header">
+                        <h4>{{ hub.name }}</h4>
+                        <span class="channel-priority priority-low">{{ hub.region }}</span>
+                    </div>
+                    <p class="channel-description">{{ hub.why_fits }}</p>
+                    {% if hub.offer_summary %}
+                    <p class="channel-description"><strong>Предлагают:</strong> {{ hub.offer_summary }}</p>
+                    {% endif %}
+                    {% if hub.url %}
+                    <a href="{{ hub.url }}" target="_blank" rel="noopener noreferrer" class="detail-value link">{{ hub.url }}</a>
+                    {% endif %}
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="empty-state card">
+                <h3>Подбора ещё нет</h3>
+                <p>AI найдёт через веб-поиск сервисы и стартап-хабы, подходящие вашему проекту.</p>
+                <a href="{{ url_for('ai.recommend', project_id=project.id) }}" class="btn btn-primary mt-3">Подобрать</a>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Tab Content: Analytics -->
+        <div id="analytics" class="tab-content">
+            <div class="metrics-grid">
+                <div class="metric-card card">
+                    <div class="metric-icon">👀</div>
+                    <div class="metric-value">{{ analytics.total_pageviews }}</div>
+                    <div class="metric-label">Визитов всего</div>
+                </div>
+                <div class="metric-card card">
+                    <div class="metric-icon">📅</div>
+                    <div class="metric-value">{{ analytics.pageviews_30d }}</div>
+                    <div class="metric-label">Визитов за 30 дней</div>
+                </div>
+                <div class="metric-card card">
+                    <div class="metric-icon">🧑</div>
+                    <div class="metric-value">{{ analytics.unique_visitors_30d }}</div>
+                    <div class="metric-label">Уникальных за 30 дней (оценка)</div>
+                </div>
+            </div>
+
+            {% if analytics.top_paths %}
+            <div class="metrics-section">
+                <h3>Популярные страницы (30 дней)</h3>
+                <div class="stats-grid">
+                    {% for path, cnt in analytics.top_paths %}
+                    <div class="stat-row">
+                        <span class="stat-label">{{ path or '/' }}</span>
+                        <span class="stat-value">{{ cnt }}</span>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+
+            {% if analytics.top_referrers %}
+            <div class="metrics-section">
+                <h3>Источники трафика (30 дней)</h3>
+                <div class="stats-grid">
+                    {% for referrer, cnt in analytics.top_referrers %}
+                    <div class="stat-row">
+                        <span class="stat-label">{{ referrer }}</span>
+                        <span class="stat-value">{{ cnt }}</span>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+
+            <div class="metrics-section">
+                <h3>Код для встраивания</h3>
+                <p class="text-muted" style="margin-bottom: 12px;">
+                    Вставьте перед закрывающим &lt;/body&gt; на вашем сайте, чтобы видеть реальные визиты здесь.
+                </p>
+                <div class="content-item card" style="padding: 16px;">
+                    <pre id="embed-snippet" style="margin: 0; white-space: pre-wrap; word-wrap: break-word;">&lt;script src="{{ url_for('static', filename='js/track.js', _external=True) }}" data-project="{{ project.id }}" async&gt;&lt;/script&gt;</pre>
+                </div>
+                <button class="btn btn-ghost btn-sm mt-3" onclick="navigator.clipboard.writeText(document.getElementById('embed-snippet').textContent)">Скопировать</button>
+            </div>
+        </div>
 
         <!-- Tab Content: Metrics -->
         <div id="metrics" class="tab-content">
@@ -567,6 +714,20 @@
     margin-bottom: 4px;
 }
 
+.sources-list {
+    margin: 0;
+    padding-left: 20px;
+    color: var(--text-secondary);
+}
+
+.sources-list li {
+    margin-bottom: 6px;
+}
+
+.sources-list a {
+    color: var(--accent-primary);
+}
+
 /* Content */
 .content-header {
     display: flex;
@@ -626,6 +787,19 @@
 .content-actions {
     display: flex;
     gap: 8px;
+}
+
+.publish-form {
+    display: flex;
+    gap: 8px;
+    margin-top: 12px;
+    flex-wrap: wrap;
+}
+
+.publish-select,
+.publish-recipients {
+    width: auto;
+    padding: 8px 12px;
 }
 
 /* Tasks */

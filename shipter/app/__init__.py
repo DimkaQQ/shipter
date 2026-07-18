@@ -35,13 +35,17 @@ def create_app():
     from app.routes.projects import projects_bp
     from app.routes.ai import ai_bp
     from app.routes.billing import billing_bp
-    
+    from app.routes.integrations import integrations_bp
+    from app.routes.tracking import tracking_bp
+
     app.register_blueprint(public_bp)
     app.register_blueprint(auth_bp, url_prefix='/auth')
     app.register_blueprint(dashboard_bp)
     app.register_blueprint(projects_bp, url_prefix='/projects')
     app.register_blueprint(ai_bp, url_prefix='/ai')
     app.register_blueprint(billing_bp, url_prefix='/billing')
+    app.register_blueprint(integrations_bp, url_prefix='/integrations')
+    app.register_blueprint(tracking_bp)
     
     # Load user before each request
     @app.before_request

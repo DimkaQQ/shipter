@@ -21,6 +21,37 @@ class AIService:
         raw = f"{project_id}:{prompt_type}:{description[:200]}"
         return f"ai:{hashlib.sha256(raw.encode()).hexdigest()}"
     
+    def _final_text_block(self, response):
+        """Возвращает текст последнего text-блока ответа.
+
+        При веб-поиске (server-side tool) content — это чередование
+        web_search_tool_result/text блоков, а не просто [text], поэтому
+        нельзя полагаться на content[0].
+        """
+        for block in reversed(response.content):
+            if block.type == 'text':
+                return block.text
+        return ''
+
+    def _create_with_web_search(self, prompt: str, max_tokens: int, max_uses: int):
+        """Вызывает Claude с веб-поиском, при pause_turn делает одно продолжение."""
+        messages = [{"role": "user", "content": prompt}]
+        response = self.client.messages.create(
+            model="claude-opus-4-8",
+            max_tokens=max_tokens,
+            tools=[{"type": "web_search_20260209", "name": "web_search", "max_uses": max_uses}],
+            messages=messages,
+        )
+        if response.stop_reason == "pause_turn":
+            messages.append({"role": "assistant", "content": response.content})
+            response = self.client.messages.create(
+                model="claude-opus-4-8",
+                max_tokens=max_tokens,
+                tools=[{"type": "web_search_20260209", "name": "web_search", "max_uses": max_uses}],
+                messages=messages,
+            )
+        return response
+
     def _cached_ai_call(self, key: str, ttl: int, fn):
         """Вызывает AI функцию с кешированием в Redis."""
         try:
@@ -45,13 +76,17 @@ class AIService:
         def do_analyze():
             if not self.client:
                 return self._get_mock_analysis()
-            
-            prompt = f"""Ты — эксперт по запуску и дистрибуции цифровых продуктов. 
-Отвечай ТОЛЬКО валидным JSON без markdown блоков. Язык — русский.
 
-Проанализируй проект и верни JSON:
+            prompt = f"""Ты — эксперт по запуску и дистрибуции цифровых продуктов.
+У тебя есть инструмент веб-поиска — используй его, чтобы найти РЕАЛЬНЫХ, действующих сегодня
+конкурентов, актуальные цены и текущие тренды в нише проекта. Не придумывай названия компаний,
+цены или факты — если не нашёл через поиск, не включай в ответ.
+
+Отвечай ТОЛЬКО валидным JSON без markdown блоков (это должен быть последний блок в ответе). Язык — русский.
+
+Верни JSON:
 {{
-  "niche_analysis": "3-5 предложений о нише, спросе, барьерах",
+  "niche_analysis": "3-5 предложений о нише, спросе, барьерах — на основе найденного в поиске",
   "competitors": [
     {{"name": "...", "pros": ["...", "..."], "cons": ["...", "..."]}}
   ],
@@ -69,7 +104,10 @@ class AIService:
     {{"action": "...", "impact": "high|medium|low", "effort": "high|medium|low", "time": "..."}},
     {{"action": "...", "impact": "high|medium|low", "effort": "high|medium|low", "time": "..."}}
   ],
-  "main_advice": "Самый важный совет в 2-3 предложения"
+  "main_advice": "Самый важный совет в 2-3 предложения",
+  "sources": [
+    {{"title": "...", "url": "..."}}
+  ]
 }}
 
 Проект: {project.name}
@@ -78,14 +116,10 @@ class AIService:
 Аудитория: {project.audience or 'Не указана'}
 Проблема: {project.problem or 'Не указана'}
 """
-            
+
             try:
-                response = self.client.messages.create(
-                    model="claude-sonnet-4-20250514",
-                    max_tokens=4096,
-                    messages=[{"role": "user", "content": prompt}]
-                )
-                content = response.content[0].text
+                response = self._create_with_web_search(prompt, max_tokens=8192, max_uses=5)
+                content = self._final_text_block(response)
                 # Очищаем от markdown если есть
                 content = content.replace('```json', '').replace('```', '').strip()
                 result = json.loads(content)
@@ -128,7 +162,7 @@ class AIService:
             
             try:
                 response = self.client.messages.create(
-                    model="claude-sonnet-4-20250514",
+                    model="claude-sonnet-5",
                     max_tokens=2048,
                     messages=[{"role": "user", "content": prompt}]
                 )
@@ -161,7 +195,7 @@ class AIService:
             
             try:
                 response = self.client.messages.create(
-                    model="claude-sonnet-4-20250514",
+                    model="claude-sonnet-5",
                     max_tokens=2048,
                     messages=[{"role": "user", "content": prompt}]
                 )
@@ -176,7 +210,69 @@ class AIService:
         
         # TTL 6 часов для задач
         return self._cached_ai_call(cache_key, 21600, do_generate)
-    
+
+    def recommend_services_and_hubs(self, project) -> dict:
+        """Подбирает актуальные сервисы (хостинг/CRM/реклама) и стартап-хабы через веб-поиск."""
+        cache_key = self._get_cache_key(project.id, 'recommend', project.description)
+
+        def do_recommend():
+            if not self.client:
+                return self._get_mock_recommendations()
+
+            prompt = f"""Ты — консультант по инфраструктуре и развитию стартапов.
+У тебя есть инструмент веб-поиска — используй его, чтобы найти РЕАЛЬНО существующие и
+действующие сегодня сервисы и стартап-хабы/акселераторы, подходящие именно этому проекту
+(его нише, типу, региону, стадии). Для КАЖДОГО пункта обязательно укажи URL, найденный в
+поиске. Если не уверен что сервис/хаб реально существует и активен — не включай его.
+
+Отвечай ТОЛЬКО валидным JSON без markdown блоков (последний блок ответа). Язык — русский.
+
+Верни JSON:
+{{
+  "services": [
+    {{"name": "...", "category": "hosting|crm|ads|payments|analytics|no_code|email|other", "why_fits": "...", "url": "..."}}
+  ],
+  "hubs": [
+    {{"name": "...", "region": "...", "why_fits": "...", "url": "...", "offer_summary": "что предлагает программа"}}
+  ]
+}}
+
+Подбери 5-8 сервисов и 3-5 стартап-хабов/акселераторов.
+
+Проект: {project.name}
+Тип: {project.type}
+Описание: {project.description}
+Аудитория: {project.audience or 'Не указана'}
+"""
+
+            try:
+                response = self._create_with_web_search(prompt, max_tokens=8192, max_uses=8)
+                content = self._final_text_block(response)
+                content = content.replace('```json', '').replace('```', '').strip()
+                result = json.loads(content)
+                tokens_used = response.usage.input_tokens + response.usage.output_tokens
+                result['tokens_used'] = tokens_used
+                return result
+            except Exception as e:
+                logger.error(f"AI recommendation error: {e}")
+                return self._get_mock_recommendations()
+
+        # TTL 7 дней — рекомендации меняются медленно, веб-поиск дорогой
+        return self._cached_ai_call(cache_key, 604800, do_recommend)
+
+    def _get_mock_recommendations(self) -> dict:
+        """Mock рекомендации для тестирования без API ключа."""
+        return {
+            "services": [
+                {"name": "Vercel", "category": "hosting", "why_fits": "Быстрый деплой для веб-приложений", "url": "https://vercel.com"},
+                {"name": "Stripe", "category": "payments", "why_fits": "Приём платежей и подписок", "url": "https://stripe.com"}
+            ],
+            "hubs": [
+                {"name": "Y Combinator", "region": "Global", "why_fits": "Ранняя стадия, широкий охват", "url": "https://www.ycombinator.com", "offer_summary": "Инвестиции + менторство"}
+            ],
+            "tokens_used": 0
+        }
+
     def _get_mock_analysis(self) -> dict:
         """Mock анализ для тестирования без API ключа."""
         return {
@@ -200,7 +296,8 @@ class AIService:
                 {"action": "Рассылка по LinkedIn", "impact": "medium", "effort": "low", "time": "30 минут"},
                 {"action": "Гостевой пост", "impact": "medium", "effort": "high", "time": "4 часа"}
             ],
-            "main_advice": "Сфокусируйтесь на одной канале дистрибуции который даёт лучший ROI. Не распыляйтесь на всё сразу."
+            "main_advice": "Сфокусируйтесь на одной канале дистрибуции который даёт лучший ROI. Не распыляйтесь на всё сразу.",
+            "sources": []
         }
     
     def _get_mock_content(self, content_type: str) -> str:

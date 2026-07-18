@@ -39,6 +39,10 @@ class Config:
     
     # Trial
     TRIAL_DAYS = int(os.environ.get('TRIAL_DAYS', 3))  # 3 дня trial
+
+    # Шифрование секретов интеграций (Telegram/SMTP креды пользователей)
+    # Генерируется один раз: python -c "from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())"
+    ENCRYPTION_KEY = os.environ.get('ENCRYPTION_KEY', '')
     
     # SQLAlchemy
     SQLALCHEMY_TRACK_MODIFICATIONS = False

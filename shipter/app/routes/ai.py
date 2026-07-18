@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash, g, jsonify
 from app.extensions import db
-from app.models import Project, DistributionPlan, GeneratedContent, ActionTask
+from app.models import Project, DistributionPlan, GeneratedContent, ActionTask, Recommendation
 from app.middleware.auth import login_required, requires_active_subscription, requires_pro
 from app.services.ai_service import ai_service
 from datetime import datetime, timezone, date
@@ -32,6 +32,7 @@ def analyze_project(project_id):
             distribution_steps=result.get('distribution_steps', []),
             quick_wins=result.get('quick_wins', []),
             main_advice=result.get('main_advice', ''),
+            sources=result.get('sources', []),
             tokens_used=result.get('tokens_used', 0)
         )
         
@@ -132,5 +133,32 @@ def update_task(task_id):
         task.status = status
         db.session.commit()
         return jsonify({'success': True})
-    
+
     return jsonify({'success': False, 'error': 'Invalid status'}), 400
+
+@ai_bp.route('/recommend/<int:project_id>', methods=['GET', 'POST'])
+@login_required
+@requires_active_subscription
+def recommend(project_id):
+    """Подбирает сервисы и стартап-хабы для проекта через веб-поиск AI."""
+    user = g.current_user
+    project = Project.query.filter_by(id=project_id, user_id=user.id).first_or_404()
+
+    existing = Recommendation.query.filter_by(project_id=project.id).order_by(Recommendation.created_at.desc()).first()
+
+    if request.method == 'POST':
+        result, from_cache = ai_service.recommend_services_and_hubs(project)
+
+        recommendation = Recommendation(
+            project_id=project.id,
+            services=result.get('services', []),
+            hubs=result.get('hubs', []),
+            tokens_used=result.get('tokens_used', 0)
+        )
+        db.session.add(recommendation)
+        db.session.commit()
+
+        flash('Подбор сервисов и хабов готов!', 'success')
+        return redirect(url_for('projects.detail', project_id=project.id))
+
+    return render_template('ai/recommend.html', project=project, recommendation=existing)

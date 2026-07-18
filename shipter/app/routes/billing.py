@@ -2,6 +2,7 @@ from flask import Blueprint, render_template, request, redirect, url_for, flash,
 from app.middleware.auth import login_required
 from app.services.payment_service import create_checkout_session, get_subscription_status
 from app.config import Config
+from app.extensions import csrf
 
 billing_bp = Blueprint('billing', __name__)
 
@@ -54,6 +55,7 @@ def success():
     return render_template('billing/success.html')
 
 @billing_bp.route('/webhook/stripe', methods=['POST'])
+@csrf.exempt  # запрос приходит от Stripe, а не из браузерной сессии — CSRF-токена нет и не будет
 def stripe_webhook():
     """Stripe webhook endpoint."""
     from app.services.payment_service import handle_webhook

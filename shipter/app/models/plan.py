@@ -12,5 +12,6 @@ class DistributionPlan(db.Model):
     distribution_steps = db.Column(db.JSON)  # массив {week, actions[]}
     quick_wins = db.Column(db.JSON)  # массив {action, impact, effort, time}
     main_advice = db.Column(db.Text)
+    sources = db.Column(db.JSON)  # массив {title, url} — найдено через веб-поиск
     tokens_used = db.Column(db.Integer)
     created_at = db.Column(db.DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
