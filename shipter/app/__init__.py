@@ -23,6 +23,15 @@ def create_app():
             server_metadata_url='https://accounts.google.com/.well-known/openid-configuration',
             client_kwargs={'scope': 'openid email profile'},
         )
+    if Config.META_APP_ID and Config.META_APP_SECRET:
+        oauth.register(
+            name='meta',
+            client_id=Config.META_APP_ID,
+            client_secret=Config.META_APP_SECRET,
+            access_token_url=f'https://graph.facebook.com/{Config.META_API_VERSION}/oauth/access_token',
+            authorize_url=f'https://www.facebook.com/{Config.META_API_VERSION}/dialog/oauth',
+            client_kwargs={'scope': 'ads_management,pages_show_list,business_management'},
+        )
 
     # Configure logging
     logging.basicConfig(level=logging.INFO)
@@ -37,6 +46,8 @@ def create_app():
     from app.routes.billing import billing_bp
     from app.routes.integrations import integrations_bp
     from app.routes.tracking import tracking_bp
+    from app.routes.crm import crm_bp
+    from app.routes.meta_ads import meta_ads_bp
 
     app.register_blueprint(public_bp)
     app.register_blueprint(auth_bp, url_prefix='/auth')
@@ -46,6 +57,8 @@ def create_app():
     app.register_blueprint(billing_bp, url_prefix='/billing')
     app.register_blueprint(integrations_bp, url_prefix='/integrations')
     app.register_blueprint(tracking_bp)
+    app.register_blueprint(crm_bp, url_prefix='/subscribers')
+    app.register_blueprint(meta_ads_bp, url_prefix='/meta-ads')
     
     # Load user before each request
     @app.before_request

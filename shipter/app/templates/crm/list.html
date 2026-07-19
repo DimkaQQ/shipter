@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+
+{% block title %}Подписчики — {{ project.name }} — Shipter{% endblock %}
+
+{% block content %}
+<div class="project-form-container">
+    <div class="container">
+        <div class="form-header">
+            <h1>Подписчики</h1>
+            <p>{{ project.name }} — список для email-рассылок</p>
+        </div>
+
+        <div class="card" style="max-width: 800px; margin: 0 auto 24px; padding: 24px;">
+            <h3 class="section-title" style="margin-top: 0;">Форма подписки для вашего сайта</h3>
+            <p class="text-muted" style="margin-bottom: 12px;">
+                Вставьте на свой сайт — новые email будут появляться в списке ниже автоматически.
+            </p>
+            <div class="content-item card" style="padding: 16px;">
+                <pre id="signup-snippet" style="margin: 0; white-space: pre-wrap; word-wrap: break-word;">&lt;form method="POST" action="{{ signup_url }}"&gt;
+  &lt;input type="email" name="email" placeholder="Ваш email" required&gt;
+  &lt;button type="submit"&gt;Подписаться&lt;/button&gt;
+&lt;/form&gt;</pre>
+            </div>
+            <button class="btn btn-ghost btn-sm mt-3" onclick="navigator.clipboard.writeText(document.getElementById('signup-snippet').textContent)">Скопировать</button>
+        </div>
+
+        <form method="POST" action="{{ url_for('crm.add_subscriber', project_id=project.id) }}" class="project-form card" style="max-width: 800px; margin: 0 auto 24px; padding: 24px; display: flex; gap: 12px; align-items: flex-end;">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <div class="form-group" style="flex: 1; margin-bottom: 0;">
+                <label class="form-label" for="email">Добавить вручную</label>
+                <input type="email" id="email" name="email" class="form-input" required placeholder="email@example.com">
+            </div>
+            <button type="submit" class="btn btn-primary">Добавить</button>
+        </form>
+
+        <div style="max-width: 800px; margin: 0 auto;">
+            {% if subscribers %}
+            <div class="task-list">
+                {% for s in subscribers %}
+                <div class="task-item card">
+                    <div class="task-content">
+                        <h4 class="task-title">{{ s.email }}</h4>
+                        <div class="task-meta">
+                            <span class="task-category-badge">{{ 'форма на сайте' if s.source == 'signup_form' else 'добавлен вручную' }}</span>
+                            {% if not s.is_active %}
+                            <span class="task-category-badge">отписался</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <form method="POST" action="{{ url_for('crm.delete_subscriber', subscriber_id=s.id) }}" onsubmit="return confirm('Удалить подписчика?')">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <button type="submit" class="btn btn-ghost btn-sm delete-task">✕</button>
+                    </form>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="empty-state card">
+                <h3>Пока нет подписчиков</h3>
+                <p>Добавьте вручную или вставьте форму подписки на свой сайт.</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -29,6 +29,14 @@ class Config:
     # Google OAuth
     GOOGLE_CLIENT_ID = os.environ.get('GOOGLE_CLIENT_ID', '')
     GOOGLE_CLIENT_SECRET = os.environ.get('GOOGLE_CLIENT_SECRET', '')
+
+    # Meta Ads (черновики рекламных кампаний, Pro).
+    # Требует зарегистрированное приложение на developers.facebook.com и App Review
+    # на permission ads_management — без этого OAuth работает только для админов/тестеров
+    # самого приложения, не для произвольных пользователей.
+    META_APP_ID = os.environ.get('META_APP_ID', '')
+    META_APP_SECRET = os.environ.get('META_APP_SECRET', '')
+    META_API_VERSION = os.environ.get('META_API_VERSION', 'v21.0')
     
     # Email (SMTP)
     MAIL_SERVER = os.environ.get('MAIL_SERVER', 'smtp.gmail.com')

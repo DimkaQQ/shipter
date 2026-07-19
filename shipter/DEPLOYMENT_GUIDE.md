@@ -200,6 +200,23 @@ python -c "from cryptography.fernet import Fernet; print(Fernet.generate_key().d
 
 Положите результат в `.env` как `ENCRYPTION_KEY=...`.
 
+### META_APP_ID / META_APP_SECRET (черновики кампаний Meta Ads, Pro)
+
+Фича создаёт черновики рекламных кампаний (Campaign + AdSet в статусе «на паузе», без
+автозапуска и без расхода бюджета) через Graph API от имени пользователя. Чтобы это
+реально заработало для всех пользователей, а не только для вас как разработчика:
+
+1. Зарегистрируйте приложение на [developers.facebook.com](https://developers.facebook.com/apps/) —
+   добавьте продукт **Marketing API**, настройте OAuth redirect URI:
+   `https://ваш-домен/meta-ads/callback`.
+2. Пройдите **App Review** на permission `ads_management` (и `pages_show_list`,
+   `business_management`). Без этого OAuth будет работать только для админов/тестеров
+   вашего приложения — процесс модерации у Meta занимает от нескольких дней до недель.
+3. Положите `META_APP_ID` / `META_APP_SECRET` из настроек приложения в `.env`.
+
+Пока `META_APP_ID`/`META_APP_SECRET` не заданы — раздел «Черновик кампании в Meta Ads»
+в интерфейсе будет отдавать понятную ошибку вместо падения приложения.
+
 ### Переменные окружения для production
 
 Создайте файл `.env` на сервере:

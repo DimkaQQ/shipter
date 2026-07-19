@@ -5,6 +5,7 @@ from app.extensions import redis_client
 from anthropic import Anthropic
 from app.config import Config
 from app.services.svg_sanitizer import sanitize_svg
+from app.services.analytics_service import get_project_analytics_summary_text
 import httpx
 
 logger = logging.getLogger(__name__)
@@ -22,6 +23,15 @@ class AIService:
         raw = f"{project_id}:{prompt_type}:{description[:200]}"
         return f"ai:{hashlib.sha256(raw.encode()).hexdigest()}"
     
+    def _analytics_context(self, project_id: int) -> str:
+        """Реальные данные встроенного счётчика — подмешиваются в промпт при повторном
+        анализе, чтобы модель опиралась на факты о том, что уже сработало, а не только
+        на описание проекта. Пусто, если по проекту ещё нет трафика."""
+        summary = get_project_analytics_summary_text(project_id)
+        if not summary:
+            return ''
+        return f"\nРеальные данные о трафике проекта (учти их при анализе): {summary}\n"
+
     def _final_text_block(self, response):
         """Возвращает текст последнего text-блока ответа.
 
@@ -116,7 +126,7 @@ class AIService:
 Описание: {project.description}
 Аудитория: {project.audience or 'Не указана'}
 Проблема: {project.problem or 'Не указана'}
-"""
+{self._analytics_context(project.id)}"""
 
             try:
                 response = self._create_with_web_search(prompt, max_tokens=8192, max_uses=5)
@@ -268,7 +278,7 @@ class AIService:
 Тип: {project.type}
 Описание: {project.description}
 Аудитория: {project.audience or 'Не указана'}
-"""
+{self._analytics_context(project.id)}"""
 
             try:
                 response = self._create_with_web_search(prompt, max_tokens=8192, max_uses=8)

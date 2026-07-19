@@ -1,14 +1,15 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash, g, jsonify
-from sqlalchemy import func
 from app.extensions import db
 from app.models.project import Project
 from app.models.action_task import ActionTask
 from app.models.generated_content import GeneratedContent
 from app.models.recommendation import Recommendation
-from app.models.analytics_event import AnalyticsEvent
 from app.models.ad_guide import AdGuide
+from app.models.ad_account_connection import AdAccountConnection
+from app.models.ad_campaign_draft import AdCampaignDraft
 from app.middleware.auth import login_required, requires_active_subscription
-from datetime import datetime, timezone, date, timedelta
+from app.services.analytics_service import get_project_analytics_summary
+from datetime import datetime, timezone, date
 
 projects_bp = Blueprint('projects', __name__)
 
@@ -78,8 +79,10 @@ def detail(project_id):
     tasks = project.action_tasks.order_by(ActionTask.due_date).all() if user.tier == 'pro' else []
     recommendation = Recommendation.query.filter_by(project_id=project.id).order_by(Recommendation.created_at.desc()).first()
     integrations = project.integrations.filter_by(is_active=True).all() if user.tier == 'pro' else []
-    analytics = _project_analytics(project.id)
+    analytics = get_project_analytics_summary(project.id)
     ad_guide = AdGuide.query.filter_by(project_id=project.id).order_by(AdGuide.created_at.desc()).first()
+    meta_connection = AdAccountConnection.query.filter_by(project_id=project.id, platform='meta').first() if user.tier == 'pro' else None
+    campaign_drafts = AdCampaignDraft.query.filter_by(project_id=project.id).order_by(AdCampaignDraft.created_at.desc()).all() if user.tier == 'pro' else []
 
     return render_template('projects/detail.html',
                          project=project,
@@ -89,34 +92,10 @@ def detail(project_id):
                          integrations=integrations,
                          analytics=analytics,
                          ad_guide=ad_guide,
+                         meta_connection=meta_connection,
+                         campaign_drafts=campaign_drafts,
                          tasks=tasks)
 
-
-def _project_analytics(project_id: int) -> dict:
-    """Агрегированная статистика встраиваемого счётчика для вкладки 'Аналитика'."""
-    base = AnalyticsEvent.query.filter_by(project_id=project_id)
-    thirty_days_ago = datetime.now(timezone.utc) - timedelta(days=30)
-
-    total_pageviews = base.count()
-    pageviews_30d = base.filter(AnalyticsEvent.created_at >= thirty_days_ago).count()
-    unique_visitors_30d = base.filter(AnalyticsEvent.created_at >= thirty_days_ago) \
-        .with_entities(func.count(func.distinct(AnalyticsEvent.visitor_hash))).scalar() or 0
-
-    top_paths = base.filter(AnalyticsEvent.created_at >= thirty_days_ago) \
-        .with_entities(AnalyticsEvent.path, func.count(AnalyticsEvent.id).label('cnt')) \
-        .group_by(AnalyticsEvent.path).order_by(func.count(AnalyticsEvent.id).desc()).limit(5).all()
-
-    top_referrers = base.filter(AnalyticsEvent.created_at >= thirty_days_ago, AnalyticsEvent.referrer != '') \
-        .with_entities(AnalyticsEvent.referrer, func.count(AnalyticsEvent.id).label('cnt')) \
-        .group_by(AnalyticsEvent.referrer).order_by(func.count(AnalyticsEvent.id).desc()).limit(5).all()
-
-    return {
-        'total_pageviews': total_pageviews,
-        'pageviews_30d': pageviews_30d,
-        'unique_visitors_30d': unique_visitors_30d,
-        'top_paths': top_paths,
-        'top_referrers': top_referrers,
-    }
 
 @projects_bp.route('/<int:project_id>/edit', methods=['GET', 'POST'])
 @login_required

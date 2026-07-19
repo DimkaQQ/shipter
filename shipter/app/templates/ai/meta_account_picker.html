@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block title %}Выбор рекламного кабинета — Shipter{% endblock %}
+
+{% block content %}
+<div class="project-form-container">
+    <div class="container">
+        <div class="form-header">
+            <h1>Выберите рекламный кабинет</h1>
+            <p>У вашего Meta-аккаунта несколько рекламных кабинетов — выберите, какой привязать к {{ project.name }}</p>
+        </div>
+
+        <form method="POST" action="{{ url_for('meta_ads.choose_account') }}" class="project-form card" style="max-width: 600px; margin: 0 auto; padding: 40px;">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            {% for account in accounts %}
+            <label class="form-group" style="display: flex; align-items: center; gap: 12px; cursor: pointer;">
+                <input type="radio" name="ad_account_id" value="{{ account.id }}" required>
+                <span>{{ account.name }} ({{ account.id }})</span>
+            </label>
+            {% endfor %}
+            <div class="form-actions">
+                <a href="{{ url_for('projects.detail', project_id=project.id) }}" class="btn btn-ghost">Отмена</a>
+                <button type="submit" class="btn btn-primary">Подключить</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

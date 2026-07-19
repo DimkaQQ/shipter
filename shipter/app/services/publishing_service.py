@@ -1,6 +1,7 @@
 import logging
 import smtplib
 from email.mime.text import MIMEText
+from flask import url_for
 import requests
 
 logger = logging.getLogger(__name__)
@@ -73,3 +74,45 @@ def send_email_smtp(integration, subject: str, body: str, recipients: list[str])
     except OSError as e:
         logger.error(f"SMTP connection error: {e}")
         return False, 'Не удалось подключиться к SMTP-серверу'
+
+
+def send_email_to_subscribers(integration, subject: str, body: str, subscribers: list) -> tuple[int, int]:
+    """Рассылка по списку подписчиков проекта — каждое письмо содержит персональную
+    ссылку отписки (обязательно для рассылок по списку — CAN-SPAM/152-ФЗ).
+    Возвращает (успешно отправлено, ошибок)."""
+    config = integration.get_config()
+    host = config.get('smtp_host')
+    port = int(config.get('smtp_port', 587))
+    username = config.get('smtp_username')
+    password = config.get('smtp_password')
+    use_tls = config.get('use_tls', True)
+
+    sent = 0
+    failed = 0
+
+    try:
+        with smtplib.SMTP(host, port, timeout=SMTP_TIMEOUT) as server:
+            if use_tls:
+                server.starttls()
+            server.login(username, password)
+
+            for subscriber in subscribers:
+                unsubscribe_url = url_for('crm.unsubscribe', token=subscriber.unsubscribe_token, _external=True)
+                personalized_body = f"{body}\n\n---\nОтписаться от рассылки: {unsubscribe_url}"
+
+                msg = MIMEText(personalized_body, 'plain', 'utf-8')
+                msg['Subject'] = subject
+                msg['From'] = username
+                msg['To'] = subscriber.email
+
+                try:
+                    server.sendmail(username, [subscriber.email], msg.as_string())
+                    sent += 1
+                except smtplib.SMTPException as e:
+                    logger.error(f"SMTP send error to subscriber {subscriber.id}: {e}")
+                    failed += 1
+    except (smtplib.SMTPException, OSError) as e:
+        logger.error(f"SMTP connection error during bulk send: {e}")
+        failed += len(subscribers) - sent
+
+    return sent, failed

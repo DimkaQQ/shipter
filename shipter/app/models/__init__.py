@@ -10,8 +10,12 @@ from app.models.publish_log import PublishLog
 from app.models.analytics_event import AnalyticsEvent
 from app.models.ad_guide import AdGuide
 from app.models.ad_creative import AdCreative
+from app.models.subscriber import Subscriber
+from app.models.ad_account_connection import AdAccountConnection
+from app.models.ad_campaign_draft import AdCampaignDraft
 
 __all__ = [
     'User', 'Project', 'DistributionPlan', 'GeneratedContent', 'Subscription', 'ActionTask',
-    'Recommendation', 'Integration', 'PublishLog', 'AnalyticsEvent', 'AdGuide', 'AdCreative'
+    'Recommendation', 'Integration', 'PublishLog', 'AnalyticsEvent', 'AdGuide', 'AdCreative',
+    'Subscriber', 'AdAccountConnection', 'AdCampaignDraft'
 ]

@@ -4,9 +4,10 @@ from app.models.project import Project
 from app.models.integration import Integration
 from app.models.generated_content import GeneratedContent
 from app.models.publish_log import PublishLog
+from app.models.subscriber import Subscriber
 from app.middleware.auth import login_required, requires_pro
 from app.services.publishing_service import (
-    test_telegram_connection, publish_telegram, send_email_smtp
+    test_telegram_connection, publish_telegram, send_email_smtp, send_email_to_subscribers
 )
 
 integrations_bp = Blueprint('integrations', __name__)
@@ -117,14 +118,56 @@ def publish_content(content_id):
 
     if integration.platform == 'telegram':
         ok, error = publish_telegram(integration, content.content)
-    else:
-        recipients_raw = request.form.get('recipients', '')
-        recipients = [r.strip() for r in recipients_raw.split(',') if r.strip()]
-        if not recipients:
-            flash('Укажите хотя бы один email получателя', 'error')
+
+        log = PublishLog(
+            generated_content_id=content.id,
+            integration_id=integration.id,
+            status='success' if ok else 'failed',
+            error_message=None if ok else error,
+        )
+        db.session.add(log)
+        db.session.commit()
+
+        if ok:
+            flash(f'Опубликовано через {integration.display_name}!', 'success')
+        else:
+            flash(f'Ошибка публикации: {error}', 'error')
+
+        return redirect(url_for('projects.detail', project_id=content.project_id))
+
+    # email_smtp
+    subject = f"{content.project.name} — {content.type}"
+
+    if request.form.get('send_to_subscribers') == 'on':
+        subscribers = Subscriber.query.filter_by(
+            project_id=content.project_id, unsubscribed_at=None
+        ).all()
+
+        if not subscribers:
+            flash('В списке подписчиков пока никого нет', 'error')
             return redirect(url_for('projects.detail', project_id=content.project_id))
-        subject = f"{content.project.name} — {content.type}"
-        ok, error = send_email_smtp(integration, subject, content.content, recipients)
+
+        sent, failed = send_email_to_subscribers(integration, subject, content.content, subscribers)
+
+        log = PublishLog(
+            generated_content_id=content.id,
+            integration_id=integration.id,
+            status='success' if sent > 0 else 'failed',
+            error_message=None if failed == 0 else f'{failed} писем не доставлено',
+        )
+        db.session.add(log)
+        db.session.commit()
+
+        flash(f'Разослано {sent} из {sent + failed} подписчикам', 'success' if sent > 0 else 'error')
+        return redirect(url_for('projects.detail', project_id=content.project_id))
+
+    recipients_raw = request.form.get('recipients', '')
+    recipients = [r.strip() for r in recipients_raw.split(',') if r.strip()]
+    if not recipients:
+        flash('Укажите email получателей или отметьте отправку по списку подписчиков', 'error')
+        return redirect(url_for('projects.detail', project_id=content.project_id))
+
+    ok, error = send_email_smtp(integration, subject, content.content, recipients)
 
     log = PublishLog(
         generated_content_id=content.id,

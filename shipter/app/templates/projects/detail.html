@@ -157,6 +157,7 @@
                 <div style="display: flex; gap: 12px;">
                     {% if g.current_user.tier == 'pro' %}
                     <a href="{{ url_for('integrations.list_integrations', project_id=project.id) }}" class="btn btn-ghost">Интеграции</a>
+                    <a href="{{ url_for('crm.list_subscribers', project_id=project.id) }}" class="btn btn-ghost">Подписчики</a>
                     {% endif %}
                     {% if plan %}
                     <a href="{{ url_for('ai.generate_content', project_id=project.id) }}" class="btn btn-primary">Генерировать контент</a>
@@ -182,12 +183,16 @@
                         {% if integrations %}
                         <form method="POST" action="{{ url_for('integrations.publish_content', content_id=item.id) }}" class="publish-form">
                             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                            <select name="integration_id" class="form-input publish-select" required onchange="this.closest('.publish-form').querySelector('.publish-recipients').style.display = this.options[this.selectedIndex].dataset.platform === 'email_smtp' ? 'inline-block' : 'none'">
+                            <select name="integration_id" class="form-input publish-select" required onchange="var isEmail = this.options[this.selectedIndex].dataset.platform === 'email_smtp'; var f = this.closest('.publish-form'); f.querySelector('.publish-recipients').style.display = isEmail ? 'inline-block' : 'none'; f.querySelector('.publish-subscribers-label').style.display = isEmail ? 'inline-flex' : 'none';">
                                 {% for integration in integrations %}
                                 <option value="{{ integration.id }}" data-platform="{{ integration.platform }}">{{ integration.display_name }} ({{ 'Telegram' if integration.platform == 'telegram' else 'Email' }})</option>
                                 {% endfor %}
                             </select>
                             <input type="text" name="recipients" class="form-input publish-recipients" placeholder="email получателей через запятую" style="display: {{ 'inline-block' if integrations[0].platform == 'email_smtp' else 'none' }};">
+                            <label class="publish-subscribers-label" style="display: {{ 'inline-flex' if integrations[0].platform == 'email_smtp' else 'none' }}; align-items: center; gap: 6px; font-size: 0.85rem;">
+                                <input type="checkbox" name="send_to_subscribers" onchange="this.closest('.publish-form').querySelector('.publish-recipients').disabled = this.checked;">
+                                Всем подписчикам
+                            </label>
                             <button type="submit" class="btn btn-primary btn-sm">Опубликовать</button>
                         </form>
                         {% else %}
@@ -414,6 +419,44 @@
                 <a href="{{ url_for('ai.creative', project_id=project.id) }}" class="btn btn-primary mt-3">Сгенерировать баннер</a>
                 {% else %}
                 <p>Доступно на тарифах Starter и Pro.</p>
+                <a href="{{ url_for('billing.plans') }}" class="btn btn-ghost mt-3">Посмотреть тарифы</a>
+                {% endif %}
+            </div>
+
+            <div class="empty-state card" style="margin-top: 24px;">
+                <h3>Черновик кампании в Meta Ads</h3>
+                {% if g.current_user.tier == 'pro' %}
+                    {% if meta_connection %}
+                    <p>Кабинет подключён. Кампании создаются в статусе «на паузе» — реклама не запускается сама.</p>
+                    <a href="{{ url_for('meta_ads.create_campaign', project_id=project.id) }}" class="btn btn-primary mt-3">Создать черновик кампании</a>
+                    {% if campaign_drafts %}
+                    <div class="task-list" style="margin-top: 20px; text-align: left;">
+                        {% for draft in campaign_drafts %}
+                        <div class="task-item card">
+                            <div class="task-content">
+                                <h4 class="task-title">{{ draft.name }}</h4>
+                                <div class="task-meta">
+                                    <span class="task-category-badge">{{ 'создан' if draft.status == 'draft_created' else 'ошибка' }}</span>
+                                    {% if draft.daily_budget %}
+                                    <span class="task-due-date">${{ draft.daily_budget }}/день · {{ draft.country }}</span>
+                                    {% endif %}
+                                </div>
+                                {% if draft.ads_manager_url %}
+                                <a href="{{ draft.ads_manager_url }}" target="_blank" rel="noopener noreferrer" class="detail-value link">Открыть в Ads Manager</a>
+                                {% elif draft.error_message %}
+                                <p class="text-muted" style="font-size: 0.85rem;">{{ draft.error_message }}</p>
+                                {% endif %}
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                    {% else %}
+                    <p>Подключите рекламный кабинет Meta, чтобы создавать черновики кампаний прямо из Shipter.</p>
+                    <a href="{{ url_for('meta_ads.connect', project_id=project.id) }}" class="btn btn-primary mt-3">Подключить Meta Ads кабинет</a>
+                    {% endif %}
+                {% else %}
+                <p>Доступно на тарифе Pro.</p>
                 <a href="{{ url_for('billing.plans') }}" class="btn btn-ghost mt-3">Посмотреть тарифы</a>
                 {% endif %}
             </div>
