@@ -2,7 +2,13 @@ from flask import Blueprint, render_template, request, redirect, url_for, flash,
 from app.extensions import db
 from app.models.project import Project
 from app.models.action_task import ActionTask
+from app.models.generated_content import GeneratedContent
+from app.models.recommendation import Recommendation
+from app.models.ad_guide import AdGuide
+from app.models.ad_account_connection import AdAccountConnection
+from app.models.ad_campaign_draft import AdCampaignDraft
 from app.middleware.auth import login_required, requires_active_subscription
+from app.services.analytics_service import get_project_analytics_summary
 from datetime import datetime, timezone, date
 
 projects_bp = Blueprint('projects', __name__)
@@ -69,14 +75,27 @@ def detail(project_id):
     
     # Получаем связанные данные
     plan = project.distribution_plan
-    content_items = project.generated_content.order_by(Project.generated_content.created_at.desc()).all()
-    tasks = project.action_tasks.order_by(Project.action_tasks.due_date).all() if user.tier == 'pro' else []
-    
-    return render_template('projects/detail.html', 
-                         project=project, 
-                         plan=plan, 
+    content_items = project.generated_content.order_by(GeneratedContent.created_at.desc()).all()
+    tasks = project.action_tasks.order_by(ActionTask.due_date).all() if user.tier == 'pro' else []
+    recommendation = Recommendation.query.filter_by(project_id=project.id).order_by(Recommendation.created_at.desc()).first()
+    integrations = project.integrations.filter_by(is_active=True).all() if user.tier == 'pro' else []
+    analytics = get_project_analytics_summary(project.id)
+    ad_guide = AdGuide.query.filter_by(project_id=project.id).order_by(AdGuide.created_at.desc()).first()
+    meta_connection = AdAccountConnection.query.filter_by(project_id=project.id, platform='meta').first() if user.tier == 'pro' else None
+    campaign_drafts = AdCampaignDraft.query.filter_by(project_id=project.id).order_by(AdCampaignDraft.created_at.desc()).all() if user.tier == 'pro' else []
+
+    return render_template('projects/detail.html',
+                         project=project,
+                         plan=plan,
                          content_items=content_items,
+                         recommendation=recommendation,
+                         integrations=integrations,
+                         analytics=analytics,
+                         ad_guide=ad_guide,
+                         meta_connection=meta_connection,
+                         campaign_drafts=campaign_drafts,
                          tasks=tasks)
+
 
 @projects_bp.route('/<int:project_id>/edit', methods=['GET', 'POST'])
 @login_required

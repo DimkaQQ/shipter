@@ -4,5 +4,18 @@ from app.models.plan import DistributionPlan
 from app.models.generated_content import GeneratedContent
 from app.models.subscription import Subscription
 from app.models.action_task import ActionTask
+from app.models.recommendation import Recommendation
+from app.models.integration import Integration
+from app.models.publish_log import PublishLog
+from app.models.analytics_event import AnalyticsEvent
+from app.models.ad_guide import AdGuide
+from app.models.ad_creative import AdCreative
+from app.models.subscriber import Subscriber
+from app.models.ad_account_connection import AdAccountConnection
+from app.models.ad_campaign_draft import AdCampaignDraft
 
-__all__ = ['User', 'Project', 'DistributionPlan', 'GeneratedContent', 'Subscription', 'ActionTask']
+__all__ = [
+    'User', 'Project', 'DistributionPlan', 'GeneratedContent', 'Subscription', 'ActionTask',
+    'Recommendation', 'Integration', 'PublishLog', 'AnalyticsEvent', 'AdGuide', 'AdCreative',
+    'Subscriber', 'AdAccountConnection', 'AdCampaignDraft'
+]

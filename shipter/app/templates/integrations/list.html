@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block title %}Интеграции — {{ project.name }} — Shipter{% endblock %}
+
+{% block content %}
+<div class="project-form-container">
+    <div class="container">
+        <div class="form-header">
+            <h1>Интеграции</h1>
+            <p>Подключите свои каналы, чтобы публиковать контент {{ project.name }} автоматически</p>
+        </div>
+
+        <div style="max-width: 800px; margin: 0 auto 24px; display: flex; justify-content: flex-end;">
+            <a href="{{ url_for('integrations.create_integration', project_id=project.id) }}" class="btn btn-primary">+ Подключить интеграцию</a>
+        </div>
+
+        <div style="max-width: 800px; margin: 0 auto;">
+            {% if integrations %}
+            <div class="task-list">
+                {% for integration in integrations %}
+                <div class="task-item card">
+                    <div class="task-content">
+                        <h4 class="task-title">{{ integration.display_name }}</h4>
+                        <div class="task-meta">
+                            <span class="task-category-badge">{{ 'Telegram' if integration.platform == 'telegram' else 'Email (SMTP)' }}</span>
+                        </div>
+                    </div>
+                    <form method="POST" action="{{ url_for('integrations.delete_integration', integration_id=integration.id) }}" onsubmit="return confirm('Удалить интеграцию?')">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <button type="submit" class="btn btn-ghost btn-sm delete-task">✕</button>
+                    </form>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="empty-state card">
+                <h3>Пока нет интеграций</h3>
+                <p>Подключите Telegram-бота или свой SMTP, чтобы публиковать контент реально, а не копипастить его вручную.</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

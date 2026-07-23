@@ -1,7 +1,8 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash, g, jsonify, current_app
 from app.middleware.auth import login_required
-from app.services.payment_service import create_checkout_session, get_subscription_status
+from app.services.payment_service import create_checkout_session, get_subscription_status, cancel_subscription_at_period_end
 from app.config import Config
+from app.extensions import csrf
 
 billing_bp = Blueprint('billing', __name__)
 
@@ -54,6 +55,7 @@ def success():
     return render_template('billing/success.html')
 
 @billing_bp.route('/webhook/stripe', methods=['POST'])
+@csrf.exempt  # запрос приходит от Stripe, а не из браузерной сессии — CSRF-токена нет и не будет
 def stripe_webhook():
     """Stripe webhook endpoint."""
     from app.services.payment_service import handle_webhook
@@ -71,15 +73,22 @@ def stripe_webhook():
 @billing_bp.route('/cancel', methods=['POST'])
 @login_required
 def cancel_subscription():
-    """Отмена подписки (в реальном приложении через Stripe API)."""
+    """Отмена подписки — реальный вызов Stripe API (доступ до конца оплаченного периода)."""
     user = g.current_user
-    subscription = user.subscriptions.filter_by(status='active').first()
-    
+    subscription = (
+        user.subscriptions.filter_by(status='active').first()
+        or user.subscriptions.filter_by(status='past_due').first()
+    )
+
     if not subscription:
         flash('Нет активной подписки', 'error')
         return redirect(url_for('billing.plans'))
-    
-    # В реальном приложении: stripe.Subscription.modify(subscription.stripe_subscription_id, cancel_at_period_end=True)
-    
-    flash('Подписка будет отменена в конце периода', 'info')
+
+    try:
+        cancel_subscription_at_period_end(subscription)
+        flash('Подписка будет отменена в конце периода', 'info')
+    except Exception as e:
+        current_app.logger.error(f"Cancel subscription error: {e}")
+        flash('Не удалось отменить подписку. Попробуйте позже или напишите в поддержку.', 'error')
+
     return redirect(url_for('billing.plans'))

@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+
+{% block title %}Редактировать {{ project.name }} — Shipter{% endblock %}
+
+{% block content %}
+<div class="project-form-container">
+    <div class="container">
+        <div class="form-header">
+            <h1>Редактировать проект</h1>
+            <p>Обновите информацию о проекте</p>
+        </div>
+
+        <form method="POST" class="project-form card">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label" for="name">Название проекта *</label>
+                    <input type="text" id="name" name="name" class="form-input" required value="{{ project.name }}">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="type">Тип продукта</label>
+                    <select id="type" name="type" class="form-input">
+                        <option value="saas" {% if project.type == 'saas' %}selected{% endif %}>SaaS</option>
+                        <option value="mobile_app" {% if project.type == 'mobile_app' %}selected{% endif %}>Mobile App</option>
+                        <option value="web_app" {% if project.type == 'web_app' %}selected{% endif %}>Web App</option>
+                        <option value="ecommerce" {% if project.type == 'ecommerce' %}selected{% endif %}>E-commerce</option>
+                        <option value="marketplace" {% if project.type == 'marketplace' %}selected{% endif %}>Marketplace</option>
+                        <option value="content" {% if project.type == 'content' %}selected{% endif %}>Content Platform</option>
+                        <option value="other" {% if project.type == 'other' %}selected{% endif %}>Другое</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" for="description">Описание проекта *</label>
+                <textarea id="description" name="description" class="form-input" rows="5" required>{{ project.description }}</textarea>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label" for="audience">Целевая аудитория</label>
+                    <input type="text" id="audience" name="audience" class="form-input" value="{{ project.audience or '' }}">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="problem">Проблема которую решаете</label>
+                    <input type="text" id="problem" name="problem" class="form-input" value="{{ project.problem or '' }}">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" for="website_url">URL сайта (если есть)</label>
+                <input type="url" id="website_url" name="website_url" class="form-input" value="{{ project.website_url or '' }}">
+            </div>
+
+            <div class="form-actions">
+                <a href="{{ url_for('projects.detail', project_id=project.id) }}" class="btn btn-ghost">Отмена</a>
+                <button type="submit" class="btn btn-primary">Сохранить изменения</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

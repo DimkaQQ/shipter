@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+
+{% block title %}Подключить интеграцию — {{ project.name }} — Shipter{% endblock %}
+
+{% block content %}
+<div class="project-form-container">
+    <div class="container">
+        <div class="form-header">
+            <h1>Подключить интеграцию</h1>
+            <p>{{ project.name }}</p>
+        </div>
+
+        <form method="POST" class="project-form card" style="max-width: 600px; margin: 0 auto 32px; padding: 40px;">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+            <div class="form-group">
+                <label class="form-label" for="platform">Платформа</label>
+                <select id="platform" name="platform" class="form-input" required onchange="togglePlatformFields()">
+                    <option value="telegram">Telegram-бот</option>
+                    <option value="email_smtp">Email (свой SMTP)</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" for="display_name">Название интеграции</label>
+                <input type="text" id="display_name" name="display_name" class="form-input" required placeholder="Например: Основной канал">
+            </div>
+
+            <div id="telegram-fields">
+                <div class="form-group">
+                    <label class="form-label" for="bot_token">Токен бота</label>
+                    <input type="text" id="bot_token" name="bot_token" class="form-input" placeholder="123456:ABC-DEF...">
+                    <p class="text-muted" style="margin-top: 6px; font-size: 0.85rem;">Получите у @BotFather в Telegram</p>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="chat_id">Chat ID канала</label>
+                    <input type="text" id="chat_id" name="chat_id" class="form-input" placeholder="@my_channel или -1001234567890">
+                    <p class="text-muted" style="margin-top: 6px; font-size: 0.85rem;">Бот должен быть администратором канала</p>
+                </div>
+            </div>
+
+            <div id="email-fields" style="display: none;">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label" for="smtp_host">SMTP host</label>
+                        <input type="text" id="smtp_host" name="smtp_host" class="form-input" placeholder="smtp.gmail.com">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="smtp_port">Порт</label>
+                        <input type="text" id="smtp_port" name="smtp_port" class="form-input" value="587">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="smtp_username">Логин (email)</label>
+                    <input type="text" id="smtp_username" name="smtp_username" class="form-input">
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="smtp_password">Пароль приложения</label>
+                    <input type="password" id="smtp_password" name="smtp_password" class="form-input">
+                </div>
+                <div class="form-group">
+                    <label class="form-label"><input type="checkbox" name="use_tls" checked> Использовать TLS</label>
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <a href="{{ url_for('integrations.list_integrations', project_id=project.id) }}" class="btn btn-ghost">Отмена</a>
+                <button type="submit" class="btn btn-primary">Подключить</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function togglePlatformFields() {
+    const platform = document.getElementById('platform').value;
+    document.getElementById('telegram-fields').style.display = platform === 'telegram' ? 'block' : 'none';
+    document.getElementById('email-fields').style.display = platform === 'email_smtp' ? 'block' : 'none';
+}
+</script>
+{% endblock %}

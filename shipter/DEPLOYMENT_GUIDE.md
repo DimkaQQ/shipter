@@ -132,6 +132,27 @@ sudo systemctl start shipter
 sudo systemctl status shipter
 ```
 
+### 4.2.1 Планировщик фоновых задач (trial reminders)
+
+Планировщик (напоминания об истечении триала) запускается **отдельным процессом**,
+а не внутри Gunicorn-воркеров — иначе задачи и письма дублировались бы по числу воркеров.
+
+```bash
+# Скопируйте файл службы
+sudo cp /path/to/shipter/shipter-scheduler.service /etc/systemd/system/
+
+# Обновите пути в файле службы
+sudo nano /etc/systemd/system/shipter-scheduler.service
+
+# Активируйте службу
+sudo systemctl daemon-reload
+sudo systemctl enable shipter-scheduler
+sudo systemctl start shipter-scheduler
+
+# Проверка статуса
+sudo systemctl status shipter-scheduler
+```
+
 ### 4.3 Для macOS (локальная разработка)
 
 Используйте launchd или просто запускайте через:
@@ -167,7 +188,53 @@ curl -I http://shipter.com
 
 ## 🔧 Дополнительные настройки
 
+### ENCRYPTION_KEY (для интеграций Telegram/SMTP на Pro)
+
+Токены и пароли, которые пользователи вводят при подключении интеграций, хранятся в БД
+зашифрованными (Fernet). Сгенерируйте ключ один раз и никогда не меняйте его после того,
+как в базе появятся интеграции (иначе расшифровка существующих записей сломается):
+
+```bash
+python -c "from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())"
+```
+
+Положите результат в `.env` как `ENCRYPTION_KEY=...`.
+
+### META_APP_ID / META_APP_SECRET (черновики кампаний Meta Ads, Pro)
+
+Фича создаёт черновики рекламных кампаний (Campaign + AdSet в статусе «на паузе», без
+автозапуска и без расхода бюджета) через Graph API от имени пользователя. Чтобы это
+реально заработало для всех пользователей, а не только для вас как разработчика:
+
+1. Зарегистрируйте приложение на [developers.facebook.com](https://developers.facebook.com/apps/) —
+   добавьте продукт **Marketing API**, настройте OAuth redirect URI:
+   `https://ваш-домен/meta-ads/callback`.
+2. Пройдите **App Review** на permission `ads_management` (и `pages_show_list`,
+   `business_management`). Без этого OAuth будет работать только для админов/тестеров
+   вашего приложения — процесс модерации у Meta занимает от нескольких дней до недель.
+3. Положите `META_APP_ID` / `META_APP_SECRET` из настроек приложения в `.env`.
+
+Пока `META_APP_ID`/`META_APP_SECRET` не заданы — раздел «Черновик кампании в Meta Ads»
+в интерфейсе будет отдавать понятную ошибку вместо падения приложения.
+
+### SENTRY_DSN (мониторинг ошибок, опционально)
+
+Если задать `SENTRY_DSN` в `.env`, приложение автоматически отправляет необработанные
+исключения в [Sentry](https://sentry.io/). Без этой переменной Sentry просто не
+инициализируется — ошибки остаются только в логах приложения, ничего не ломается.
+
+### /healthz — проверка работоспособности
+
+`GET /healthz` возвращает `200 {"database": "ok", "redis": "ok"}`, если БД доступна
+(Redis — best-effort: rate-limiting и аналитика деградируют без него, но не роняют сайт,
+поэтому проверка Redis не влияет на итоговый статус-код). При недоступной БД — `503`.
+Подходит для healthcheck в балансировщике/оркестраторе.
+
 ### Переменные окружения для production
+
+⚠️ Если `FLASK_ENV=production`, а `SECRET_KEY` не задан (используется значение по
+умолчанию для разработки), приложение откажется запускаться — это защита от случайного
+запуска прода с небезопасным ключом сессий.
 
 Создайте файл `.env` на сервере:
 
@@ -207,6 +274,9 @@ MAIL_PASSWORD=...
 
 # Trial
 TRIAL_DAYS=3
+
+# Sentry (опционально)
+SENTRY_DSN=
 ```
 
 ⚠️ **Никогда не коммитьте `.env` файл в Git!**
