@@ -13,6 +13,20 @@ auth_bp = Blueprint('auth', __name__)
 
 RESET_RATE_LIMIT_PER_HOUR = 5
 LOGIN_RATE_LIMIT_PER_15MIN = 10
+RESEND_VERIFY_RATE_LIMIT_PER_HOUR = 5
+
+
+def _resend_verify_rate_limited(ip: str) -> bool:
+    try:
+        hour_bucket = time.strftime('%Y%m%d%H')
+        key = f"ratelimit:resend-verify:{ip}:{hour_bucket}"
+        count = redis_client.incr(key)
+        if count == 1:
+            redis_client.expire(key, 3600)
+        return count > RESEND_VERIFY_RATE_LIMIT_PER_HOUR
+    except Exception:
+        # Redis недоступен — не блокируем повторную отправку из-за инфраструктурной ошибки
+        return False
 
 
 def _reset_rate_limited(ip: str) -> bool:
@@ -78,7 +92,8 @@ def login():
             return render_template('auth/login.html')
 
         if not user.email_verified:
-            flash('Пожалуйста, подтвердите email перед входом', 'warning')
+            flash('Пожалуйста, подтвердите email перед входом. Не пришло письмо? '
+                  'Ссылка для повторной отправки — под формой входа.', 'warning')
             return render_template('auth/login.html')
 
         session['user_id'] = user.id
@@ -144,6 +159,37 @@ def verify_email(token):
     
     flash('Email подтверждён! Теперь вы можете войти.', 'success')
     return redirect(url_for('auth.login'))
+
+@auth_bp.route('/resend-verification', methods=['GET', 'POST'])
+def resend_verification():
+    if g.current_user:
+        return redirect(url_for('dashboard.index'))
+
+    if request.method == 'POST':
+        ip = request.headers.get('X-Forwarded-For', request.remote_addr or '').split(',')[0].strip()
+
+        if _resend_verify_rate_limited(ip):
+            flash('Слишком много попыток. Попробуйте позже.', 'error')
+            return render_template('auth/resend_verification.html')
+
+        email = request.form.get('email', '').strip().lower()
+        user = User.query.filter_by(email=email).first() if email else None
+
+        # Одинаковый ответ независимо от результата — не раскрываем регистрацию email
+        # и не спамим уже подтверждённых пользователей повторной отправкой.
+        if user and not user.email_verified and user.password_hash:
+            if not user.email_verify_token:
+                user.email_verify_token = secrets.token_urlsafe(32)
+                db.session.commit()
+            try:
+                send_verification_email(user)
+            except Exception as e:
+                logger.error(f"Error resending verification email: {e}")
+
+        flash('Если этот email зарегистрирован и ещё не подтверждён, мы отправили письмо повторно.', 'success')
+        return redirect(url_for('auth.login'))
+
+    return render_template('auth/resend_verification.html')
 
 @auth_bp.route('/forgot-password', methods=['GET', 'POST'])
 def forgot_password():

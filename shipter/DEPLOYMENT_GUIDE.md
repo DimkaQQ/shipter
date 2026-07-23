@@ -232,6 +232,10 @@ python -c "from cryptography.fernet import Fernet; print(Fernet.generate_key().d
 
 ### Переменные окружения для production
 
+⚠️ Если `FLASK_ENV=production`, а `SECRET_KEY` не задан (используется значение по
+умолчанию для разработки), приложение откажется запускаться — это защита от случайного
+запуска прода с небезопасным ключом сессий.
+
 Создайте файл `.env` на сервере:
 
 ```bash

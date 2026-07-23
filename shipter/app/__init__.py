@@ -9,6 +9,12 @@ def create_app():
     app = Flask(__name__)
     app.config.from_object(Config)
 
+    if Config.FLASK_ENV == 'production' and Config.SECRET_KEY == 'dev-key-change-in-production':
+        raise RuntimeError(
+            'SECRET_KEY не задан для production (используется значение по умолчанию для разработки). '
+            'Установите переменную окружения SECRET_KEY перед запуском.'
+        )
+
     if Config.SENTRY_DSN:
         import sentry_sdk
         from sentry_sdk.integrations.flask import FlaskIntegration
@@ -97,11 +103,16 @@ def create_app():
     # Error handlers
     @app.errorhandler(404)
     def not_found(error):
-        return 'Page not found', 404
-    
+        from flask import render_template
+        return render_template('errors/404.html'), 404
+
     @app.errorhandler(500)
     def internal_error(error):
+        from flask import render_template
         db.session.rollback()
-        return 'Internal server error', 500
+        try:
+            return render_template('errors/500.html'), 500
+        except Exception:
+            return 'Internal server error', 500
     
     return app

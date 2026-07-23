@@ -150,6 +150,40 @@ def test_payment_grace_period_keeps_access_then_final_cancel(app, db):
         assert user.is_active() is False
 
 
+def test_resend_verification_unblocks_locked_out_user(app, db, client):
+    """Regression test: without this, a failed/lost verification email
+    permanently locks a new user out with no recourse."""
+    user_id = _register_user(app, db, email='unverified@shipter.com')
+    with app.app_context():
+        user = User.query.get(user_id)
+        user.email_verified = False
+        import secrets as _secrets
+        user.email_verify_token = _secrets.token_urlsafe(32)
+        db.session.commit()
+
+    r = _login(client, 'unverified@shipter.com', 'password123')
+    assert 'подтвердите email' in r.get_data(as_text=True)
+
+    r = client.get('/auth/resend-verification')
+    assert r.status_code == 200
+    csrf = get_csrf_token(r.get_data(as_text=True))
+    r = client.post('/auth/resend-verification', data={'csrf_token': csrf, 'email': 'unverified@shipter.com'}, follow_redirects=True)
+    assert r.status_code == 200
+
+    with app.app_context():
+        user = User.query.get(user_id)
+        token = user.email_verify_token
+        assert token is not None
+
+    r = client.get(f'/auth/verify/{token}', follow_redirects=True)
+    assert r.status_code == 200
+    with app.app_context():
+        assert User.query.get(user_id).email_verified is True
+
+    r = _login(client, 'unverified@shipter.com', 'password123')
+    assert r.status_code == 302
+
+
 def test_settings_export_and_account_deletion(app, db, client):
     user_id = _register_user(app, db, email='deleteme@shipter.com')
     with client.session_transaction() as sess:

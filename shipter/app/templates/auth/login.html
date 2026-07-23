@@ -35,6 +35,9 @@
         <p class="auth-footer">
             Нет аккаунта? <a href="{{ url_for('auth.register') }}">Зарегистрироваться</a>
         </p>
+        <p class="auth-footer">
+            Не пришло письмо подтверждения? <a href="{{ url_for('auth.resend_verification') }}">Отправить снова</a>
+        </p>
     </div>
 </div>
 {% endblock %}
