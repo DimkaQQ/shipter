@@ -9,6 +9,11 @@ def create_app():
     app = Flask(__name__)
     app.config.from_object(Config)
 
+    if Config.SENTRY_DSN:
+        import sentry_sdk
+        from sentry_sdk.integrations.flask import FlaskIntegration
+        sentry_sdk.init(dsn=Config.SENTRY_DSN, integrations=[FlaskIntegration()], traces_sample_rate=0.1)
+
     # Initialize extensions
     db.init_app(app)
     mail.init_app(app)
@@ -48,10 +53,11 @@ def create_app():
     from app.routes.tracking import tracking_bp
     from app.routes.crm import crm_bp
     from app.routes.meta_ads import meta_ads_bp
+    from app.routes.settings import settings_bp
 
     app.register_blueprint(public_bp)
     app.register_blueprint(auth_bp, url_prefix='/auth')
-    app.register_blueprint(dashboard_bp)
+    app.register_blueprint(dashboard_bp, url_prefix='/dashboard')
     app.register_blueprint(projects_bp, url_prefix='/projects')
     app.register_blueprint(ai_bp, url_prefix='/ai')
     app.register_blueprint(billing_bp, url_prefix='/billing')
@@ -59,6 +65,7 @@ def create_app():
     app.register_blueprint(tracking_bp)
     app.register_blueprint(crm_bp, url_prefix='/subscribers')
     app.register_blueprint(meta_ads_bp, url_prefix='/meta-ads')
+    app.register_blueprint(settings_bp)
     
     # Load user before each request
     @app.before_request
@@ -67,6 +74,26 @@ def create_app():
         if session.get('user_id'):
             session.permanent = True
     
+    @app.route('/healthz')
+    def healthz():
+        from sqlalchemy import text
+        checks = {}
+
+        try:
+            db.session.execute(text('SELECT 1'))
+            checks['database'] = 'ok'
+        except Exception as e:
+            checks['database'] = f'error: {e}'
+
+        try:
+            redis_client.ping()
+            checks['redis'] = 'ok'
+        except Exception as e:
+            checks['redis'] = f'error: {e}'
+
+        healthy = checks['database'] == 'ok'
+        return checks, 200 if healthy else 503
+
     # Error handlers
     @app.errorhandler(404)
     def not_found(error):

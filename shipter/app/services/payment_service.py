@@ -59,10 +59,14 @@ def handle_webhook(payload: bytes, sig_header: str):
         sub = event.data.object
         _update_subscription(sub)
     
-    elif event.type in ('customer.subscription.deleted', 'invoice.payment_failed'):
+    elif event.type == 'customer.subscription.deleted':
         sub = event.data.object
         _cancel_subscription(sub)
-    
+
+    elif event.type == 'invoice.payment_failed':
+        invoice = event.data.object
+        _mark_past_due(invoice)
+
     else:
         logger.info(f"Unhandled event type: {event.type}")
     
@@ -141,6 +145,34 @@ def _update_subscription(stripe_sub):
         db.session.rollback()
         raise
 
+def _mark_past_due(invoice):
+    """Отмечает подписку как просроченную (грейс-период) при неудачном списании.
+
+    Доступ не отключается сразу — пользователь продолжает пользоваться платформой,
+    пока Stripe повторяет попытки списания (Smart Retries, настраивается в дашборде
+    Stripe). Окончательная отмена происходит отдельно, когда Stripe присылает
+    customer.subscription.deleted после исчерпания всех повторных попыток.
+    """
+    try:
+        subscription_id = invoice.subscription
+        if not subscription_id:
+            logger.warning("Invoice payment_failed without subscription id, skipping")
+            return
+
+        sub = Subscription.query.filter_by(stripe_subscription_id=subscription_id).first()
+        if not sub:
+            logger.warning(f"Subscription not found for failed invoice: {subscription_id}")
+            return
+
+        sub.status = 'past_due'
+        db.session.commit()
+        logger.warning(f"Subscription marked past_due after failed payment: {subscription_id}")
+
+    except Exception as e:
+        logger.error(f"Error marking subscription past_due: {e}")
+        db.session.rollback()
+        raise
+
 def _cancel_subscription(stripe_sub):
     """Отменяет подписку."""
     try:
@@ -165,10 +197,39 @@ def _cancel_subscription(stripe_sub):
         db.session.rollback()
         raise
 
+def cancel_subscription_at_period_end(subscription) -> None:
+    """Реально отменяет подписку в Stripe (доступ сохраняется до конца оплаченного периода)."""
+    stripe.Subscription.modify(
+        subscription.stripe_subscription_id,
+        cancel_at_period_end=True,
+    )
+    # Оптимистично обновляем локально — webhook customer.subscription.updated
+    # ещё раз синхронизирует состояние, когда придёт от Stripe.
+    subscription.cancel_at_period_end = True
+    db.session.commit()
+    logger.info(f"Cancellation requested for subscription {subscription.stripe_subscription_id}")
+
+
+def cancel_subscription_now(subscription) -> None:
+    """Немедленно отменяет подписку в Stripe — используется при удалении аккаунта,
+    в отличие от cancel_subscription_at_period_end (доступ до конца периода)."""
+    try:
+        stripe.Subscription.delete(subscription.stripe_subscription_id)
+    except stripe.error.InvalidRequestError as e:
+        # Подписка уже отменена/не существует в Stripe — не блокируем удаление аккаунта
+        logger.warning(f"Stripe subscription already gone during immediate cancel: {e}")
+    subscription.status = 'cancelled'
+    db.session.commit()
+    logger.info(f"Subscription immediately cancelled: {subscription.stripe_subscription_id}")
+
+
 def get_subscription_status(user) -> dict:
     """Возвращает статус подписки пользователя."""
-    subscription = user.subscriptions.filter_by(status='active').first()
-    
+    subscription = (
+        user.subscriptions.filter_by(status='active').first()
+        or user.subscriptions.filter_by(status='past_due').first()
+    )
+
     if not subscription:
         return {
             'active': False,
@@ -176,10 +237,11 @@ def get_subscription_status(user) -> dict:
             'trial_days_left': user.trial_days_left(),
             'is_trial': user.tier == 'trial'
         }
-    
+
     return {
         'active': True,
         'tier': subscription.tier,
         'current_period_end': subscription.current_period_end,
-        'cancel_at_period_end': subscription.cancel_at_period_end
+        'cancel_at_period_end': subscription.cancel_at_period_end,
+        'past_due': subscription.status == 'past_due',
     }

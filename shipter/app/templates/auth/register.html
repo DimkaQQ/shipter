@@ -6,7 +6,7 @@
 <div class="auth-container">
     <div class="auth-card card">
         <h1 class="auth-title">Создать аккаунт</h1>
-        <p class="auth-subtitle">7 дней бесплатно. Карта не нужна.</p>
+        <p class="auth-subtitle">3 дня бесплатно. Карта не нужна.</p>
         
         <form method="POST" action="{{ url_for('auth.register') }}" class="auth-form">
             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">

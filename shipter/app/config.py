@@ -51,6 +51,9 @@ class Config:
     # Шифрование секретов интеграций (Telegram/SMTP креды пользователей)
     # Генерируется один раз: python -c "from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())"
     ENCRYPTION_KEY = os.environ.get('ENCRYPTION_KEY', '')
+
+    # Sentry (мониторинг ошибок) — опционально, включается только если задан DSN
+    SENTRY_DSN = os.environ.get('SENTRY_DSN', '')
     
     # SQLAlchemy
     SQLALCHEMY_TRACK_MODIFICATIONS = False

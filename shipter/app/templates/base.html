@@ -11,12 +11,9 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     
-    <!-- HTMX for dynamic interactions -->
-    <script src="https://unpkg.com/htmx.org@1.9.10"></script>
-    
-    <!-- Anime.js for animations (v3.x for global anime variable) -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
-    
+    <!-- Anime.js for animations (self-hosted — v3.x for global anime variable) -->
+    <script src="{{ url_for('static', filename='js/anime.min.js') }}"></script>
+
     <!-- Main CSS -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
     {% block extra_css %}{% endblock %}
@@ -70,6 +67,7 @@
                     <div class="user-avatar user-avatar-placeholder">{{ g.current_user.name[0]|upper if g.current_user.name else g.current_user.email[0]|upper }}</div>
                     {% endif %}
                     <div class="dropdown">
+                        <a href="{{ url_for('settings.index') }}">Настройки</a>
                         <a href="{{ url_for('auth.logout') }}">Выйти</a>
                     </div>
                 </div>

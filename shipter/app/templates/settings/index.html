@@ -1,0 +1,148 @@
+{% extends "base.html" %}
+
+{% block title %}Настройки{% endblock %}
+
+{% block content %}
+<div class="settings-container">
+    <div class="container">
+        <header class="settings-header">
+            <h1>Настройки аккаунта</h1>
+        </header>
+
+        <div class="settings-section card">
+            <h3>Профиль</h3>
+            <div class="profile-row">
+                <span class="profile-label">Email</span>
+                <span class="profile-value">{{ g.current_user.email }}</span>
+            </div>
+            {% if g.current_user.name %}
+            <div class="profile-row">
+                <span class="profile-label">Имя</span>
+                <span class="profile-value">{{ g.current_user.name }}</span>
+            </div>
+            {% endif %}
+            <div class="profile-row">
+                <span class="profile-label">Тариф</span>
+                <span class="profile-value">{{ g.current_user.tier|upper }}</span>
+            </div>
+        </div>
+
+        <div class="settings-section card">
+            <h3>Экспорт данных</h3>
+            <p class="section-desc">
+                Скачайте все ваши данные в Shipter: проекты, AI-анализы, сгенерированный контент,
+                задачи, подписчиков и рекламные материалы — в формате JSON.
+            </p>
+            <a href="{{ url_for('settings.export_data') }}" class="btn btn-secondary">Скачать мои данные</a>
+        </div>
+
+        <div class="settings-section card danger-zone">
+            <h3>Удаление аккаунта</h3>
+            <p class="section-desc">
+                Это действие необратимо: будут удалены все ваши проекты, AI-анализы, контент,
+                подписчики и рекламные материалы. Активная подписка будет отменена немедленно.
+            </p>
+            <button type="button" class="btn btn-danger" onclick="document.getElementById('delete-confirm').style.display='block'; this.style.display='none';">
+                Удалить аккаунт
+            </button>
+
+            <div id="delete-confirm" class="delete-confirm-box" style="display:none;">
+                <form method="POST" action="{{ url_for('settings.delete_account') }}" onsubmit="return confirm('Это действие нельзя отменить. Удалить аккаунт навсегда?');">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <label class="form-label" for="confirm_email">
+                        Введите ваш email <strong>{{ g.current_user.email }}</strong> для подтверждения:
+                    </label>
+                    <input type="email" id="confirm_email" name="confirm_email" class="form-input" required placeholder="{{ g.current_user.email }}">
+                    <button type="submit" class="btn btn-danger">Удалить аккаунт навсегда</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.settings-container {
+    padding: 60px 0;
+}
+
+.settings-header {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.settings-header h1 {
+    font-family: var(--font-display);
+    font-size: 2.25rem;
+    background: var(--gradient-hero);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.settings-section {
+    max-width: 700px;
+    margin: 0 auto 24px;
+    padding: 32px;
+}
+
+.settings-section h3 {
+    font-family: var(--font-display);
+    margin-bottom: 16px;
+}
+
+.section-desc {
+    color: var(--text-secondary);
+    margin-bottom: 20px;
+    line-height: 1.6;
+}
+
+.profile-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border-subtle);
+}
+
+.profile-row:last-child {
+    border-bottom: none;
+}
+
+.profile-label {
+    color: var(--text-secondary);
+}
+
+.profile-value {
+    font-weight: 600;
+}
+
+.danger-zone {
+    border-color: #ef4444;
+}
+
+.btn-danger {
+    background: #ef4444;
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 12px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.btn-danger:hover {
+    opacity: 0.9;
+}
+
+.delete-confirm-box {
+    margin-top: 20px;
+    padding: 20px;
+    background: var(--accent-glow);
+    border-radius: 12px;
+}
+
+.delete-confirm-box .form-input {
+    margin: 12px 0;
+}
+</style>
+{% endblock %}

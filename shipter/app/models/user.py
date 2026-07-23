@@ -13,6 +13,8 @@ class User(db.Model):
     avatar_url = db.Column(db.String(500))
     email_verified = db.Column(db.Boolean, default=False)
     email_verify_token = db.Column(db.String(255))
+    reset_token = db.Column(db.String(255), unique=True)
+    reset_token_expires_at = db.Column(db.DateTime(timezone=True))
     tier = db.Column(db.String(20), default='trial')
     trial_ends_at = db.Column(db.DateTime(timezone=True))
     trial_reminder_sent = db.Column(db.Boolean, default=False)
@@ -21,7 +23,7 @@ class User(db.Model):
     last_seen = db.Column(db.DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
 
     projects = db.relationship('Project', backref='owner', lazy='dynamic', cascade='all, delete-orphan')
-    subscriptions = db.relationship('Subscription', backref='user', lazy='dynamic')
+    subscriptions = db.relationship('Subscription', backref='user', lazy='dynamic', cascade='all, delete-orphan')
 
     def set_password(self, password: str):
         self.password_hash = bcrypt.hashpw(password.encode(), bcrypt.gensalt()).decode()
@@ -33,7 +35,12 @@ class User(db.Model):
 
     def is_active(self) -> bool:
         if self.tier in ('starter', 'pro'):
-            sub = self.subscriptions.filter_by(status='active').first()
+            # past_due — грейс-период: доступ сохраняется пока Stripe повторяет
+            # попытки списания, отключается только по customer.subscription.deleted
+            sub = (
+                self.subscriptions.filter_by(status='active').first()
+                or self.subscriptions.filter_by(status='past_due').first()
+            )
             return sub is not None
         if self.tier == 'trial':
             return self.trial_ends_at and datetime.now(timezone.utc) < self.trial_ends_at
@@ -59,6 +66,20 @@ class User(db.Model):
         }
         allowed_tiers = FEATURES.get(feature, [])
         return self.tier in allowed_tiers and self.is_active()
+
+    def generate_reset_token(self) -> str:
+        import secrets
+        token = secrets.token_urlsafe(32)
+        self.reset_token = token
+        self.reset_token_expires_at = datetime.now(timezone.utc) + timedelta(hours=1)
+        return token
+
+    def reset_token_valid(self) -> bool:
+        return bool(
+            self.reset_token
+            and self.reset_token_expires_at
+            and datetime.now(timezone.utc) < self.reset_token_expires_at
+        )
 
     @classmethod
     def create_with_trial(cls, email: str, password: str = None, name: str = None, google_id: str = None):

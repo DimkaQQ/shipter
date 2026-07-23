@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash, g, jsonify, current_app
 from app.middleware.auth import login_required
-from app.services.payment_service import create_checkout_session, get_subscription_status
+from app.services.payment_service import create_checkout_session, get_subscription_status, cancel_subscription_at_period_end
 from app.config import Config
 from app.extensions import csrf
 
@@ -73,15 +73,22 @@ def stripe_webhook():
 @billing_bp.route('/cancel', methods=['POST'])
 @login_required
 def cancel_subscription():
-    """Отмена подписки (в реальном приложении через Stripe API)."""
+    """Отмена подписки — реальный вызов Stripe API (доступ до конца оплаченного периода)."""
     user = g.current_user
-    subscription = user.subscriptions.filter_by(status='active').first()
-    
+    subscription = (
+        user.subscriptions.filter_by(status='active').first()
+        or user.subscriptions.filter_by(status='past_due').first()
+    )
+
     if not subscription:
         flash('Нет активной подписки', 'error')
         return redirect(url_for('billing.plans'))
-    
-    # В реальном приложении: stripe.Subscription.modify(subscription.stripe_subscription_id, cancel_at_period_end=True)
-    
-    flash('Подписка будет отменена в конце периода', 'info')
+
+    try:
+        cancel_subscription_at_period_end(subscription)
+        flash('Подписка будет отменена в конце периода', 'info')
+    except Exception as e:
+        current_app.logger.error(f"Cancel subscription error: {e}")
+        flash('Не удалось отменить подписку. Попробуйте позже или напишите в поддержку.', 'error')
+
     return redirect(url_for('billing.plans'))

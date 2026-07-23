@@ -16,16 +16,27 @@
             <div class="trial-details">
                 <h3>Trial период</h3>
                 <p>У вас осталось <strong>{{ subscription.trial_days_left }} дн.</strong> бесплатного доступа</p>
-                <p class="trial-note">Требуется привязка карты. Списания начнутся после окончания trial.</p>
+                <p class="trial-note">Карта не нужна. После окончания trial выберите тариф, чтобы продолжить пользоваться Shipter.</p>
             </div>
         </div>
         {% endif %}
 
         {% if subscription.active %}
         <div class="active-subscription card">
+            {% if subscription.past_due %}
+            <div class="sub-status status-past-due">⚠️ Проблема с оплатой</div>
+            <div class="past-due-notice">
+                Не удалось списать оплату за подписку. Stripe автоматически повторит попытку.
+                Обновите способ оплаты, чтобы не потерять доступ — иначе после исчерпания
+                повторных попыток подписка будет отменена автоматически.
+            </div>
+            {% else %}
             <div class="sub-status status-active">● Активна</div>
+            {% endif %}
             <h3>Ваш тариф: <span class="tier-name">{{ subscription.tier|upper }}</span></h3>
+            {% if subscription.current_period_end %}
             <p>Действует до: {{ subscription.current_period_end.strftime('%d.%m.%Y') }}</p>
+            {% endif %}
             {% if subscription.cancel_at_period_end %}
             <div class="cancel-notice">
                 ⚠️ Подписка будет отменена в конце периода
@@ -56,7 +67,7 @@
                     <li>✅ AI-анализ проекта</li>
                     <li>✅ Генерация контента</li>
                     <li>✅ Пошаговый план дистрибуции</li>
-                    <li>💳 Требуется привязка карты</li>
+                    <li>💳 Карта не требуется</li>
                 </ul>
                 {% if not g.current_user %}
                 <a href="{{ url_for('auth.register') }}" class="btn btn-outline">Начать бесплатно</a>
@@ -121,11 +132,11 @@
             <div class="faq-list">
                 <details class="faq-item">
                     <summary>Что такое Trial и как он работает?</summary>
-                    <p>Trial — это 3 дня полного доступа ко всем функциям платформы. Требуется привязка карты для защиты от злоупотреблений. Вы можете отменить подписку в любой момент до окончания trial и с вас не спишут деньги.</p>
+                    <p>Trial — это 3 дня полного доступа ко всем функциям платформы. Карта не нужна — вы ничего не платите, пока сами не выберете платный тариф.</p>
                 </details>
                 <details class="faq-item">
                     <summary>Когда произойдёт первое списание?</summary>
-                    <p>Первое списание произойдёт автоматически после окончания 3-дневного trial периода если вы не отмените подписку. Далее списания происходят раз в месяц в ту же дату.</p>
+                    <p>Автоматических списаний нет: карта не привязывается при регистрации. Оплата происходит только когда вы сами выбираете тариф Starter или Pro и проходите оплату через Stripe. Дальше списания происходят раз в месяц в ту же дату, пока вы не отмените подписку.</p>
                 </details>
                 <details class="faq-item">
                     <summary>Можно ли отменить подписку?</summary>
@@ -201,6 +212,20 @@
 
 .status-active {
     color: #10b981;
+}
+
+.status-past-due {
+    color: var(--accent-warning);
+}
+
+.past-due-notice {
+    background: var(--accent-glow);
+    color: var(--text-primary);
+    padding: 12px 16px;
+    border-radius: 8px;
+    margin: 8px 0 16px;
+    font-size: 0.9rem;
+    line-height: 1.5;
 }
 
 .tier-name {

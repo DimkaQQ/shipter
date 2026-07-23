@@ -1,9 +1,11 @@
-from flask import Blueprint, render_template
+from flask import Blueprint, render_template, redirect, url_for, g
 
 public_bp = Blueprint('public', __name__)
 
 @public_bp.route('/')
 def landing():
+    if g.current_user:
+        return redirect(url_for('dashboard.index'))
     return render_template('public/landing.html')
 
 @public_bp.route('/pricing')

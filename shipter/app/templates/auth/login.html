@@ -18,7 +18,9 @@
                 <label class="form-label" for="password">Пароль</label>
                 <input type="password" id="password" name="password" class="form-input" required placeholder="••••••••">
             </div>
-            
+
+            <p class="auth-forgot"><a href="{{ url_for('auth.forgot_password') }}">Забыли пароль?</a></p>
+
             <button type="submit" class="btn btn-primary btn-block">Войти</button>
         </form>
         
@@ -62,6 +64,20 @@
 
 .auth-form {
     margin-bottom: 24px;
+}
+
+.auth-forgot {
+    text-align: right;
+    margin: -8px 0 20px;
+    font-size: 0.875rem;
+}
+
+.auth-forgot a {
+    color: var(--text-secondary);
+}
+
+.auth-forgot a:hover {
+    color: var(--accent-primary);
 }
 
 .auth-divider {
